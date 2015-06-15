@@ -28,8 +28,9 @@ public class Comparator {
 
         while (iterator.hasNext()) {
             Statement contextStatement = iterator.next();
-            if( propertiesSatisfying(contextStatement, statement))
+            if (propertiesSatisfying(contextStatement, statement)) {
                 return true;
+            }
         }
 
         return false;
@@ -39,9 +40,9 @@ public class Comparator {
         if (!pre.getPredicate().equals(post.getPredicate())) {
             return false;
         }
-        
-        return entitiesSatisfying(pre.getResource(), post.getResource()) && 
-                entitiesSatisfying(pre.getSubject(), post.getSubject());
+
+        return entitiesSatisfying(pre.getResource(), post.getResource())
+                && entitiesSatisfying(pre.getSubject(), post.getSubject());
     }
 
     public static boolean entitiesSatisfying(Resource sub, Resource sup) {
@@ -52,15 +53,14 @@ public class Comparator {
 
         return subModel.intersection(supModel).isIsomorphicWith(supModel);
     }
-    
-    
+
     public static boolean propertiesCompatible(Statement p1, Statement p2) {
         if (!p1.getPredicate().equals(p2.getPredicate())) {
             return false;
         }
-        
-        return entitiesCompatible(p1.getResource(), p2.getResource()) && 
-                entitiesCompatible(p1.getSubject(), p2.getSubject());
+
+        return entitiesCompatible(p1.getResource(), p2.getResource())
+                && entitiesCompatible(p1.getSubject(), p2.getSubject());
     }
 
     public static boolean entitiesCompatible(Resource e1, Resource e2) {
@@ -71,6 +71,5 @@ public class Comparator {
 
         return e1Model.isIsomorphicWith(e2Model);
     }
-
 
 }

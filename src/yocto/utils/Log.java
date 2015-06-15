@@ -57,18 +57,18 @@ public class Log {
     }
 
     private static void log(Level level, Object toLog) {
-        String message = ""+toLog;
-        out.println(level + "\t" + 
-                (CONTEXTUALIZED ? caller() : "") + 
-                (message.length() > 20 && MULTILINE ? "\n\t" : " ") + 
-                message.replaceAll("\n", "\n\t")
+        String message = "" + toLog;
+        out.println(level + "\t"
+                + (CONTEXTUALIZED ? caller() : "")
+                + (message.length() > 20 && MULTILINE ? "\n\t" : " ")
+                + message.replaceAll("\n", "\n\t")
         );
     }
 
     private static void log(Level level, Exception exception) {
-        out.println(level + " " + 
-                (CONTEXTUALIZED ? caller() : "") + " " + 
-                exception.getLocalizedMessage());
+        out.println(level + " "
+                + (CONTEXTUALIZED ? caller() : "") + " "
+                + exception.getLocalizedMessage());
         exception.printStackTrace(out);
     }
 

@@ -27,8 +27,6 @@ import yocto.utils.Log;
  */
 public class Main {
 
-    
-
     private static final Model model;
 
     static {
@@ -49,8 +47,7 @@ public class Main {
                 Log.e(ex);
             }
         }
-        
-        
+
     }
 
     /**
@@ -63,6 +60,5 @@ public class Main {
         //ONLINE
 //        PspMinus pspMinus = new PspMinus(model, minPlan);
     }
-
 
 }

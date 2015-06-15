@@ -13,7 +13,7 @@ import java.util.Set;
  * @author antoine
  */
 public interface Action extends Goal, Comparable<Action> {
-    
+
     public Set<Statement> getEffects();
-    
+
 }

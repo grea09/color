@@ -20,7 +20,7 @@ import yocto.rdf.Predicate;
 public class ActionImpl extends GoalImpl implements Action {
 
     private final static Node type = NameSpace.BASE.node("Action");
-    
+
     private final Set<Statement> effects;
 
     protected ActionImpl(EnhGraph m, Node n, Set<Statement> preconditions, Set<Statement> effects) {
@@ -51,7 +51,7 @@ public class ActionImpl extends GoalImpl implements Action {
             Set<Statement> preconditions = get(node, Predicate.PRECONDITION.node(), eg);
 
             Set<Statement> effects = get(node, Predicate.EFFECT.node(), eg);
-            
+
             if (preconditions.isEmpty() || effects.isEmpty()) {
                 throw new DoesNotReifyException(node);
             }
@@ -69,7 +69,7 @@ public class ActionImpl extends GoalImpl implements Action {
             }
             return true;
         }
-        
-    }; 
+
+    };
 
 }

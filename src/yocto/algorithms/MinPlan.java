@@ -41,18 +41,17 @@ public class MinPlan {
 
     @Override
     public String toString() {
-        
-        String result ="";
+
+        String result = "";
         for (Resource goal : plans.keySet()) {
             result += "Goal :" + goal + " Plan: ";
-            for (Resource action : plans.get(goal))
-                 result += action + " | ";
+            for (Resource action : plans.get(goal)) {
+                result += action + " | ";
+            }
             result += "\n";
         }
         return result;
     }
-    
-    
 
     private Set<Resource> minPlan(Node goal) {
         Set<Resource> actions = actionsSatisfying(goal);

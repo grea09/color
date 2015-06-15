@@ -40,8 +40,6 @@ public class PspMinus {
     public Map<Resource, Stack> stack;
     public Map<Resource, Map<Resource, List<Resource>>> plans;
 
-    
-
     public class Stack {
 
         public Model initial;
@@ -108,7 +106,7 @@ public class PspMinus {
     }
 
     private DirectedGraph<Resource, DefaultEdge> psp(DirectedGraph<Resource, DefaultEdge> partial, Model initial, Resource goal) {
-        
+
         return null;
     }
 

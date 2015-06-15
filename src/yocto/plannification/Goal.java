@@ -14,7 +14,7 @@ import java.util.Set;
  * @author antoine
  */
 public interface Goal extends Resource {
-    
+
     public Set<Statement> getPreconditions();
-    
+
 }

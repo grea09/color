@@ -16,6 +16,7 @@ import com.hp.hpl.jena.rdf.model.ResourceFactory;
  * @author antoine
  */
 public enum Predicate {
+
     TYPE(NameSpace.RDF + "type"),
     OBJECT(NameSpace.RDF + "object"),
     PREDICATE(NameSpace.RDF + "predicate"),
@@ -23,36 +24,31 @@ public enum Predicate {
     PRECONDITION(NameSpace.BASE + "pre"),
     EFFECT(NameSpace.BASE + "eff"),
     PARAM(NameSpace.BASE + "param");
-    
+
     private final String uri;
-    
-    private Predicate(String uri)
-    {
+
+    private Predicate(String uri) {
         this.uri = uri;
     }
-    
+
     @Override
     public String toString() {
         return uri;
     }
-    
-    public Property in(Model model)
-    {
+
+    public Property in(Model model) {
         return model.getProperty(uri);
     }
-    
-    public Property in(Resource resource)
-    {
+
+    public Property in(Resource resource) {
         return in(resource.getModel());
     }
-    
-    public Property property()
-    {
+
+    public Property property() {
         return ResourceFactory.createProperty(uri);
     }
-    
-    public Node node()
-    {
+
+    public Node node() {
         return property().asNode();
     }
 }

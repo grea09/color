@@ -53,14 +53,12 @@ public enum NameSpace {
                     }
                 }
             };
-    
-    public Resource resource(String local)
-    {
+
+    public Resource resource(String local) {
         return ResourceFactory.createResource(this + local);
     }
-    
-    public Node node(String local)
-    {
+
+    public Node node(String local) {
         return resource(local).asNode();
     }
 }
