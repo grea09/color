@@ -1,0 +1,293 @@
+@prefix : <http://yocto.fr/owl#> .
+@prefix a: <http://yocto.fr/owl/action#> .
+@prefix c: <http://yocto.fr/owl/class#> .
+@prefix e: <http://yocto.fr/owl/entity#> .
+@prefix p: <http://yocto.fr/owl/property#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://yocto.fr/owl> .
+
+<http://yocto.fr/owl> rdf:type owl:Ontology ;
+                      
+                      owl:imports rdf: .
+
+
+#################################################################
+#
+#    Object Properties
+#
+#################################################################
+
+
+###  http://www.w3.org/1999/02/22-rdf-syntax-ns#object
+
+rdf:object rdfs:subPropertyOf :param .
+
+
+
+###  http://www.w3.org/1999/02/22-rdf-syntax-ns#subject
+
+rdf:subject rdfs:subPropertyOf :param .
+
+
+
+###  http://yocto.fr/owl#eff
+
+:eff rdf:type owl:ObjectProperty ;
+     
+     rdfs:domain :Action .
+
+
+
+###  http://yocto.fr/owl#param
+
+:param rdf:type owl:ObjectProperty ;
+       
+       rdfs:domain rdf:Statement ,
+                   :Action ;
+       
+       rdfs:range :Variable .
+
+
+
+###  http://yocto.fr/owl#pre
+
+:pre rdf:type owl:ObjectProperty ;
+     
+     rdfs:subPropertyOf owl:topObjectProperty ;
+     
+     rdfs:domain :Action .
+
+
+
+###  http://yocto.fr/owl/property#holds
+
+p:holds rdf:type owl:ObjectProperty ,
+                 owl:SymmetricProperty .
+
+
+
+###  http://yocto.fr/owl/property#posture
+
+p:posture rdf:type owl:ObjectProperty ,
+                   owl:SymmetricProperty ;
+          
+          rdfs:domain c:Person ;
+          
+          rdfs:range c:Posture .
+
+
+
+###  http://yocto.fr/owl/property#room
+
+p:room rdf:type owl:ObjectProperty ,
+                owl:SymmetricProperty ;
+       
+       rdfs:domain c:Entity ;
+       
+       rdfs:range c:Room .
+
+
+
+
+
+#################################################################
+#
+#    Classes
+#
+#################################################################
+
+
+###  http://yocto.fr/owl#Action
+
+:Action rdf:type owl:Class ;
+        
+        rdfs:subClassOf rdfs:Class .
+
+
+
+###  http://yocto.fr/owl#Variable
+
+:Variable rdf:type owl:Class ;
+          
+          rdfs:subClassOf rdfs:Resource .
+
+
+
+###  http://yocto.fr/owl/class#Entity
+
+c:Entity rdf:type owl:Class ;
+         
+         rdfs:subClassOf rdfs:Class .
+
+
+
+###  http://yocto.fr/owl/class#Handable
+
+c:Handable rdf:type owl:Class ;
+           
+           rdfs:subClassOf c:Entity .
+
+
+
+###  http://yocto.fr/owl/class#Person
+
+c:Person rdf:type owl:Class ;
+         
+         rdfs:subClassOf c:Entity .
+
+
+
+###  http://yocto.fr/owl/class#Posture
+
+c:Posture rdf:type owl:Class ;
+          
+          rdfs:subClassOf c:Entity .
+
+
+
+###  http://yocto.fr/owl/class#Room
+
+c:Room rdf:type owl:Class ;
+       
+       rdfs:subClassOf c:Entity .
+
+
+
+
+
+#################################################################
+#
+#    Individuals
+#
+#################################################################
+
+
+###  http://yocto.fr/owl/action#grab
+
+a:grab rdf:type owl:NamedIndividual ,
+                :Action ;
+       
+       :eff <http://yocto.fr/owl/action#grab:eff0> ;
+       
+       :pre <http://yocto.fr/owl/action#grab:pre0> .
+
+
+
+###  http://yocto.fr/owl/action#grab:b0
+
+<http://yocto.fr/owl/action#grab:b0> rdf:type owl:NamedIndividual ,
+                                              :Variable ,
+                                              c:Person ;
+                                     
+                                     rdfs:label "grab:b0" ;
+                                     
+                                     :param a:grab .
+
+
+
+###  http://yocto.fr/owl/action#grab:b1
+
+<http://yocto.fr/owl/action#grab:b1> rdf:type owl:NamedIndividual ,
+                                              :Variable ,
+                                              c:Handable ;
+                                     
+                                     rdfs:label "grab:b1" ;
+                                     
+                                     :param a:grab ;
+                                     
+                                     rdf:object <http://yocto.fr/owl/action#grab:eff0> .
+
+
+
+###  http://yocto.fr/owl/action#grab:eff0
+
+<http://yocto.fr/owl/action#grab:eff0> rdf:type rdf:Statement ,
+                                                owl:NamedIndividual ;
+                                       
+                                       rdfs:label "grab:eff0" ;
+                                       
+                                       rdf:subject <http://yocto.fr/owl/action#grab:b0> ;
+                                       
+                                       rdf:object <http://yocto.fr/owl/action#grab:b1> ;
+                                       
+                                       rdf:predicate p:holds .
+
+
+
+###  http://yocto.fr/owl/action#grab:pre0
+
+<http://yocto.fr/owl/action#grab:pre0> rdf:type rdf:Statement ,
+                                                owl:NamedIndividual ;
+                                       
+                                       rdfs:label "grab:pre0" ;
+                                       
+                                       rdf:subject <http://yocto.fr/owl/action#grab:b0> ;
+                                       
+                                       rdf:object e:nothing ;
+                                       
+                                       rdf:predicate p:holds .
+
+
+
+###  http://yocto.fr/owl/entity#bob
+
+e:bob rdf:type owl:NamedIndividual ,
+               c:Person ;
+      
+      p:room e:living_room ;
+      
+      p:holds e:nothing ;
+      
+      p:posture e:standing .
+
+
+
+###  http://yocto.fr/owl/entity#laying
+
+e:laying rdf:type owl:NamedIndividual ,
+                  c:Posture .
+
+
+
+###  http://yocto.fr/owl/entity#living_room
+
+e:living_room rdf:type owl:NamedIndividual ,
+                       c:Room .
+
+
+
+###  http://yocto.fr/owl/entity#nothing
+
+e:nothing rdf:type owl:NamedIndividual ,
+                   owl:Thing .
+
+
+
+###  http://yocto.fr/owl/entity#siting
+
+e:siting rdf:type owl:NamedIndividual ,
+                  c:Posture .
+
+
+
+###  http://yocto.fr/owl/entity#standing
+
+e:standing rdf:type owl:NamedIndividual ,
+                    c:Posture .
+
+
+
+###  http://yocto.fr/owl/property#holds
+
+p:holds rdf:type rdf:Property ,
+                 owl:NamedIndividual .
+
+
+
+
+###  Generated by the OWL API (version 3.5.1) http://owlapi.sourceforge.net
+
