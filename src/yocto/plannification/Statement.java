@@ -6,17 +6,15 @@
 package yocto.plannification;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import java.util.Set;
+import com.hp.hpl.jena.rdf.model.ReifiedStatement;
+import yocto.utils.Compatible;
 
 /**
  *
  * @author antoine
  */
-public interface Goal extends Resource {
+public interface Statement extends ReifiedStatement, com.hp.hpl.jena.rdf.model.Statement, Compatible<Statement> {
+
+    public boolean isSatisfied(Model context);
     
-    public boolean isSatisfied(Model initial);
-
-    public Set<Statement> getPreconditions();
-
 }

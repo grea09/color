@@ -8,6 +8,7 @@ package yocto;
 import com.hp.hpl.jena.enhanced.BuiltinPersonalities;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.ModelMaker;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,11 +16,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import yocto.algorithms.Correlation;
 import yocto.algorithms.MinPlan;
+import yocto.algorithms.PspMinus;
 import yocto.plannification.Action;
 import yocto.plannification.ActionImpl;
+import yocto.plannification.Entity;
+import yocto.plannification.EntityImpl;
 import yocto.plannification.Goal;
 import yocto.plannification.GoalImpl;
+import yocto.plannification.Statement;
+import yocto.plannification.StatementImpl;
 import yocto.utils.Log;
+import yocto.utils.ModelManager;
 
 /**
  *
@@ -28,26 +35,15 @@ import yocto.utils.Log;
 public class Main {
 
     private static final Model model;
+    
 
     static {
-        BuiltinPersonalities.model.add(Action.class, ActionImpl.actionImplementation);
         BuiltinPersonalities.model.add(Goal.class, GoalImpl.goalImplementation);
-        model = ModelFactory.createMemModelMaker().createDefaultModel();
-        InputStream in = null;
-        try {
-            // Open the bloggers RDF graph from the filesystem
-            in = new FileInputStream(new File("data/test.rdf"));
-            model.read(in, null); // null base URI, since model URIs are absolute
-        } catch (FileNotFoundException ex) {
-            Log.e(ex);
-        } finally {
-            try {
-                in.close();
-            } catch (IOException ex) {
-                Log.e(ex);
-            }
-        }
-
+        BuiltinPersonalities.model.add(Action.class, ActionImpl.actionImplementation);
+        BuiltinPersonalities.model.add(Statement.class, StatementImpl.statementImplementation);
+        BuiltinPersonalities.model.add(Entity.class, EntityImpl.entityImplementation);
+        
+        model = ModelManager.read("data/test.rdf");
     }
 
     /**
@@ -58,7 +54,7 @@ public class Main {
         MinPlan minPlan = new MinPlan(model);
         Correlation correlation = new Correlation(model, minPlan);
         //ONLINE
-//        PspMinus pspMinus = new PspMinus(model, minPlan);
+        PspMinus pspMinus = new PspMinus(model, minPlan);
     }
 
 }

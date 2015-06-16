@@ -11,7 +11,6 @@ import com.hp.hpl.jena.enhanced.Implementation;
 import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.rdf.model.DoesNotReifyException;
-import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.Set;
 import yocto.rdf.NameSpace;
@@ -23,8 +22,8 @@ public class ActionImpl extends GoalImpl implements Action {
 
     private final Set<Statement> effects;
 
-    protected ActionImpl(EnhGraph m, Node n, Set<Statement> preconditions, Set<Statement> effects) {
-        super(m, n, preconditions);
+    protected ActionImpl(Node n, EnhGraph m, Set<Statement> preconditions, Set<Statement> effects) {
+        super(n, m, preconditions);
         this.effects = effects;
     }
 
@@ -56,7 +55,7 @@ public class ActionImpl extends GoalImpl implements Action {
                 throw new DoesNotReifyException(node);
             }
 
-            return new ActionImpl(eg, node, preconditions, effects);
+            return new ActionImpl(node, eg, preconditions, effects);
 
         }
 

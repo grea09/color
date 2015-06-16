@@ -8,18 +8,17 @@ package yocto.algorithms;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.ReifiedStatement;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.SimpleSelector;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import yocto.rdf.Predicate;
-import yocto.utils.Comparator;
+import yocto.plannification.Action;
+import yocto.plannification.Goal;
+import yocto.plannification.Statement;
+import yocto.rdf.NameSpace;
 import yocto.utils.Log;
 import yocto.utils.Query;
 
@@ -30,7 +29,7 @@ import yocto.utils.Query;
 public class Correlation {
 
     private final Model model;
-    public Map<Set<Resource>, List<Count>> correlation;
+    public Map<Set<Goal>, List<Count>> correlation;
 
     public static class Count {
 
@@ -66,20 +65,20 @@ public class Correlation {
     public Correlation(Model model, MinPlan minPlan) {
         this.model = model;
         correlation = new HashMap<>();
-        Map<Resource, Count> counts = new HashMap<>();
-        for (Map.Entry<Resource, Set<Resource>> plan : minPlan.plans.entrySet()) {
+        Map<Goal, Count> counts = new HashMap<>();
+        for (Map.Entry<Goal, Set<Action>> plan : minPlan.plans.entrySet()) {
             counts.put(plan.getKey(), new Count(countProperties(plan.getValue()), plan.getValue().size()));
         }
 
-        Set<Resource> closed = new HashSet<>();
+        Set<Goal> closed = new HashSet<>();
 
-        for (Resource goal1 : minPlan.goals) {
+        for (Goal goal1 : minPlan.goals) {
             closed.add(goal1);
-            for (Resource goal2 : minPlan.goals) {
+            for (Goal goal2 : minPlan.goals) {
                 if (closed.contains(goal2)) {
                     continue;
                 }
-                Log.i("Correlation :" + goal1 + " ~ " + goal2);
+                Log.i("Correlation " + goal1 + " ~ " + goal2);
 
                 Count count = counts.get(goal1).min(counts.get(goal2));
 
@@ -92,7 +91,7 @@ public class Correlation {
                 tmp.retainAll(minPlan.plans.get(goal2));
                 common.actions = tmp.size();
 
-                correlation.put(new HashSet<Resource>() {
+                correlation.put(new HashSet<Goal>() {
                     {
                         add(goal1);
                         add(goal2);
@@ -109,9 +108,9 @@ public class Correlation {
     @Override
     public String toString() {
         String result = "";
-        for (Set<Resource> pair : correlation.keySet()) {
+        for (Set<Goal> pair : correlation.keySet()) {
             List<Count> counts = correlation.get(pair);
-            result += "Correlation :"
+            result += "Correlation "
                     + pair.stream().map((goal) -> goal + " ~ ").
                     reduce(result, String::concat)
                     + counts.get(0).correlation(counts.get(1)) + "\n";
@@ -120,29 +119,32 @@ public class Correlation {
         return result;
     }
 
-    private int commonProperties(Set<Resource> actions1, Set<Resource> actions2) {
+    private int commonProperties(Set<Action> actions1, Set<Action> actions2) {
         Query query = Query.named().in("a1", actions1).in("a2", actions2);
         ResultSet results = query.execute(model);
         int result = 0;
-        Set<Resource> closed = new HashSet<>();
+        Set<Statement> closed = new HashSet<>();
         while (results.hasNext()) {
             QuerySolution next = results.next();
-            Log.d(next.getResource("p") + " @ " + next.getResource("a1") + " ~ " + next.getResource("a2"));
-            if ((!closed.contains(next.getResource("pre2")))
-                    && Comparator.propertiesCompatible(
-                            next.getResource("pre1").as(ReifiedStatement.class).getStatement(),
-                            next.getResource("pre2").as(ReifiedStatement.class).getStatement()
-                    )) {
+            Statement pre1 = next.getResource("pre1").as(Statement.class);
+            Statement pre2 = next.getResource("pre2").as(Statement.class);
+
+            Log.d(NameSpace.prefix(next.getResource("p").getURI()) + " @ "
+                    + NameSpace.prefix(next.getResource("a1").getURI()) + " ~ "
+                    + NameSpace.prefix(next.getResource("a2").getURI())
+            );
+            if ((!closed.contains(pre2))
+                    && pre1.compatible(pre2).compatible()) {
                 Log.d("COMPATIBLE !");
                 ++result;
             }
-            closed.add(next.getResource("pre1"));
+            closed.add(pre1);
         }
         query.close();
         return result;
     }
 
-    private int countProperties(Set<Resource> actions) {
+    private int countProperties(Set<Action> actions) {
         Query query = Query.named().in("a", actions).groupBy(Arrays.asList("a"));
         ResultSet results = query.execute(model);
         int result = 0;

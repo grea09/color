@@ -6,14 +6,14 @@
 package yocto.utils;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ReifiedStatement;
 import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.Statement;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.util.ResourceUtils;
 import java.util.HashSet;
 import java.util.Set;
-import yocto.rdf.Predicate;
+import yocto.plannification.Action;
+import yocto.plannification.Entity;
+import yocto.plannification.Statement;
 
 /**
  *
@@ -21,10 +21,10 @@ import yocto.rdf.Predicate;
  */
 public class Grounder {
 
-    public Set<Resource> favorites;
+    public Set<Entity> favorites;
     private Model model;
 
-    public Grounder(Model model, Set<Resource> favorites) {
+    public Grounder(Model model, Set<Entity> favorites) {
         this.favorites = favorites;
         this.model = model;
     }
@@ -33,55 +33,40 @@ public class Grounder {
         this(model, new HashSet<>());
     }
 
-    public static void ground(Statement statement, Resource object, Resource subject) {
-        ground(statement, object.getURI(), subject.getURI());
-    }
-
     public static void ground(Statement statement, String object, String subject) {
-        if (object != null) {
-            ResourceUtils.renameResource(statement.getResource(), object);
-        }
-        if (subject != null) {
-            ResourceUtils.renameResource(statement.getSubject(), subject);
+        ground(statement.getResource(), object);
+        ground(statement.getSubject(), subject);
+    }
+    
+    public static void ground(Resource entity, String uri) {
+        if (uri != null) {
+            ResourceUtils.renameResource(entity, uri);
         }
     }
 
-    public void groundAction(Resource action) {
-        StmtIterator iterator = action.getModel().listStatements(action, Predicate.PRECONDITION.in(action.getModel()), (String) null);
-        while (iterator.hasNext()) {
-            ground(iterator.next().getSubject().as(ReifiedStatement.class).getStatement());
+    public void groundAction(Action action) {
+        for (Statement statement : action.getPreconditions()) {
+            ground(statement);
         }
 
-        iterator = action.getModel().listStatements(action, Predicate.EFFECT.in(action.getModel()), (String) null);
-        while (iterator.hasNext()) {
-            ground(iterator.next().getSubject().as(ReifiedStatement.class).getStatement());
+        for (Statement statement : action.getEffects()) {
+            ground(statement);
         }
     }
 
     public void ground(Statement statement) {
-        for (Resource favorite : favorites) {
-            StmtIterator iterator = model.listStatements(favorite, statement.getPredicate(), (String) null);
-            while (iterator.hasNext()) {
-                Statement next = iterator.next();
-                if (Comparator.propertiesSatisfying(next, statement)) {
-                    ground(statement, next.getResource(), next.getSubject());
-                    return;
-                }
-            }
-            iterator = model.listStatements(null, statement.getPredicate(), favorite);
-            while (iterator.hasNext()) {
-                Statement next = iterator.next();
-                if (Comparator.propertiesSatisfying(next, statement)) {
-                    ground(statement, next.getResource(), next.getSubject());
-                    return;
-                }
-            }
+        for (Entity favorite : favorites) {
+            ground(model.listStatements(favorite, statement.getPredicate(), (String) null), statement);
+            ground(model.listStatements(null, statement.getPredicate(), favorite), statement);
         }
-        StmtIterator iterator = model.listStatements(null, statement.getPredicate(), (String) null);
+        ground(model.listStatements(null, statement.getPredicate(), (String) null), statement);
+    }
+
+    private void ground(StmtIterator iterator, Statement statement) {
         while (iterator.hasNext()) {
-            Statement next = iterator.next();
-            if (Comparator.propertiesSatisfying(next, statement)) {
-                ground(statement, next.getResource(), next.getSubject());
+            Statement next = iterator.next().createReifiedStatement().as(Statement.class);
+            if (next.compatible(statement).satisfies()) {
+                ground(statement, next.getResource().getURI(), next.getSubject().getURI());
                 return;
             }
         }

@@ -13,11 +13,7 @@ import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.ontology.impl.IndividualImpl;
 import com.hp.hpl.jena.rdf.model.DoesNotReifyException;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.ReifiedStatement;
-import com.hp.hpl.jena.rdf.model.Statement;
-import com.hp.hpl.jena.rdf.model.StmtIterator;
-import com.hp.hpl.jena.rdf.model.impl.ReifiedStatementImpl;
+import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.util.iterator.ExtendedIterator;
 import com.hp.hpl.jena.vocabulary.RDF;
 import java.util.HashSet;
@@ -31,7 +27,7 @@ public class GoalImpl extends IndividualImpl implements Goal {
 
     private final Set<Statement> preconditions;
 
-    protected GoalImpl(EnhGraph m, Node n, Set<Statement> preconditions) {
+    protected GoalImpl(Node n, EnhGraph m, Set<Statement> preconditions) {
         super(n, m);
         this.preconditions = preconditions;
     }
@@ -57,7 +53,7 @@ public class GoalImpl extends IndividualImpl implements Goal {
                 throw new DoesNotReifyException(node);
             }
 
-            return new GoalImpl(eg, node, preconditions);
+            return new GoalImpl(node, eg, preconditions);
 
         }
 
@@ -79,11 +75,28 @@ public class GoalImpl extends IndividualImpl implements Goal {
                 ExtendedIterator<Triple> iterator = eg.asGraph().find(action, predicate, Node.ANY);
                 while (iterator.hasNext()) {
                     Node pre = iterator.next().getObject();
-                    add(ReifiedStatementImpl.reifiedStatementFactory.wrap(pre, eg).as(ReifiedStatement.class).getStatement());
+                    add((Statement) StatementImpl.statementImplementation.wrap(pre, eg));
                 }
                 iterator.close();
             }
         };
     }
+
+    @Override
+    public String toString() {
+        return NameSpace.prefix(getURI());
+    }
+
+    @Override
+    public boolean isSatisfied(Model initial) {
+        for(Statement statement : preconditions)
+        {
+            if(!statement.isSatisfied(initial))
+                return false;
+        }
+        return true;
+    }
+    
+    
 
 }

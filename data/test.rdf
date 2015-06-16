@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:a="http://yocto.fr/action#" xmlns:c="http://yocto.fr/class#" xmlns:e="http://yocto.fr/entity#" xmlns:g="http://yocto.fr/goal#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:p="http://yocto.fr/property#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://yocto.fr#">
+  <rdf:Description rdf:about="http://yocto.fr/entity#bob">
+    <rdf:type rdf:resource="http://yocto.fr/class#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#bob">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#bob">
+    <p:holds rdf:resource="http://yocto.fr/entity#nothing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#bob">
+    <p:room rdf:resource="http://yocto.fr/entity#living_room"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#bob">
+    <p:state rdf:resource="http://yocto.fr/entity#standing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#nothing">
+    <rdf:type rdf:resource="http://yocto.fr/class#Handable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#nothing">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#living_room">
+    <rdf:type rdf:resource="http://yocto.fr/class#Room"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#living_room">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#kitchen">
+    <rdf:type rdf:resource="http://yocto.fr/class#Room"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#kitchen">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#on">
+    <rdf:type rdf:resource="http://yocto.fr/class#State"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#on">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#sitting">
+    <rdf:type rdf:resource="http://yocto.fr/class#Posture"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#sitting">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#standing">
+    <rdf:type rdf:resource="http://yocto.fr/class#Posture"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/entity#standing">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#grab">
+    <rdf:type rdf:resource="http://yocto.fr#Action"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid1">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid1">
+    <rdf:subject rdf:nodeID="grab0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid1">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#holds"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid1">
+    <rdf:object rdf:resource="http://yocto.fr/entity#nothing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#grab">
+    <pre rdf:nodeID="genid1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="grab0">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="grab0">
+    <param rdf:resource="http://yocto.fr/action#grab"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="grab0">
+    <rdf:type rdf:resource="http://yocto.fr/class#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid2">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid2">
+    <rdf:subject rdf:nodeID="grab0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid2">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#holds"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid2">
+    <rdf:object rdf:nodeID="grab1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#grab">
+    <eff rdf:nodeID="genid2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="grab1">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="grab1">
+    <param rdf:resource="http://yocto.fr/action#grab"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="grab1">
+    <rdf:type rdf:resource="http://yocto.fr/class#Handable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#sit_down">
+    <rdf:type rdf:resource="http://yocto.fr#Action"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid3">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid3">
+    <rdf:subject rdf:nodeID="sit_down0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid3">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#posture"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid3">
+    <rdf:object rdf:resource="http://yocto.fr/entity#standing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#sit_down">
+    <pre rdf:nodeID="genid3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="sit_down0">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="sit_down0">
+    <param rdf:resource="http://yocto.fr/action#sit_down"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="sit_down0">
+    <rdf:type rdf:resource="http://yocto.fr/class#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid4">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid4">
+    <rdf:subject rdf:nodeID="sit_down0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid4">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#posture"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid4">
+    <rdf:object rdf:resource="http://yocto.fr/entity#sitting"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#sit_down">
+    <eff rdf:nodeID="genid4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#switch">
+    <rdf:type rdf:resource="http://yocto.fr#Action"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid5">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid5">
+    <rdf:subject rdf:nodeID="switch0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid5">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#state"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid5">
+    <rdf:object rdf:nodeID="switch1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#switch">
+    <pre rdf:nodeID="genid5"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="switch0">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="switch0">
+    <param rdf:resource="http://yocto.fr/action#switch"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="switch0">
+    <rdf:type rdf:resource="http://yocto.fr/class#Switchable"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="switch1">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="switch1">
+    <param rdf:resource="http://yocto.fr/action#switch"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="switch1">
+    <rdf:type rdf:resource="http://yocto.fr/class#State"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid6">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid6">
+    <rdf:subject rdf:nodeID="switch0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid6">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#state"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid6">
+    <rdf:object rdf:nodeID="switch2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#switch">
+    <eff rdf:nodeID="genid6"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="switch2">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="switch2">
+    <param rdf:resource="http://yocto.fr/action#switch"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="switch2">
+    <rdf:type rdf:resource="http://yocto.fr/class#State"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="switch2">
+    <owl:differentFrom rdf:nodeID="switch1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#go">
+    <rdf:type rdf:resource="http://yocto.fr#Action"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid7">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid7">
+    <rdf:subject rdf:nodeID="go0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid7">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#room"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid7">
+    <rdf:object rdf:nodeID="go1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#go">
+    <pre rdf:nodeID="genid7"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="go0">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="go0">
+    <param rdf:resource="http://yocto.fr/action#go"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="go0">
+    <rdf:type rdf:resource="http://yocto.fr/class#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="go1">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="go1">
+    <param rdf:resource="http://yocto.fr/action#go"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="go1">
+    <rdf:type rdf:resource="http://yocto.fr/class#Room"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid8">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid8">
+    <rdf:subject rdf:nodeID="go0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid8">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#room"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid8">
+    <rdf:object rdf:nodeID="go2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#go">
+    <eff rdf:nodeID="genid8"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="go2">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="go2">
+    <param rdf:resource="http://yocto.fr/action#go"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="go2">
+    <rdf:type rdf:resource="http://yocto.fr/class#Room"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#put">
+    <rdf:type rdf:resource="http://yocto.fr#Action"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid9">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid9">
+    <rdf:subject rdf:nodeID="put0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid9">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#holds"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid9">
+    <rdf:object rdf:nodeID="put1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#put">
+    <pre rdf:nodeID="genid9"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="put0">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="put0">
+    <param rdf:resource="http://yocto.fr/action#put"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="put0">
+    <rdf:type rdf:resource="http://yocto.fr/class#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="put1">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="put1">
+    <param rdf:resource="http://yocto.fr/action#put"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="put1">
+    <rdf:type rdf:resource="http://yocto.fr/class#Handable"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid10">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid10">
+    <rdf:subject rdf:nodeID="put0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid10">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#holds"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid10">
+    <rdf:object rdf:resource="http://yocto.fr/entity#nothing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#put">
+    <eff rdf:nodeID="genid10"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid11">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid11">
+    <rdf:subject rdf:nodeID="put1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid11">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#on"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid11">
+    <rdf:object rdf:nodeID="put2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#put">
+    <eff rdf:nodeID="genid11"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="put2">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="put2">
+    <param rdf:resource="http://yocto.fr/action#put"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="put2">
+    <rdf:type rdf:resource="http://yocto.fr/class#Fourniture"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#clean">
+    <rdf:type rdf:resource="http://yocto.fr#Action"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid12">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid12">
+    <rdf:subject rdf:nodeID="clean0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid12">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#holds"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid12">
+    <rdf:object rdf:nodeID="clean1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#clean">
+    <pre rdf:nodeID="genid12"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid13">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid13">
+    <rdf:subject rdf:nodeID="clean0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid13">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#room"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid13">
+    <rdf:object rdf:nodeID="clean2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#clean">
+    <pre rdf:nodeID="genid13"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="clean0">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="clean0">
+    <param rdf:resource="http://yocto.fr/action#clean"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="clean0">
+    <rdf:type rdf:resource="http://yocto.fr/class#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="clean1">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="clean1">
+    <param rdf:resource="http://yocto.fr/action#clean"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="clean1">
+    <rdf:type rdf:resource="http://yocto.fr/class#CleanTool"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="clean2">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="clean2">
+    <param rdf:resource="http://yocto.fr/action#clean"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="clean2">
+    <rdf:type rdf:resource="http://yocto.fr/class#Room"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid14">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid14">
+    <rdf:subject rdf:nodeID="clean2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid14">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#clean"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid14">
+    <rdf:object rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</rdf:object>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/action#clean">
+    <eff rdf:nodeID="genid14"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/goal#watch_tv">
+    <rdf:type rdf:resource="http://yocto.fr#Goal"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid15">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid15">
+    <rdf:subject rdf:nodeID="watch_tv0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid15">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#room"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid15">
+    <rdf:object rdf:nodeID="watch_tv1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/goal#watch_tv">
+    <pre rdf:nodeID="genid15"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid16">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid16">
+    <rdf:subject rdf:nodeID="watch_tv0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid16">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#posture"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid16">
+    <rdf:object rdf:resource="http://yocto.fr/entity#sitting"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/goal#watch_tv">
+    <pre rdf:nodeID="genid16"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid17">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid17">
+    <rdf:subject rdf:nodeID="watch_tv1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid17">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#state"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid17">
+    <rdf:object rdf:resource="http://yocto.fr/entity#on"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/goal#watch_tv">
+    <pre rdf:nodeID="genid17"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="watch_tv0">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="watch_tv0">
+    <param rdf:resource="http://yocto.fr/goal#watch_tv"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="watch_tv0">
+    <rdf:type rdf:resource="http://yocto.fr/class#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="watch_tv1">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="watch_tv1">
+    <param rdf:resource="http://yocto.fr/goal#watch_tv"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="watch_tv1">
+    <rdf:type rdf:resource="http://yocto.fr/class#Room"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="watch_tv2">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="watch_tv2">
+    <param rdf:resource="http://yocto.fr/goal#watch_tv"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="watch_tv2">
+    <rdf:type rdf:resource="http://yocto.fr/class#TV"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="watch_tv2">
+    <p:room rdf:nodeID="watch_tv1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/goal#cook">
+    <rdf:type rdf:resource="http://yocto.fr#Goal"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid18">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid18">
+    <rdf:subject rdf:nodeID="cook0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid18">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#room"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid18">
+    <rdf:object rdf:resource="http://yocto.fr/entity#kitchen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/goal#cook">
+    <pre rdf:nodeID="genid18"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid19">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid19">
+    <rdf:subject rdf:nodeID="cook1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid19">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#on"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid19">
+    <rdf:object rdf:nodeID="cook2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/goal#cook">
+    <pre rdf:nodeID="genid19"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="cook0">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="cook0">
+    <param rdf:resource="http://yocto.fr/goal#cook"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="cook0">
+    <rdf:type rdf:resource="http://yocto.fr/class#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="cook1">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="cook1">
+    <param rdf:resource="http://yocto.fr/goal#cook"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="cook1">
+    <rdf:type rdf:resource="http://yocto.fr/class#Food"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="cook2">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="cook2">
+    <param rdf:resource="http://yocto.fr/goal#cook"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="cook2">
+    <rdf:type rdf:resource="http://yocto.fr/class#Fourniture"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="cook2">
+    <p:room rdf:resource="http://yocto.fr/entity#kitchen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/goal#clean">
+    <rdf:type rdf:resource="http://yocto.fr#Goal"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid20">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid20">
+    <rdf:subject rdf:nodeID="clean0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid20">
+    <rdf:predicate rdf:resource="http://yocto.fr/property#clean"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="genid20">
+    <rdf:object rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</rdf:object>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/goal#clean">
+    <pre rdf:nodeID="genid20"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="g_clean0">
+    <rdf:type rdf:resource="http://yocto.fr#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="g_clean0">
+    <param rdf:resource="http://yocto.fr/action#clean"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="g_clean0">
+    <rdf:type rdf:resource="http://yocto.fr/class#Room"/>
+  </rdf:Description>
+</rdf:RDF>

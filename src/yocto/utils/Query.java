@@ -136,7 +136,7 @@ public class Query {
 //        sparql.append(") .\n");
 //        return this;
 //    }
-    public Query in(String name, Set<Resource> list) {
+    public Query in(String name, Set<? extends Resource> list) {
         sparql.append("FILTER(");
         for (Resource item : list) {
             sparql.append("?" + name + " = ");
@@ -239,6 +239,14 @@ public class Query {
         Set<Resource> items = new HashSet<>();
         while (results.hasNext()) {
             items.add(results.next().getResource(varName));
+        }
+        return items;
+    }
+
+    public static <T extends Resource> Set<T> toSet(ResultSet results, String varName, Class<T> type) {
+        Set<T> items = new HashSet<>();
+        while (results.hasNext()) {
+            items.add(results.next().getResource(varName).as(type));
         }
         return items;
     }

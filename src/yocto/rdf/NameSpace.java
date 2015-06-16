@@ -24,11 +24,11 @@ public enum NameSpace {
                 }
             },
     RDF("http://www.w3.org/1999/02/22-rdf-syntax-ns"),
-    A(BASE + "/action"),
-    C(BASE + "/class"),
-    E(BASE + "/entity"),
-    P(BASE + "/property"),
-    G(BASE + "/goal");
+    A(BASE.uri + "/action"),
+    C(BASE.uri + "/class"),
+    E(BASE.uri + "/entity"),
+    P(BASE.uri + "/property"),
+    G(BASE.uri + "/goal");
 
     private final String uri;
 
@@ -60,5 +60,22 @@ public enum NameSpace {
 
     public Node node(String local) {
         return resource(local).asNode();
+    }
+    
+    public static String strip(String uri)
+    {
+        return uri.replaceFirst("http:[^#]*#", "");
+    }
+    
+    public static String prefix(String uri)
+    {
+        for(Map.Entry<String, String> entry : prefixes.entrySet())
+        {
+            if(uri.startsWith(entry.getValue()))
+            {
+                return entry.getKey() + ":" + strip(uri);
+            }
+        }
+        return uri;
     }
 }

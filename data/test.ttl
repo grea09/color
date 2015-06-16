@@ -10,51 +10,57 @@
 #INITIAL
 
 e:bob a c:Person; a :Entity; p:holds e:nothing; p:room e:living_room; p:state e:standing.
+e:nothing  a c:Handable; a :Entity .
+e:living_room a c:Room; a :Entity .
+e:kitchen a c:Room; a :Entity .
+e:on a c:State; a :Entity .
+e:sitting a c:Posture; a :Entity .
+e:standing a c:Posture; a :Entity .
 
 
 #ACTIONS
 
 a:grab a :Action .
 a:grab :pre [ a rdf:Statement; rdf:subject _:grab0; rdf:predicate p:holds; rdf:object e:nothing] .
-_:grab0 :param a:grab; a c:Person .
+_:grab0 a :Entity; :param a:grab; a c:Person .
 a:grab :eff [ a rdf:Statement; rdf:subject _:grab0; rdf:predicate p:holds; rdf:object _:grab1] .
-_:grab1 :param a:grab; a c:Handable .
+_:grab1 a :Entity; :param a:grab; a c:Handable .
 
 
 a:sit_down a :Action .
 a:sit_down :pre [ a rdf:Statement; rdf:subject _:sit_down0; rdf:predicate p:posture; rdf:object e:standing] .
-_:sit_down0 :param a:sit_down; a c:Person .
+_:sit_down0 a :Entity; :param a:sit_down; a c:Person .
 a:sit_down :eff [ a rdf:Statement; rdf:subject _:sit_down0; rdf:predicate p:posture; rdf:object e:sitting] .
 
 a:switch a :Action .
 a:switch :pre [ a rdf:Statement; rdf:subject _:switch0; rdf:predicate p:state; rdf:object _:switch1] .
-_:switch0 :param a:switch; a c:Switchable .
-_:switch1 :param a:switch; a c:State .
+_:switch0 a :Entity; :param a:switch; a c:Switchable .
+_:switch1 a :Entity; :param a:switch; a c:State .
 a:switch :eff [ a rdf:Statement; rdf:subject _:switch0; rdf:predicate p:state; rdf:object _:switch2] .
-_:switch2 :param a:switch; a c:State; owl:differentFrom _:switch1 . #switch1 != switch2
+_:switch2 a :Entity; :param a:switch; a c:State; owl:differentFrom _:switch1 . #switch1 != switch2
 
 
 a:go a :Action .
 a:go :pre [ a rdf:Statement; rdf:subject _:go0; rdf:predicate p:room; rdf:object _:go1] .
-_:go0 :param a:go; a c:Person .
-_:go1 :param a:go; a c:Room .
+_:go0 a :Entity; :param a:go; a c:Person .
+_:go1 a :Entity; :param a:go; a c:Room .
 a:go :eff [ a rdf:Statement; rdf:subject _:go0; rdf:predicate p:room; rdf:object _:go2] .
-_:go2 :param a:go; a c:Room .
+_:go2 a :Entity; :param a:go; a c:Room .
 
 a:put a :Action .
 a:put :pre [ a rdf:Statement; rdf:subject _:put0; rdf:predicate p:holds; rdf:object _:put1] .
-_:put0 :param a:put; a c:Person .
-_:put1 :param a:put; a c:Handable .
+_:put0 a :Entity; :param a:put; a c:Person .
+_:put1 a :Entity; :param a:put; a c:Handable .
 a:put :eff [ a rdf:Statement; rdf:subject _:put0; rdf:predicate p:holds; rdf:object e:nothing] .
 a:put :eff [ a rdf:Statement; rdf:subject _:put1; rdf:predicate p:on; rdf:object _:put2] .
-_:put2 :param a:put; a c:Fourniture .
+_:put2 a :Entity; :param a:put; a c:Fourniture .
 
 a:clean a :Action .
 a:clean :pre [ a rdf:Statement; rdf:subject _:clean0; rdf:predicate p:holds; rdf:object _:clean1] .
 a:clean :pre [ a rdf:Statement; rdf:subject _:clean0; rdf:predicate p:room; rdf:object _:clean2] .
-_:clean0 :param a:clean; a c:Person .
-_:clean1 :param a:clean; a c:CleanTool .
-_:clean2 :param a:clean; a c:Room .
+_:clean0 a :Entity; :param a:clean; a c:Person .
+_:clean1 a :Entity; :param a:clean; a c:CleanTool .
+_:clean2 a :Entity; :param a:clean; a c:Room .
 a:clean :eff [ a rdf:Statement; rdf:subject _:clean2; rdf:predicate p:clean; rdf:object true] .
 
 #!TODO a:prepare with recipe and such
@@ -65,17 +71,17 @@ g:watch_tv a :Goal .
 g:watch_tv :pre [ a rdf:Statement; rdf:subject _:watch_tv0; rdf:predicate p:room; rdf:object _:watch_tv1] .
 g:watch_tv :pre [ a rdf:Statement; rdf:subject _:watch_tv0; rdf:predicate p:posture; rdf:object e:sitting] .
 g:watch_tv :pre [ a rdf:Statement; rdf:subject _:watch_tv1; rdf:predicate p:state; rdf:object e:on] .
-_:watch_tv0 :param g:watch_tv; a c:Person .
-_:watch_tv1 :param g:watch_tv; a c:Room .
-_:watch_tv2 :param g:watch_tv; a c:TV; p:room _:watch_tv1 .
+_:watch_tv0 a :Entity; :param g:watch_tv; a c:Person .
+_:watch_tv1 a :Entity; :param g:watch_tv; a c:Room .
+_:watch_tv2 a :Entity; :param g:watch_tv; a c:TV; p:room _:watch_tv1 .
 
 g:cook a :Goal .
 g:cook :pre [ a rdf:Statement; rdf:subject _:cook0; rdf:predicate p:room; rdf:object e:kitchen] .
 g:cook :pre [ a rdf:Statement; rdf:subject _:cook1; rdf:predicate p:on; rdf:object _:cook2] .
-_:cook0 :param g:cook; a c:Person .
-_:cook1 :param g:cook; a c:Food .
-_:cook2 :param g:cook; a c:Fourniture; p:room e:kitchen .
+_:cook0 a :Entity; :param g:cook; a c:Person .
+_:cook1 a :Entity; :param g:cook; a c:Food .
+_:cook2 a :Entity; :param g:cook; a c:Fourniture; p:room e:kitchen .
 
 g:clean a :Goal .
 g:clean :pre [ a rdf:Statement; rdf:subject _:clean0; rdf:predicate p:clean; rdf:object true] .
-_:g_clean0 :param a:clean; a c:Room .
+_:g_clean0 a :Entity; :param a:clean; a c:Room .

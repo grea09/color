@@ -6,15 +6,10 @@
 package yocto.algorithms;
 
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.rdf.model.SimpleSelector;
-import com.hp.hpl.jena.util.ResourceUtils;
 import java.util.LinkedList;
 import java.util.Queue;
-import yocto.rdf.NameSpace;
-import yocto.rdf.Predicate;
-import yocto.utils.Comparator;
-import yocto.utils.Grounder;
+import yocto.plannification.Action;
+import yocto.plannification.Entity;
 
 /**
  *
@@ -49,10 +44,10 @@ public class Observer {
 
     public class Observation {
 
-        public Resource effecter;
-        public Resource observation;
+        public Entity effecter;
+        public Action observation;
 
-        public Observation(Resource effecter, Resource observation) {
+        public Observation(Entity effecter, Action observation) {
             this.effecter = effecter;
             this.observation = observation;
         }

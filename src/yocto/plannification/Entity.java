@@ -5,14 +5,13 @@
  */
 package yocto.plannification;
 
-import java.util.Set;
+import com.hp.hpl.jena.rdf.model.Resource;
+import yocto.utils.Compatible;
 
 /**
  *
  * @author antoine
  */
-public interface Action extends Goal, Comparable<Action> {
-
-    public Set<Statement> getEffects();
+public interface Entity extends Resource, Compatible<Entity> {
 
 }

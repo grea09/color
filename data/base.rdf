@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:a="http://yocto.fr/owl/action#" xmlns:c="http://yocto.fr/owl/class#" xmlns:e="http://yocto.fr/owl/entity#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:p="http://yocto.fr/owl/property#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns="http://yocto.fr/owl#">
+  <rdf:Description rdf:about="http://yocto.fr/owl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl">
+    <owl:imports rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#object">
+    <rdfs:subPropertyOf rdf:resource="http://yocto.fr/owl#param"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject">
+    <rdfs:subPropertyOf rdf:resource="http://yocto.fr/owl#param"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#eff">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#eff">
+    <rdfs:domain rdf:resource="http://yocto.fr/owl#Action"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#param">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#param">
+    <rdfs:domain rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#param">
+    <rdfs:domain rdf:resource="http://yocto.fr/owl#Action"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#param">
+    <rdfs:range rdf:resource="http://yocto.fr/owl#Variable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#pre">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#pre">
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#pre">
+    <rdfs:domain rdf:resource="http://yocto.fr/owl#Action"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#holds">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#holds">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#posture">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#posture">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#posture">
+    <rdfs:domain rdf:resource="http://yocto.fr/owl/class#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#posture">
+    <rdfs:range rdf:resource="http://yocto.fr/owl/class#Posture"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#room">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#room">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#SymmetricProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#room">
+    <rdfs:domain rdf:resource="http://yocto.fr/owl/class#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#room">
+    <rdfs:range rdf:resource="http://yocto.fr/owl/class#Room"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#Action">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#Action">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#Variable">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl#Variable">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/class#Entity">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/class#Entity">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/class#Handable">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/class#Handable">
+    <rdfs:subClassOf rdf:resource="http://yocto.fr/owl/class#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/class#Person">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/class#Person">
+    <rdfs:subClassOf rdf:resource="http://yocto.fr/owl/class#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/class#Posture">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/class#Posture">
+    <rdfs:subClassOf rdf:resource="http://yocto.fr/owl/class#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/class#Room">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/class#Room">
+    <rdfs:subClassOf rdf:resource="http://yocto.fr/owl/class#Entity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab">
+    <rdf:type rdf:resource="http://yocto.fr/owl#Action"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab">
+    <eff rdf:resource="http://yocto.fr/owl/action#grab:eff0"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab">
+    <pre rdf:resource="http://yocto.fr/owl/action#grab:pre0"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:b0">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:b0">
+    <rdf:type rdf:resource="http://yocto.fr/owl#Variable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:b0">
+    <rdf:type rdf:resource="http://yocto.fr/owl/class#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:b0">
+    <rdfs:label>grab:b0</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:b0">
+    <param rdf:resource="http://yocto.fr/owl/action#grab"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:b1">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:b1">
+    <rdf:type rdf:resource="http://yocto.fr/owl#Variable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:b1">
+    <rdf:type rdf:resource="http://yocto.fr/owl/class#Handable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:b1">
+    <rdfs:label>grab:b1</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:b1">
+    <param rdf:resource="http://yocto.fr/owl/action#grab"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:b1">
+    <rdf:object rdf:resource="http://yocto.fr/owl/action#grab:eff0"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:eff0">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:eff0">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:eff0">
+    <rdfs:label>grab:eff0</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:eff0">
+    <rdf:subject rdf:resource="http://yocto.fr/owl/action#grab:b0"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:eff0">
+    <rdf:object rdf:resource="http://yocto.fr/owl/action#grab:b1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:eff0">
+    <rdf:predicate rdf:resource="http://yocto.fr/owl/property#holds"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:pre0">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:pre0">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:pre0">
+    <rdfs:label>grab:pre0</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:pre0">
+    <rdf:subject rdf:resource="http://yocto.fr/owl/action#grab:b0"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:pre0">
+    <rdf:object rdf:resource="http://yocto.fr/owl/entity#nothing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/action#grab:pre0">
+    <rdf:predicate rdf:resource="http://yocto.fr/owl/property#holds"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#bob">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#bob">
+    <rdf:type rdf:resource="http://yocto.fr/owl/class#Person"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#bob">
+    <p:room rdf:resource="http://yocto.fr/owl/entity#living_room"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#bob">
+    <p:holds rdf:resource="http://yocto.fr/owl/entity#nothing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#bob">
+    <p:posture rdf:resource="http://yocto.fr/owl/entity#standing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#laying">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#laying">
+    <rdf:type rdf:resource="http://yocto.fr/owl/class#Posture"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#living_room">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#living_room">
+    <rdf:type rdf:resource="http://yocto.fr/owl/class#Room"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#nothing">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#nothing">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#siting">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#siting">
+    <rdf:type rdf:resource="http://yocto.fr/owl/class#Posture"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#standing">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/entity#standing">
+    <rdf:type rdf:resource="http://yocto.fr/owl/class#Posture"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#holds">
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://yocto.fr/owl/property#holds">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+</rdf:RDF>
