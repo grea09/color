@@ -22,6 +22,60 @@ import psptest.exception.Success;
  * @author antoine
  */
 public class PSP {
+    
+    public static void solve(Problem problem) throws Failure {
+        try {
+            solve_(problem);
+            throw new Failure();
+        } catch (Success s) {
+            //TODO add plan building
+        }
+    }
+    
+    private static void solve_(Problem problem) throws Success {
+
+        Map<Integer, Action> subgoals = subgoal(problem);
+        Log.d("Subgoals : " + subgoals);
+        for (Map.Entry<Integer, Action> subgoal : subgoals.entrySet()) {
+            if (problem.initial.effects.contains(subgoal.getKey())) {
+                insert(problem, subgoal.getKey(), subgoal.getValue(), problem.initial);
+            }
+
+            for (Action step : problem.plan.vertexSet()) {
+                if (step.effects.contains(subgoal.getKey())) {
+                    insert(problem, subgoal.getKey(), subgoal.getValue(), step);
+                }
+            }
+            for (Action action : problem.actions) {
+                if (action.effects.contains(subgoal.getKey())) {
+                    insert(problem, subgoal.getKey(), subgoal.getValue(), action);
+                }
+            }
+            return; //Failure
+        }
+        throw new Success(problem);
+    }
+    
+    private static Map<Integer, Action> subgoal(Problem problem) {
+        Map<Integer, Action> subgoals = new HashMap<>();
+        Deque<Action> open = new ArrayDeque<>(Arrays.asList(problem.goal));
+        while (!open.isEmpty()) {
+            Action current = open.pollLast();
+//            for (int effect : current.effects) {
+//                subgoals.remove(effect);
+//            }
+            for (int precondition : current.preconditions) {
+//                if (!problem.initial.effects.contains(precondition)) {
+                subgoals.put(precondition, current);
+//                }
+            }
+            for (Edge edge : problem.plan.incomingEdgesOf(current)) {
+                subgoals.remove(edge.label);
+                open.addFirst(problem.plan.getEdgeSource(edge));
+            }
+        }
+        return subgoals;
+    }
 
     private static void insert(Problem problem, int subgoal, Action toSatisfy, Action candidate) throws Success {
         Log.d("Inserting " + candidate + " to satisfy precondition " + subgoal + " of goal " + toSatisfy);
@@ -59,30 +113,6 @@ public class PSP {
         solve_(problem);
     }
 
-    private static void solve_(Problem problem) throws Success {
-
-        Map<Integer, Action> subgoals = subgoal(problem);
-        Log.d("Subgoals : " + subgoals);
-        for (Map.Entry<Integer, Action> subgoal : subgoals.entrySet()) {
-            if (problem.initial.effects.contains(subgoal.getKey())) {
-                insert(problem, subgoal.getKey(), subgoal.getValue(), problem.initial);
-            }
-
-            for (Action step : problem.plan.vertexSet()) {
-                if (step.effects.contains(subgoal.getKey())) {
-                    insert(problem, subgoal.getKey(), subgoal.getValue(), step);
-                }
-            }
-            for (Action action : problem.actions) {
-                if (action.effects.contains(subgoal.getKey())) {
-                    insert(problem, subgoal.getKey(), subgoal.getValue(), action);
-                }
-            }
-            return; //Failure
-        }
-        throw new Success(problem);
-    }
-
     private static void demote(Problem problem, Action source, Action target, Action threat, int effect) throws Success {
         Log.d("Demoting " + threat);
         problem.plan.addEdge(threat, source);
@@ -101,36 +131,6 @@ public class PSP {
         solve_(problem);
         // Revert !
         problem.plan.removeEdge(target, threat);
-    }
-
-    public static void solve(Problem problem) throws Failure {
-        try {
-            solve_(problem);
-            throw new Failure();
-        } catch (Success s) {
-            //TODO add plan building
-        }
-    }
-
-    private static Map<Integer, Action> subgoal(Problem problem) {
-        Map<Integer, Action> subgoals = new HashMap<>();
-        Deque<Action> open = new ArrayDeque<>(Arrays.asList(problem.goal));
-        while (!open.isEmpty()) {
-            Action current = open.pollLast();
-//            for (int effect : current.effects) {
-//                subgoals.remove(effect);
-//            }
-            for (int precondition : current.preconditions) {
-//                if (!problem.initial.effects.contains(precondition)) {
-                subgoals.put(precondition, current);
-//                }
-            }
-            for (Edge edge : problem.plan.incomingEdgesOf(current)) {
-                subgoals.remove(edge.label);
-                open.addFirst(problem.plan.getEdgeSource(edge));
-            }
-        }
-        return subgoals;
     }
 
 }
