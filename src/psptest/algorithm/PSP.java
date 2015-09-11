@@ -22,16 +22,17 @@ import psptest.exception.Success;
  * @author antoine
  */
 public class PSP {
-    
+
     public static void solve(Problem problem) throws Failure {
         try {
             solve_(problem);
             throw new Failure();
         } catch (Success s) {
             //TODO add plan building
+            s.printStackTrace(Log.out);
         }
     }
-    
+
     private static void solve_(Problem problem) throws Success {
 
         Map<Integer, Action> subgoals = subgoal(problem);
@@ -55,7 +56,7 @@ public class PSP {
         }
         throw new Success(problem);
     }
-    
+
     private static Map<Integer, Action> subgoal(Problem problem) {
         Map<Integer, Action> subgoals = new HashMap<>();
         Deque<Action> open = new ArrayDeque<>(Arrays.asList(problem.goal));
@@ -83,7 +84,7 @@ public class PSP {
         problem.plan.addVertex(candidate);
         Edge edge = problem.plan.addEdge(candidate, toSatisfy);
         edge.label = subgoal;
-        solve_(problem);
+        unthreaten(problem, candidate);
         Log.d("Action " + candidate + " not suited, reverting");
         problem.plan.removeEdge(candidate, toSatisfy);
         if (problem.plan.outDegreeOf(candidate) == 0) {
@@ -91,46 +92,56 @@ public class PSP {
         }
     }
 
-    private static void unthreaten(Problem problem, Action candidate) throws Success {
+    private static void unthreaten(Problem problem, Action candidate) throws Success { //TODO ignore initial and goal
         for (int effect : candidate.effects) {
-            if (effect < 0) // BEWARE : Effect 0 has no effect
-            {
-                for (Edge oposite : problem.plan.edgeSet()) {
-                    if ((Integer) oposite.label == -effect) { //Uh oh ?
-                        Action source = problem.plan.getEdgeSource(oposite);
-                        Action target = problem.plan.getEdgeTarget(oposite);
-                        if (problem.plan.getEdge(candidate, source) == null
-                                && problem.plan.getEdge(target, candidate) == null) {
-                            Log.w("" + candidate + " is a threat to the link " + source + " => " + target);
-                            demote(problem, source, target, candidate, -effect);
-                            promote(problem, source, target, candidate, -effect);
-                            return; //failure
-                        }
+//            if (effect < 0) // BEWARE : Effect 0 has no effect
+//            {
+            for (Edge oposite : problem.plan.edgeSet()) {
+                if ((Integer) oposite.label == -effect) { //Uh oh ?
+                    Action source = problem.plan.getEdgeSource(oposite);
+                    Action target = problem.plan.getEdgeTarget(oposite);
+                    if (problem.plan.getEdge(candidate, source) == null
+                            && problem.plan.getEdge(target, candidate) == null) {
+                        Log.w("" + candidate + " is a threat to the link " + source + " => " + target);
+                        demote(problem, source, target, candidate, effect);
+                        promote(problem, source, target, candidate, effect);
+                        return; //failure
                     }
                 }
             }
+//            }
         }
         solve_(problem);
     }
 
     private static void demote(Problem problem, Action source, Action target, Action threat, int effect) throws Success {
         Log.d("Demoting " + threat);
-        problem.plan.addEdge(threat, source);
-        // TODO edge.label = 0 ?
+        Edge edge;
+        if (effect < 0) {
+            edge = problem.plan.addEdge(threat, source);
+        } else  {
+            edge = problem.plan.addEdge(source, threat);
+        }
+        edge.label = 0;
         // TODO consistency check
         solve_(problem);
         // Revert !
-        problem.plan.removeEdge(threat, source);
+        problem.plan.removeEdge(edge);
     }
 
     private static void promote(Problem problem, Action source, Action target, Action threat, int effect) throws Success {
         Log.d("Promoting " + threat);
-        problem.plan.addEdge(target, threat);
-        // TODO edge.label = 0 ?
+        Edge edge;
+        if (effect < 0) {
+            edge = problem.plan.addEdge(threat, target);
+        } else  {
+            edge = problem.plan.addEdge(target, threat);
+        }
+        edge.label = 0;
         // TODO consistency check
         solve_(problem);
         // Revert !
-        problem.plan.removeEdge(target, threat);
+        problem.plan.removeEdge(edge);
     }
 
 }
