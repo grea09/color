@@ -29,10 +29,11 @@ public class PSPTest {
     public static void main(String[] args) throws Failure {
         // TODO code application logic here
         Action initial = new Action(null, set(1, 2));
-        Action goal = new Action(set(3, 4, 6), null);
+        Action goal = new Action(set(3, 4, -5, 6), null);
         Set<Action> actions = set(new Action(set(1), set(3, 5)),
                 new Action(set(5), set(4)),
                 new Action(set(1), set(42)),
+                new Action(set(2), set(-5)),
                 new Action(set(42), set(3)),
                 new Action(set(42), set(42)),
                 new Action(set(4), set(6))

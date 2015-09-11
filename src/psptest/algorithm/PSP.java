@@ -25,8 +25,10 @@ public class PSP {
 
     private static void insert(Problem problem, int subgoal, Action toSatisfy, Action candidate) throws Success {
         Log.d("Inserting " + candidate + " to satisfy precondition " + subgoal + " of goal " + toSatisfy);
+        //TODO Fail if negative effects
         problem.plan.addVertex(candidate);
-        problem.plan.addEdge(candidate, toSatisfy);
+        Edge edge = problem.plan.addEdge(candidate, toSatisfy);
+        edge.label = subgoal;
         solve_(problem);
         Log.d("Action " + candidate + " not suited, reverting");
         problem.plan.removeEdge(candidate, toSatisfy);
@@ -35,32 +37,37 @@ public class PSP {
         }
     }
 
-    private static void prepone(Problem problem, Map.Entry<Integer, Action> threat) throws Success {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    private static Map<Integer, Action> threats(Problem problem) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    private static void unthreaten(Problem problem, Action candidate) throws Success {
+        for (int effect : candidate.effects) {
+            if (effect < 0) // BEWARE : Effect 0 has no effect
+            {
+                for (Edge oposite : problem.plan.edgeSet()) {
+                    if ((Integer) oposite.label == -effect) { //Uh oh ?
+                        Action source = problem.plan.getEdgeSource(oposite);
+                        Action target = problem.plan.getEdgeTarget(oposite);
+                        if (problem.plan.getEdge(candidate, source) == null
+                                && problem.plan.getEdge(target, candidate) == null) {
+                            Log.w("" + candidate + " is a threat to the link " + source + " => " + target);
+                            demote(problem, source, target, candidate, -effect);
+                            promote(problem, source, target, candidate, -effect);
+                            return; //failure
+                        }
+                    }
+                }
+            }
+        }
+        solve_(problem);
     }
 
     private static void solve_(Problem problem) throws Success {
-//        Map<Integer, Action> threats = threats(initial, goal, plan);
-//        for (Map.Entry<Integer, Action> threat : threats.entrySet()) { //random select …
-//            //CHOICE
-//            prepone(initial, goal, plan, threat);
-//            postpone(initial, goal, plan, threat);
-//            return; //Failure
-//        }
-        
-        
-        
+
         Map<Integer, Action> subgoals = subgoal(problem);
         Log.d("Subgoals : " + subgoals);
         for (Map.Entry<Integer, Action> subgoal : subgoals.entrySet()) {
             if (problem.initial.effects.contains(subgoal.getKey())) {
                 insert(problem, subgoal.getKey(), subgoal.getValue(), problem.initial);
             }
-            
+
             for (Action step : problem.plan.vertexSet()) {
                 if (step.effects.contains(subgoal.getKey())) {
                     insert(problem, subgoal.getKey(), subgoal.getValue(), step);
@@ -76,8 +83,24 @@ public class PSP {
         throw new Success(problem);
     }
 
-    private static void postpone(Problem problem, Map.Entry<Integer, Action> threat) throws Success {
-        throw new UnsupportedOperationException("Not supported yet.");
+    private static void demote(Problem problem, Action source, Action target, Action threat, int effect) throws Success {
+        Log.d("Demoting " + threat);
+        problem.plan.addEdge(threat, source);
+        // TODO edge.label = 0 ?
+        // TODO consistency check
+        solve_(problem);
+        // Revert !
+        problem.plan.removeEdge(threat, source);
+    }
+
+    private static void promote(Problem problem, Action source, Action target, Action threat, int effect) throws Success {
+        Log.d("Promoting " + threat);
+        problem.plan.addEdge(target, threat);
+        // TODO edge.label = 0 ?
+        // TODO consistency check
+        solve_(problem);
+        // Revert !
+        problem.plan.removeEdge(target, threat);
     }
 
     public static void solve(Problem problem) throws Failure {
@@ -89,18 +112,17 @@ public class PSP {
         }
     }
 
-
     private static Map<Integer, Action> subgoal(Problem problem) {
         Map<Integer, Action> subgoals = new HashMap<>();
         Deque<Action> open = new ArrayDeque<>(Arrays.asList(problem.goal));
         while (!open.isEmpty()) {
             Action current = open.pollLast();
-            for (int effect : current.effects) {
-                subgoals.remove(effect);
-            }
+//            for (int effect : current.effects) {
+//                subgoals.remove(effect);
+//            }
             for (int precondition : current.preconditions) {
 //                if (!problem.initial.effects.contains(precondition)) {
-                    subgoals.put(precondition, current);
+                subgoals.put(precondition, current);
 //                }
             }
             for (Edge edge : problem.plan.incomingEdgesOf(current)) {
@@ -110,5 +132,5 @@ public class PSP {
         }
         return subgoals;
     }
-    
+
 }
