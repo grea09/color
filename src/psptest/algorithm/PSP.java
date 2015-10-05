@@ -10,7 +10,12 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import me.grea.antoine.log.Log;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.CycleDetector;
+import org.jgrapht.graph.DefaultEdge;
 import psptest.type.Action;
 import psptest.type.Edge;
 import psptest.exception.Failure;
@@ -25,8 +30,11 @@ public class PSP {
 
     public static void solve(Problem problem) throws Failure {
         try {
+            assert (problem.initial.preconditions.isEmpty());
+            assert (problem.goal.effects.isEmpty());
+
             solve_(problem);
-            throw new Failure();
+            throw new Failure(null);
         } catch (Success s) {
             //TODO add plan building
             s.printStackTrace(Log.out);
@@ -34,7 +42,17 @@ public class PSP {
     }
 
     private static void solve_(Problem problem) throws Success {
+        try {
+            unthreaten(problem);
+            satisfy(problem);
+            throw new Success();
+        } catch (Failure ex) {
+            Log.e(ex);
+            return;
+        }
+    }
 
+    private static void satisfy(Problem problem) throws Success, Failure {
         Map<Integer, Action> subgoals = subgoal(problem);
         Log.d("Subgoals : " + subgoals);
         for (Map.Entry<Integer, Action> subgoal : subgoals.entrySet()) {
@@ -52,9 +70,8 @@ public class PSP {
                     insert(problem, subgoal.getKey(), subgoal.getValue(), action);
                 }
             }
-            return; //Failure
+            throw new Failure((Object) subgoal);
         }
-        throw new Success(problem);
     }
 
     private static Map<Integer, Action> subgoal(Problem problem) {
@@ -84,7 +101,9 @@ public class PSP {
         problem.plan.addVertex(candidate);
         Edge edge = problem.plan.addEdge(candidate, toSatisfy);
         edge.label = subgoal;
-        unthreaten(problem, candidate);
+
+        solve_(problem);
+
         Log.d("Action " + candidate + " not suited, reverting");
         problem.plan.removeEdge(candidate, toSatisfy);
         if (problem.plan.outDegreeOf(candidate) == 0) {
@@ -92,54 +111,56 @@ public class PSP {
         }
     }
 
-    private static void unthreaten(Problem problem, Action candidate) throws Success { //TODO ignore initial and goal
-        for (int effect : candidate.effects) {
-//            if (effect < 0) // BEWARE : Effect 0 has no effect
-//            {
-            for (Edge oposite : problem.plan.edgeSet()) {
-                if ((Integer) oposite.label == -effect) { //Uh oh ?
-                    Action source = problem.plan.getEdgeSource(oposite);
-                    Action target = problem.plan.getEdgeTarget(oposite);
-                    if (problem.plan.getEdge(candidate, source) == null
-                            && problem.plan.getEdge(target, candidate) == null) {
-                        Log.w("" + candidate + " is a threat to the link " + source + " => " + target);
-                        demote(problem, source, target, candidate, effect);
-                        promote(problem, source, target, candidate, effect);
-                        return; //failure
+    private static void unthreaten(Problem problem) throws Success, Failure { //TODO ignore initial and goal
+        for (Action candidate : problem.plan.vertexSet()) {
+            for (int effect : candidate.effects) {
+                for (Edge oposite : problem.plan.edgeSet()) {
+                    if ((Integer) oposite.label == -effect) { //NEVER have a 0 effect
+                        Action source = problem.plan.getEdgeSource(oposite);
+                        Action target = problem.plan.getEdgeTarget(oposite);
+                        if (problem.plan.getEdge(candidate, source) == null
+                                && problem.plan.getEdge(target, candidate) == null) {
+                            Log.w("" + candidate + " is a threat to the link " + source + " => " + target);
+                            demote(problem, source, target, candidate, effect);
+                            promote(problem, source, target, candidate, effect);
+                            throw new Failure(candidate);
+                        }
                     }
                 }
             }
-//            }
         }
-        solve_(problem);
     }
 
     private static void demote(Problem problem, Action source, Action target, Action threat, int effect) throws Success {
-        Log.d("Demoting " + threat);
-        Edge edge;
-        if (effect < 0) {
-            edge = problem.plan.addEdge(threat, source);
-        } else  {
-            edge = problem.plan.addEdge(source, threat);
+        Log.d("Demoting " + threat + " in the link " + problem.plan.getEdge(source, target));
+        if (target == problem.goal) {
+            Log.w("Can't demote after goal step !");
+            return;
         }
+        Edge edge;
+        edge = problem.plan.addEdge(target, threat);
         edge.label = 0;
         // TODO consistency check
-        solve_(problem);
+        if (!new CycleDetector<>(problem.plan).detectCycles()) {
+            solve_(problem);
+        }
         // Revert !
         problem.plan.removeEdge(edge);
     }
 
     private static void promote(Problem problem, Action source, Action target, Action threat, int effect) throws Success {
-        Log.d("Promoting " + threat);
-        Edge edge;
-        if (effect < 0) {
-            edge = problem.plan.addEdge(threat, target);
-        } else  {
-            edge = problem.plan.addEdge(target, threat);
+        Log.d("Promoting " + threat + " in the link " + problem.plan.getEdge(source, target));
+        if (source == problem.initial) {
+            Log.w("Can't promote before initial step !");
+            return;
         }
+        Edge edge;
+        edge = problem.plan.addEdge(threat, source);
         edge.label = 0;
         // TODO consistency check
-        solve_(problem);
+        if (!new CycleDetector<Action, Edge>(problem.plan).detectCycles()) {
+            solve_(problem);
+        }
         // Revert !
         problem.plan.removeEdge(edge);
     }

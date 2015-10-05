@@ -10,8 +10,10 @@ package psptest.exception;
  * @author antoine
  */
 public class Failure extends Exception {
+    public Object cause;
 
-    public Failure() {
+    public Failure(Object cause) {
+        this.cause = cause;
     }
     
 }

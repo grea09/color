@@ -10,10 +10,8 @@ package psptest.exception;
  * @author antoine
  */
 public class Success extends Exception {
-    public Object result;
-
-    public Success(Object result) {
-        this.result = result;
+    
+    public Success() {
     }
     
 }

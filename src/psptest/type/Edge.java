@@ -13,5 +13,12 @@ import org.jgrapht.graph.DefaultEdge;
  */
 public class Edge<T> extends DefaultEdge {
     public T label;
+
+    @Override
+    public String toString() {
+        return getSource() + " =["+ label +"]> " + getTarget();
+    }
+    
+    
     
 }

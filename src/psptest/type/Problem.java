@@ -30,15 +30,16 @@ public class Problem {
 
     @Override
     public String toString() {
-        return "Problem {" + "\n\tinitial:" + initial.effects + "=> goal:" + ((Goal)goal).toString() + "\n\tactions:" + actions + "\n\tplan:" + planToString() + "}";
+        return "Problem {" + "\n\tinitial:" + initial.effects + " => goal:" + ((Goal)goal).toString() + "\n\tactions:" + actions + "\n\tplan:" + planToString() + "}";
     }
     
     public String planToString()
     {
+//        return plan.edgeSet().toString();
         String result = "";
         for(Edge edge : plan.edgeSet())
         {
-            result += plan.getEdgeSource(edge) + " => " + plan.getEdgeTarget(edge) +"\n\t\t";
+            result += edge +"\n\t";
         }
         return result;
     }
