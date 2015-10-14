@@ -3,17 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package psptest.exception;
+package soda.algorithm;
 
 /**
  *
  * @author antoine
  */
-public class Failure extends Exception {
-    public Object cause;
-
-    public Failure(Object cause) {
-        this.cause = cause;
-    }
+public class Correlator {
     
 }

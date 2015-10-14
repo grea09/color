@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package psptest.type;
+package soda.type;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -15,8 +15,8 @@ import java.util.Set;
 import me.grea.antoine.log.Log;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.CycleDetector;
-import org.jgrapht.alg.DijkstraShortestPath;
-import psptest.exception.Failure;
+import soda.algorithm.DFS;
+import soda.exception.Failure;
 
 /**
  *
@@ -28,6 +28,8 @@ public class Problem {
     public Action goal;
     public Set<Action> actions; // not including those above
     public DirectedGraph<Action, Edge> plan;
+    public Map<Flaw, DirectedGraph<Action, Edge>> partialSolutions = new HashMap<>();
+    public DirectedGraph<Action, Edge> lastTry;
 
     public Problem(Action initial, Action goal, Set<Action> actions, DirectedGraph<Action, Edge> plan) {
         this.initial = initial;
@@ -36,7 +38,18 @@ public class Problem {
         this.plan = plan;
     }
 
-    public class SubGoal {
+    public Problem(Problem other) {
+        this.initial = other.initial;
+        this.goal = other.goal;
+        this.actions = other.actions;
+        this.plan = other.plan;
+    }
+
+    public class Flaw {
+
+    }
+
+    public class SubGoal extends Flaw {
 
         public Action needer;
         public int subgoal;
@@ -52,6 +65,10 @@ public class Problem {
             this.provider = provider;
             plan.addVertex(provider);
             causal = plan.addEdge(provider, needer);
+            if (causal == null) {
+                revert(); //FIXME So so ugly
+                return;
+            }
             causal.label = subgoal;
             Log.d("Inserting " + this);
         }
@@ -113,7 +130,7 @@ public class Problem {
         return null;
     }
 
-    public class Threat {
+    public class Threat extends Flaw {
 
         public Action threat;
         public Edge threatened;
@@ -129,7 +146,7 @@ public class Problem {
             Log.d("Demoting " + threat + " for the link " + threatened);
             if (plan.getEdgeTarget(threatened) == goal) {
                 Log.w("Can't demote after goal step !");
-                throw new Failure(this);
+                throw new Failure(Problem.this, this);
             }
             demoter = plan.addEdge(plan.getEdgeTarget(threatened), threat);
             demoter.label = 0;
@@ -143,7 +160,7 @@ public class Problem {
             Log.d("Promoting " + threat + " for the link " + threatened);
             if (plan.getEdgeSource(threatened) == initial) {
                 Log.w("Can't promote before initial step !");
-                throw new Failure(this);
+                throw new Failure(Problem.this, this);
             }
             promoter = plan.addEdge(threat, plan.getEdgeSource(threatened));
             promoter.label = 0;
@@ -207,7 +224,8 @@ public class Problem {
     }
 
     public boolean pathExists(Action source, Action target) {
-        return new DijkstraShortestPath<>(plan, source, target).getPathLength() != Double.POSITIVE_INFINITY;
+//        return new DijkstraShortestPath<>(plan, source, target).getPathLength() != Double.POSITIVE_INFINITY;
+        return DFS.reachable(plan, source, target);
     }
 
     @Override

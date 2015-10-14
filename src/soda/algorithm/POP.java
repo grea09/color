@@ -3,42 +3,31 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package psptest.algorithm;
+package soda.algorithm;
 
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import me.grea.antoine.log.Log;
-import org.jgrapht.alg.CycleDetector;
-import psptest.type.Action;
-import psptest.type.Edge;
-import psptest.exception.Failure;
-import psptest.type.Problem;
-import psptest.exception.Success;
-import psptest.type.Problem.SubGoal;
-import psptest.type.Problem.Threat;
+import soda.type.Action;
+import soda.exception.Failure;
+import soda.type.Problem;
+import soda.exception.Success;
+import soda.type.Problem.SubGoal;
+import soda.type.Problem.Threat;
 
 /**
  *
  * @author antoine
  */
-public class PSP {
+public class POP {
 
-    public static void solve(Problem problem) throws Failure {
+    public static void solve(Problem problem) throws Failure{
         try {
-            assert (problem.initial.preconditions.isEmpty());
-            assert (problem.goal.effects.isEmpty());
-
+            POPMinus.clean(problem);
             solve_(problem);
-            throw new Failure(null);
+            Log.w("Problem unsolvable ! Now trying softer");
+            POPPlus.soft(problem);
         } catch (Success s) {
-            //TODO add plan building
             Log.v(s);
+            POPMinus.clean(problem);
         }
     }
 
@@ -48,7 +37,7 @@ public class PSP {
             satisfy(problem);
             throw new Success();
         } catch (Failure ex) {
-            Log.e(ex);
+            Log.w(ex);
         }
     }
 
@@ -71,7 +60,7 @@ public class PSP {
                     insert(problem, subGoal, action);
                 }
             }
-            throw new Failure(subGoal);
+            throw new Failure(problem, subGoal);
         }
         //Success as we return
     }
@@ -92,7 +81,7 @@ public class PSP {
             Log.w("Found a threat " + threat);
             demote(problem, threat);
             promote(problem, threat);
-            throw new Failure(threat);
+            throw new Failure(problem, threat);
         }
     }
 

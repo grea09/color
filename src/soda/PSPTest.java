@@ -3,19 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package psptest;
+package soda;
 
-import psptest.type.Problem;
-import psptest.exception.Failure;
-import psptest.type.Edge;
-import psptest.type.Action;
+import soda.type.Problem;
+import soda.exception.Failure;
+import soda.type.Edge;
+import soda.type.Action;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import me.grea.antoine.log.Log;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import psptest.algorithm.PSP;
+import soda.algorithm.POP;
+import soda.algorithm.ProperPlan;
 
 /**
  *
@@ -25,8 +26,9 @@ public class PSPTest {
 
     /**
      * @param args the command line arguments
+     * @throws soda.exception.Failure
      */
-    public static void main(String[] args) throws Failure {
+    public static void main(String[] args) {
         // TODO code application logic here
         Action initial = new Action(null, set(1, 2));
         Action goal = new Action(set(3, 4, -5, 6), null);
@@ -38,16 +40,23 @@ public class PSPTest {
                 new Action(set(42), set(-5)),
                 new Action(set(4), set(6))
         );
-        DirectedGraph<Action, Edge> plan = new DefaultDirectedGraph<>(Edge.class);
+        DirectedGraph<Action, Edge> plan = ProperPlan.plan(goal, actions);
         plan.addVertex(initial);
-        plan.addVertex(goal);
         
         Problem problem = new Problem(initial, goal, actions, plan);
 
-        Log.i("Problem : " + problem);
+        System.out.println(problem);
 
-        PSP.solve(problem);
-        Log.i("Solution :" + problem.planToString());
+        try {
+            POP.solve(problem);
+        } catch (Failure ex) {
+            Log.e(ex);
+            Log.out.flush();
+            System.out.println("Partial solution {\n\t" + ex.partialSolution + "}");
+            System.exit(-1);
+        }
+        
+        System.out.println("Solution {\n\t" + problem.planToString() + "}");
     }
 
     public static <T> Set<T> set(T... list) {
