@@ -17,6 +17,7 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.CycleDetector;
 import soda.algorithm.DFS;
 import soda.exception.Failure;
+import soda.utils.Sets;
 
 /**
  *
@@ -29,7 +30,7 @@ public class Problem {
     public Set<Action> actions; // not including those above
     public DirectedGraph<Action, Edge> plan;
     public Map<Flaw, DirectedGraph<Action, Edge>> partialSolutions = new HashMap<>();
-    public DirectedGraph<Action, Edge> lastTry;
+    public Set<Action> quarantine = new HashSet<>();
 
     public Problem(Action initial, Action goal, Set<Action> actions, DirectedGraph<Action, Edge> plan) {
         this.initial = initial;
@@ -47,34 +48,57 @@ public class Problem {
 
     public class Flaw {
 
+        public int fluent;
+        public Action needer;
+
+    }
+
+    public class Loop extends Flaw {
+
+        public Edge looping;
+
+        public Loop(Action needer, int subgoal, Edge looping) {
+            this.needer = needer;
+            this.fluent = subgoal;
+            this.looping = looping;
+        }
+
+        @Override
+        public String toString() {
+            return "↺ " + looping;
+        }
     }
 
     public class SubGoal extends Flaw {
 
-        public Action needer;
-        public int subgoal;
         private Edge causal;
         private Action provider;
 
         public SubGoal(Action needer, int subgoal) {
             this.needer = needer;
-            this.subgoal = subgoal;
+            this.fluent = subgoal;
         }
 
-        public void satisfy(Action provider) {
+        public void satisfy(Action provider) throws Failure {
             this.provider = provider;
             plan.addVertex(provider);
             causal = plan.addEdge(provider, needer);
             if (causal == null) {
-                revert(); //FIXME So so ugly
-                return;
+                Log.w("Edge is already present ! Probably a loop in the problem space");
+                Edge edge = plan.getEdge(provider, needer);
+//                if ((Integer) edge.label == fluent) {
+//                    Log.w(edge + "is symptomatic of a loop : quarantine engaged");
+                    throw new Failure(Problem.this, new Loop(needer, fluent, edge));
+//                } else {
+//                    throw new Failure(Problem.this, this);
+//                }
             }
-            causal.label = subgoal;
-            Log.d("Inserting " + this);
+            causal.label = fluent;
+            Log.i("Inserting " + this);
         }
 
         public void revert() {
-            Log.w("Action " + provider + " not suited to achieve " + subgoal + " of " + needer + " ! Reverting");
+//            Log.w("Action " + provider + " not suited to achieve " + fluent + " of " + needer + " ! Reverting");
             plan.removeEdge(causal);
             if (plan.outDegreeOf(provider) == 0) {
                 plan.removeVertex(provider);
@@ -84,7 +108,7 @@ public class Problem {
         @Override
         public String toString() {
             return (provider != null && plan.containsVertex(provider) ? provider : "?")
-                    + " =[" + subgoal + "]>" + needer;
+                    + " =(" + fluent + ")> " + needer;
         }
 
     }
@@ -132,23 +156,25 @@ public class Problem {
 
     public class Threat extends Flaw {
 
-        public Action threat;
+        public Action breaker;
         public Edge threatened;
         private Edge demoter;
         private Edge promoter;
 
         public Threat(Action threat, Edge threatened) {
-            this.threat = threat;
+            this.breaker = threat;
             this.threatened = threatened;
+            fluent = (Integer) threatened.label;
+            needer = plan.getEdgeTarget(threatened);
         }
 
         public void demote() throws Failure {
-            Log.d("Demoting " + threat + " for the link " + threatened);
+            Log.i("Demoting " + breaker + " for the link " + threatened);
             if (plan.getEdgeTarget(threatened) == goal) {
                 Log.w("Can't demote after goal step !");
                 throw new Failure(Problem.this, this);
             }
-            demoter = plan.addEdge(plan.getEdgeTarget(threatened), threat);
+            demoter = plan.addEdge(plan.getEdgeTarget(threatened), breaker);
             demoter.label = 0;
         }
 
@@ -157,12 +183,12 @@ public class Problem {
         }
 
         public void promote() throws Failure {
-            Log.d("Promoting " + threat + " for the link " + threatened);
+            Log.i("Promoting " + breaker + " for the link " + threatened);
             if (plan.getEdgeSource(threatened) == initial) {
                 Log.w("Can't promote before initial step !");
                 throw new Failure(Problem.this, this);
             }
-            promoter = plan.addEdge(threat, plan.getEdgeSource(threatened));
+            promoter = plan.addEdge(breaker, plan.getEdgeSource(threatened));
             promoter.label = 0;
         }
 
@@ -172,7 +198,7 @@ public class Problem {
 
         @Override
         public String toString() {
-            return threat + " ☠ " + threatened;
+            return breaker + " ☠ " + threatened;
         }
 
     }
@@ -226,6 +252,10 @@ public class Problem {
     public boolean pathExists(Action source, Action target) {
 //        return new DijkstraShortestPath<>(plan, source, target).getPathLength() != Double.POSITIVE_INFINITY;
         return DFS.reachable(plan, source, target);
+    }
+
+    public long violation() {
+        return plan.vertexSet().stream().filter((action) -> (action.fake)).count();
     }
 
     @Override

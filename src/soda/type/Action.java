@@ -15,6 +15,7 @@ import java.util.Set;
  */
 public class Action extends Goal {
     public Set<Integer> effects;
+    public final boolean fake;
 
     public Action() {
         this(new HashSet<>(), new HashSet<>());
@@ -29,17 +30,24 @@ public class Action extends Goal {
     }
 
     public Action(Collection<Integer> preconditions, Collection<Integer> effects) {
+        this(preconditions, effects, false);
+    }
+    
+    public Action(Collection<Integer> preconditions, Collection<Integer> effects, boolean fake) {
         super(preconditions);
         if (effects == null) {
             this.effects = new HashSet();
         } else {
             this.effects = new HashSet(effects);
         }
+        this.fake = fake;
     }
 
     @Override
     public String toString() {
-        return "A[|=" + preconditions + " =+" + effects + ']';
+        return  (fake ? "₳" : "A") + 
+                (preconditions.isEmpty() ? '[' : "[ ⊧" + preconditions) + 
+                (effects.isEmpty() ? ']' : " +" + effects + ']');
     }
     
 }

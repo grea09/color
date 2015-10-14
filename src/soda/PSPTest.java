@@ -31,14 +31,16 @@ public class PSPTest {
     public static void main(String[] args) {
         // TODO code application logic here
         Action initial = new Action(null, set(1, 2));
-        Action goal = new Action(set(3, 4, -5, 6), null);
+        Action goal = new Action(set(3, 4, -5, 6, 7), null);
         Set<Action> actions = set(new Action(set(1), set(3, 5)),
                 new Action(set(5), set(4)),
                 new Action(set(1), set(42)),
                 new Action(set(2), set(-4)),
                 new Action(set(42), set(3)),
                 new Action(set(42), set(-5)),
-                new Action(set(4), set(6))
+                new Action(set(4), set(6)),
+                new Action(set(-7, 8), set(-8, 7)),
+                new Action(set(7, -8), set(8, -7))
         );
         DirectedGraph<Action, Edge> plan = ProperPlan.plan(goal, actions);
         plan.addVertex(initial);
@@ -47,16 +49,12 @@ public class PSPTest {
 
         System.out.println(problem);
 
-        try {
-            POP.solve(problem);
-        } catch (Failure ex) {
-            Log.e(ex);
-            Log.out.flush();
-            System.out.println("Partial solution {\n\t" + ex.partialSolution + "}");
-            System.exit(-1);
-        }
+        POP.solve(problem);
         
-        System.out.println("Solution {\n\t" + problem.planToString() + "}");
+        
+        Log.i("Finih !");
+        Log.out.println("Solution {\n\t" + problem.planToString() + "}");
+        Log.out.println("Violation : " + problem.violation());
     }
 
     public static <T> Set<T> set(T... list) {

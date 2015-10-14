@@ -16,7 +16,7 @@ public class Edge<T> extends DefaultEdge {
 
     @Override
     public String toString() {
-        return getSource()+ " =["+ label +"]> " + getTarget();
+        return getSource()+ " =("+ label +")> " + getTarget();
     }
     
 }

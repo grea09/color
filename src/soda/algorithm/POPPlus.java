@@ -6,15 +6,14 @@
 package soda.algorithm;
 
 import java.util.Map;
-import java.util.Set;
 import me.grea.antoine.log.Log;
 import org.jgrapht.DirectedGraph;
+import soda.PSPTest;
 import soda.exception.Failure;
 import soda.type.Action;
 import soda.type.Problem;
 import soda.type.Edge;
 import soda.type.Problem.Flaw;
-import soda.type.Problem.SubGoal;
 import soda.type.Problem.Threat;
 
 /**
@@ -23,7 +22,7 @@ import soda.type.Problem.Threat;
  */
 public class POPPlus {
 
-    public static void soft(Problem problem) throws Failure {
+    public static void soft(Problem problem) {
         double minViolation = Double.POSITIVE_INFINITY;
         Problem best = problem;
         Flaw annoyer = null;
@@ -31,68 +30,44 @@ public class POPPlus {
             Problem partial = new Problem(problem);
             partial.plan = fail.getValue();
             partial.partialSolutions = problem.partialSolutions;
-            Log.d("Considering : " + partial.planToString());
+//            Log.d("Considering : " + partial.planToString());
             double currentViolation = violation(partial);
-            Log.d("Violation = " +currentViolation);
+//            Log.d("Violation = " +currentViolation);
             if (currentViolation < minViolation) {
                 best = partial;
                 annoyer = fail.getKey();
                 minViolation = currentViolation;
             }
         }
-        Log.d("Best partial " +best.planToString());
+        Log.i("Best partial " +best.planToString());
+        Log.i("Violation : " + minViolation);
         POPMinus.clean(best);
-        solve(best);
-        POPMinus.clean(best);
-        if(problem.plan.equals(best.plan))
-        {
-            throw new Failure(best, annoyer);
-        }
-        soft(best);
+        problem.plan = best.plan;
+        problem.partialSolutions.clear();
+        problem.quarantine.clear();
+        fix(annoyer, problem);
+        Log.i("Trying again !");
+        POP.solve(problem);
     }
 
-    private static double violation(Problem partial) {
-        return partial.suboals().size() + partial.threats().size();// / (double) partial.plan.edgeSet().size();
+    private static long violation(Problem partial) {
+        return partial.suboals().size() + partial.threats().size() + partial.violation();
     }
     
-     private static void satisfy(Problem problem) {
-        Set<SubGoal> subgoals = problem.suboals();
-        for (SubGoal subGoal : subgoals) {
-            if (problem.initial.effects.contains(subGoal.subgoal)) {
-                subGoal.satisfy(problem.initial);
-            }
-
-            for (Action step : problem.plan.vertexSet()) {
-                if (step.effects.contains(subGoal.subgoal)) {
-                    subGoal.satisfy(step);
-                }
-            }
-            for (Action action : problem.actions) {
-                if (action.effects.contains(subGoal.subgoal)) {
-                    subGoal.satisfy(action);
-                }
-            }
+    private static void fix(Flaw flaw, Problem problem)
+    {
+        Action provider = new Action(null, PSPTest.set(flaw.fluent), true);
+        Log.i("Fixing flaw " + flaw + " with fake action " + provider);
+        problem.plan.addVertex(provider);
+        Edge edge = problem.plan.addEdge(provider, flaw.needer);
+        edge.label = flaw.fluent;
+        
+        if(flaw instanceof Threat)
+        {
+            Threat threat = (Threat) flaw;
+            edge = problem.plan.addEdge(threat.breaker, provider); 
+            edge.label = 0;
         }
-    }
-
-    private static void unthreaten(Problem problem) {
-       for(Threat threat : problem.threats())
-       {
-           try {
-               threat.demote();
-           } catch (Failure ex) {
-               try {
-                   threat.promote();
-               } catch (Failure ex1) {
-                   
-               }
-           }
-       }
-    }
-
-    private static void solve(Problem problem) {
-        satisfy(problem);
-        unthreaten(problem);
     }
 
 }

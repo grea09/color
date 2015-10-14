@@ -25,6 +25,7 @@ public class POPMinus {
         lieToMe(problem);
         breakCycles(problem);
         dontRepeat(problem);
+        beUsefull(problem);
     }
 
     private static void illegal(Problem problem) {
@@ -33,12 +34,14 @@ public class POPMinus {
         problem.actions.addAll(problem.plan.vertexSet()); //FIXME when instanciating you shouldn't do that
 
         for (Action action : problem.actions) {
-            if (action.effects.contains(0) || action.preconditions.contains(0)
-                    || (action.effects.isEmpty() && action != problem.goal)) {
-                Log.w("Illegal action " + action + " removed !");
-                problem.actions.remove(action);
-                problem.plan.removeVertex(action);
-            }
+            action.effects.stream().filter((fluent) -> (action.effects.contains(-fluent))).forEach((fluent) -> {
+                action.effects.remove(fluent);
+                action.effects.remove(-fluent);
+            });
+            action.preconditions.stream().filter((fluent) -> (action.preconditions.contains(-fluent))).forEach((fluent) -> {
+                action.preconditions.remove(fluent);
+                action.preconditions.remove(-fluent);
+            });
         }
     }
 
@@ -78,15 +81,46 @@ public class POPMinus {
     }
 
     private static void dontRepeat(Problem problem) {
+        Set<Edge> concurents = new HashSet<>();
         for (Edge edge : problem.plan.edgeSet()) {
             //List<GraphPath<Action, Edge>> paths = new KShortestPaths<>(problem.plan, problem.plan.getEdgeSource(edge),2).getPaths(problem.plan.getEdgeTarget(edge));
             //if(paths.size() >1) {
-            if (DFS.kReachable(problem.plan, problem.plan.getEdgeSource(edge), problem.plan.getEdgeTarget(edge), 2)) {
+            if ((Integer) edge.label == 0 && DFS.kReachable(problem.plan, problem.plan.getEdgeSource(edge), problem.plan.getEdgeTarget(edge), 2)) {
                 Log.w("The edge " + edge + " is redudant");// with " + paths.get(1));
                 problem.plan.removeEdge(edge);
                 dontRepeat(problem);
                 return;
             }
+            
+            for(Edge concurent :problem.plan.incomingEdgesOf(problem.plan.getEdgeTarget(edge)))
+            {
+                if(concurent != edge && !concurents.contains(edge) && !concurents.contains(concurent)
+                        && concurent.label == edge.label)
+                {
+                    Log.w("The edge " + concurent + " is competing with " + edge);
+                    concurents.add(concurent);
+                    concurents.remove(edge);
+                }
+            }
         }
+        problem.plan.removeAllEdges(concurents);
+    }
+
+    private static void beUsefull(Problem problem) {
+        for (Action action : problem.actions) {
+            if (action.effects.isEmpty() && action != problem.goal) {
+                Log.w("Useless action " + action + " removed !");
+                problem.actions.remove(action);
+                problem.plan.removeVertex(action);
+            }
+            if(problem.plan.containsVertex(action) && problem.plan.outDegreeOf(action) == 0 && 
+                    action != problem.goal && action != problem.initial)
+            {
+                Log.w("Useless action " + action + " removed !");
+                problem.plan.removeVertex(action);
+            }
+        }
+        
+        //TODO moar
     }
 }

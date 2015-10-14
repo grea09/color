@@ -13,6 +13,7 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import soda.type.Action;
 import soda.type.Edge;
+import soda.type.Goal;
 
 /**
  *
@@ -20,7 +21,7 @@ import soda.type.Edge;
  */
 public class ProperPlan {
 
-    public static DirectedGraph<Action, Edge> plan(Action goal, Set<Action> actions) {
+    public static DirectedGraph<Action, Edge> plan(Goal goal, Set<Action> actions) {
         DirectedGraph<Action, Edge> plan = new DefaultDirectedGraph<>(Edge.class);
         Set<Action> relevants = satisfy(goal, actions, plan);
         Deque<Action> open = new ArrayDeque<>(relevants);
@@ -35,17 +36,18 @@ public class ProperPlan {
             relevants.addAll(candidates);
 
         }
-        return plan; //TODO unthreaten
+        return plan; //TODO unthreaten + loop a little ?
     }
+    
 
-    private static Set<Action> satisfy(Action goal, Set<Action> actions, DirectedGraph<Action, Edge> plan) {
+    private static Set<Action> satisfy(Goal goal, Set<Action> actions, DirectedGraph<Action, Edge> plan) {
         Set<Action> relevants = new HashSet<>();
-        plan.addVertex(goal);
+        plan.addVertex((Action) goal);
         for (int precondition : goal.preconditions) {
             for (Action action : actions) {
                 if (action.effects.contains(precondition)) {
                     plan.addVertex(action);
-                    Edge edge = plan.addEdge(action, goal);
+                    Edge edge = plan.addEdge(action, (Action) goal);
                     if (edge != null) // FIXME Find a way for that
                     {
                         edge.label = precondition;

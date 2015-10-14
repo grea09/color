@@ -5,6 +5,8 @@
  */
 package soda.algorithm;
 
+import java.util.HashSet;
+import java.util.Set;
 import me.grea.antoine.log.Log;
 import soda.type.Action;
 import soda.exception.Failure;
@@ -12,6 +14,7 @@ import soda.type.Problem;
 import soda.exception.Success;
 import soda.type.Problem.SubGoal;
 import soda.type.Problem.Threat;
+import soda.type.Problem.Loop;
 
 /**
  *
@@ -19,11 +22,11 @@ import soda.type.Problem.Threat;
  */
 public class POP {
 
-    public static void solve(Problem problem) throws Failure{
+    public static void solve(Problem problem) {
         try {
             POPMinus.clean(problem);
             solve_(problem);
-            Log.w("Problem unsolvable ! Now trying softer");
+            Log.e("Problem unsolvable ! Now trying softer");
             POPPlus.soft(problem);
         } catch (Success s) {
             Log.v(s);
@@ -45,32 +48,62 @@ public class POP {
 //        Set<SubGoal> subgoals = problem.suboals();
 //        Log.d("Subgoals : " + subgoals);
         SubGoal subGoal = problem.findSubGoal();
-        if (subGoal != null) {
-            if (problem.initial.effects.contains(subGoal.subgoal)) {
-                insert(problem, subGoal, problem.initial);
-            }
+//        if(problem.partialSolutions.containsKey(subGoal))
+//        {
+//            Log.w("Loop detected with flaw " + subGoal);
+//            throw new Failure(problem, subGoal);
+//        }
 
-            for (Action step : problem.plan.vertexSet()) {
-                if (step.effects.contains(subGoal.subgoal)) {
-                    insert(problem, subGoal, step);
+        if (subGoal != null) {
+            try {
+                if (problem.initial.effects.contains(subGoal.fluent)) {
+                    insert(problem, subGoal, problem.initial);
                 }
-            }
-            for (Action action : problem.actions) {
-                if (action.effects.contains(subGoal.subgoal)) {
-                    insert(problem, subGoal, action);
+
+                Set<Action> steps = new HashSet<>(problem.plan.vertexSet());
+                steps.remove(problem.initial);
+                steps.removeAll(problem.quarantine);
+                for (Action step : steps) {
+                    if (step.effects.contains(subGoal.fluent)) {
+                        insert(problem, subGoal, step);
+                    }
                 }
+                
+                Set<Action> actions = new HashSet<>(problem.actions);
+                actions.remove(problem.initial);
+                actions.removeAll(steps);
+                actions.removeAll(problem.quarantine);
+                for (Action action : actions) {
+                    if ( action.effects.contains(subGoal.fluent)) {
+                        insert(problem, subGoal, action);
+                    }
+                }
+//                for (Action contamined : problem.quarantine) {
+//                    if (contamined.effects.contains(subGoal.fluent)) {
+//                        Log.w("Forced to use contamined action " + contamined);
+//                        insert(problem, subGoal, contamined);
+//                    }
+//                }
+            } catch (Failure failure) {
+                if (failure.cause instanceof Loop) {
+                    Loop loop = (Loop) failure.cause;
+                    problem.quarantine.add(problem.plan.getEdgeSource(loop.looping));
+                    problem.quarantine.add(problem.plan.getEdgeTarget(loop.looping));
+                    Log.d("Quarantine is now :" + problem.quarantine);
+                }
+                throw failure;
             }
             throw new Failure(problem, subGoal);
         }
         //Success as we return
     }
 
-    private static void insert(Problem problem, SubGoal subGoal, Action candidate) throws Success {
-
-        //TODO Fail if negative effects
+    private static void insert(Problem problem, SubGoal subGoal, Action candidate) throws Success, Failure {
         subGoal.satisfy(candidate);
 
-        solve_(problem);
+        if (problem.consistent()) {
+            solve_(problem);
+        }
 
         subGoal.revert();
     }
