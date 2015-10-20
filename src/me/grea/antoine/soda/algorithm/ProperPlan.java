@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package soda.algorithm;
+package me.grea.antoine.soda.algorithm;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -11,9 +11,9 @@ import java.util.HashSet;
 import java.util.Set;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import soda.type.Action;
-import soda.type.Edge;
-import soda.type.Goal;
+import me.grea.antoine.soda.type.Action;
+import me.grea.antoine.soda.type.Edge;
+import me.grea.antoine.soda.type.Goal;
 
 /**
  *

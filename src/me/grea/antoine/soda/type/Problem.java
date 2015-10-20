@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package soda.type;
+package me.grea.antoine.soda.type;
 
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -15,9 +15,9 @@ import java.util.Set;
 import me.grea.antoine.log.Log;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.CycleDetector;
-import soda.algorithm.DFS;
-import soda.exception.Failure;
-import soda.utils.Sets;
+import me.grea.antoine.soda.algorithm.DFS;
+import me.grea.antoine.soda.exception.Failure;
+import me.grea.antoine.soda.utils.Sets;
 
 /**
  *

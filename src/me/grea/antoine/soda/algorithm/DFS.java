@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package soda.algorithm;
+package me.grea.antoine.soda.algorithm;
 
 import java.util.ArrayDeque;
 import java.util.Deque;

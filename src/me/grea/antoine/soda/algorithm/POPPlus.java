@@ -3,18 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package soda.algorithm;
+package me.grea.antoine.soda.algorithm;
 
 import java.util.Map;
 import me.grea.antoine.log.Log;
 import org.jgrapht.DirectedGraph;
-import soda.PSPTest;
-import soda.exception.Failure;
-import soda.type.Action;
-import soda.type.Problem;
-import soda.type.Edge;
-import soda.type.Problem.Flaw;
-import soda.type.Problem.Threat;
+import me.grea.antoine.soda.PSPTest;
+import me.grea.antoine.soda.exception.Failure;
+import me.grea.antoine.soda.type.Action;
+import me.grea.antoine.soda.type.Problem;
+import me.grea.antoine.soda.type.Edge;
+import me.grea.antoine.soda.type.Problem.Flaw;
+import me.grea.antoine.soda.type.Problem.Threat;
 
 /**
  *

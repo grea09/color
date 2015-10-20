@@ -3,20 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package soda;
+package me.grea.antoine.soda;
 
-import soda.type.Problem;
-import soda.exception.Failure;
-import soda.type.Edge;
-import soda.type.Action;
+import me.grea.antoine.soda.type.Problem;
+import me.grea.antoine.soda.exception.Failure;
+import me.grea.antoine.soda.type.Edge;
+import me.grea.antoine.soda.type.Action;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import me.grea.antoine.log.Log;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import soda.algorithm.POP;
-import soda.algorithm.ProperPlan;
+import me.grea.antoine.soda.algorithm.POP;
+import me.grea.antoine.soda.algorithm.ProperPlan;
 
 /**
  *
@@ -26,12 +26,12 @@ public class PSPTest {
 
     /**
      * @param args the command line arguments
-     * @throws soda.exception.Failure
+     * @throws me.grea.antoine.soda.exception.Failure
      */
     public static void main(String[] args) {
         // TODO code application logic here
         Action initial = new Action(null, set(1, 2));
-        Action goal = new Action(set(3, 4, -5, 6, 7), null);
+        Action goal = new Action(set(3, 4, -5, 6), null);
         Set<Action> actions = set(new Action(set(1), set(3, 5)),
                 new Action(set(5), set(4)),
                 new Action(set(1), set(42)),

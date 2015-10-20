@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package soda.exception;
+package me.grea.antoine.soda.exception;
 
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
-import soda.type.Action;
-import soda.type.Edge;
-import soda.type.Problem;
-import soda.type.Problem.Flaw;
+import me.grea.antoine.soda.type.Action;
+import me.grea.antoine.soda.type.Edge;
+import me.grea.antoine.soda.type.Problem;
+import me.grea.antoine.soda.type.Problem.Flaw;
 
 /**
  *

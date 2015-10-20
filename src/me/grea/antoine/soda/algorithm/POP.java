@@ -3,18 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package soda.algorithm;
+package me.grea.antoine.soda.algorithm;
 
 import java.util.HashSet;
 import java.util.Set;
 import me.grea.antoine.log.Log;
-import soda.type.Action;
-import soda.exception.Failure;
-import soda.type.Problem;
-import soda.exception.Success;
-import soda.type.Problem.SubGoal;
-import soda.type.Problem.Threat;
-import soda.type.Problem.Loop;
+import me.grea.antoine.soda.type.Action;
+import me.grea.antoine.soda.exception.Failure;
+import me.grea.antoine.soda.type.Problem;
+import me.grea.antoine.soda.exception.Success;
+import me.grea.antoine.soda.type.Problem.SubGoal;
+import me.grea.antoine.soda.type.Problem.Threat;
+import me.grea.antoine.soda.type.Problem.Loop;
 
 /**
  *
@@ -108,7 +108,7 @@ public class POP {
         subGoal.revert();
     }
 
-    private static void unthreaten(Problem problem) throws Success, Failure { //TODO ignore initial and goal
+    private static void unthreaten(Problem problem) throws Success, Failure {
         Threat threat = problem.findThreat();
         if (threat != null) {
             Log.w("Found a threat " + threat);
