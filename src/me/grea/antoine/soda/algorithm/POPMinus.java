@@ -34,11 +34,15 @@ public class POPMinus {
         problem.actions.addAll(problem.plan.vertexSet()); //FIXME when instanciating you shouldn't do that
 
         for (Action action : problem.actions) {
-            action.effects.stream().filter((fluent) -> (action.effects.contains(-fluent))).forEach((fluent) -> {
+            Set<Integer> effects = new HashSet<>(action.effects);
+            effects.stream().filter((fluent) -> (action.effects.contains(-fluent))).forEach((fluent) -> {
+                Log.w(action + " is illegal ! Contradiction fixed");
                 action.effects.remove(fluent);
                 action.effects.remove(-fluent);
             });
-            action.preconditions.stream().filter((fluent) -> (action.preconditions.contains(-fluent))).forEach((fluent) -> {
+            Set<Integer> preconditions = new HashSet<>(action.preconditions);
+            preconditions.stream().filter((fluent) -> (action.preconditions.contains(-fluent))).forEach((fluent) -> {
+                Log.w(action + " is illegal ! Contradiction fixed");
                 action.preconditions.remove(fluent);
                 action.preconditions.remove(-fluent);
             });
@@ -107,7 +111,8 @@ public class POPMinus {
     }
 
     private static void beUsefull(Problem problem) {
-        for (Action action : problem.actions) {
+        HashSet<Action> actions = new HashSet<>(problem.actions);
+        for (Action action : actions) {
             if (action.effects.isEmpty() && action != problem.goal) {
                 Log.w("Useless action " + action + " removed !");
                 problem.actions.remove(action);

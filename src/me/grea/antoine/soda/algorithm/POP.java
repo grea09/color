@@ -24,13 +24,13 @@ public class POP {
 
     public static void solve(Problem problem) {
         try {
-            POPMinus.clean(problem);
+//            POPMinus.clean(problem);
             solve_(problem);
             Log.e("Problem unsolvable ! Now trying softer");
-            POPPlus.soft(problem);
+//            POPPlus.soft(problem);
         } catch (Success s) {
             Log.v(s);
-            POPMinus.clean(problem);
+//            POPMinus.clean(problem);
         }
     }
 

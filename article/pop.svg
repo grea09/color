@@ -42,9 +42,9 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:zoom="1.7938242"
-     inkscape:cx="211.09287"
-     inkscape:cy="51.306725"
+     inkscape:zoom="0.89691211"
+     inkscape:cx="190.68335"
+     inkscape:cy="175.27723"
      inkscape:window-x="327"
      inkscape:window-y="30"
      inkscape:window-maximized="1"
@@ -56,6 +56,8 @@
        id="g12"><g
          id="g14"
          clip-path="url(#clipPath16)"><g
+           id="g526" /><g
+           id="g558" /><g
            id="g3577"><path
              id="path22"
              style="fill:#dc322f;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -67,7 +69,7 @@
                  id="tspan28"
                  y="0"
                  x="0"
-                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Light;-inkscape-font-specification:Aller">b</tspan></text>
+                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller">b</tspan></text>
 </g><g
              id="g30"><path
                id="path32"
@@ -91,7 +93,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.1919999 8.3920002"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
 </g><g
              id="g48"><path
                id="path50"
@@ -115,7 +117,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.296 7.9920001"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
 </g><path
              id="path66"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -127,7 +129,7 @@
                  id="tspan72"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">4</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">4</tspan></text>
 </g><path
              id="path74"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -139,7 +141,7 @@
                  id="tspan80"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">2</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">2</tspan></text>
 </g><g
              id="g82"><path
                id="path84"
@@ -156,7 +158,7 @@
                  id="tspan92"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">1</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">1</tspan></text>
 </g><path
              id="path94"
              style="fill:#dc322f;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -168,7 +170,7 @@
                  id="tspan100"
                  y="0"
                  x="0"
-                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Light;-inkscape-font-specification:Aller">t</tspan></text>
+                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller">t</tspan></text>
 </g><g
              id="g102"><path
                id="path104"
@@ -192,7 +194,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.1919999 8.3920002"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
 </g><g
              id="g120"><path
                id="path122"
@@ -216,7 +218,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.296 7.9920001"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
 </g><path
              id="path138"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -229,7 +231,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.4879999"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">-5</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">-5</tspan></text>
 </g><path
              id="path146"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -241,7 +243,7 @@
                  id="tspan152"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">4</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">4</tspan></text>
 </g><path
              id="path154"
              style="fill:#dc322f;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -253,7 +255,7 @@
                  id="tspan160"
                  y="0"
                  x="0"
-                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Light;-inkscape-font-specification:Aller">a</tspan></text>
+                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller">a</tspan></text>
 </g><g
              id="g162"><path
                id="path164"
@@ -277,7 +279,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.1919999 8.3920002"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
 </g><g
              id="g180"><path
                id="path182"
@@ -301,7 +303,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.296 7.9920001"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
 </g><path
              id="path198"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -313,7 +315,7 @@
                  id="tspan204"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">3</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">3</tspan></text>
 </g><path
              id="path206"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -325,7 +327,7 @@
                  id="tspan212"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">1</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">1</tspan></text>
 </g><path
              id="path214"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -337,7 +339,7 @@
                  id="tspan220"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">5</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">5</tspan></text>
 </g><g
              id="g222"><path
                id="path224"
@@ -360,7 +362,7 @@
                  id="tspan238"
                  y="0"
                  x="0"
-                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#dc322f;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Light;-inkscape-font-specification:Aller">I</tspan></text>
+                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#dc322f;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller">I</tspan></text>
 </g><g
              id="g240"><path
                id="path242"
@@ -384,7 +386,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.296 8.0880003"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
 </g><path
              id="path258"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -396,7 +398,7 @@
                  id="tspan264"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">1</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">1</tspan></text>
 </g><path
              id="path266"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -408,7 +410,7 @@
                  id="tspan272"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">2</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">2</tspan></text>
 </g><g
              id="g274"><path
                id="path276"
@@ -451,7 +453,7 @@
                  id="tspan306"
                  y="0"
                  x="0"
-                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#dc322f;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Light;-inkscape-font-specification:Aller">G</tspan></text>
+                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#dc322f;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller">G</tspan></text>
 </g><g
              id="g308"><path
                id="path310"
@@ -475,7 +477,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.1919999 8.3920002"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
 </g><path
              id="path326"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -487,7 +489,7 @@
                  id="tspan332"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">3</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">3</tspan></text>
 </g><path
              id="path334"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -499,7 +501,7 @@
                  id="tspan340"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">4</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">4</tspan></text>
 </g><path
              id="path342"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -512,7 +514,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.4879999"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">-5</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">-5</tspan></text>
 </g><path
              id="path350"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -524,7 +526,7 @@
                  id="tspan356"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">6</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">6</tspan></text>
 </g><path
              id="path358"
              style="fill:#dc322f;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -536,7 +538,7 @@
                  id="tspan364"
                  y="0"
                  x="0"
-                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Light;-inkscape-font-specification:Aller">v</tspan></text>
+                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller">v</tspan></text>
 </g><g
              id="g366"><path
                id="path368"
@@ -560,7 +562,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.1919999 8.3920002"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
 </g><g
              id="g384"><path
                id="path386"
@@ -584,7 +586,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.296 8.0880003"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
 </g><path
              id="path402"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -596,7 +598,7 @@
                  id="tspan408"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">4</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">4</tspan></text>
 </g><path
              id="path410"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -608,7 +610,7 @@
                  id="tspan416"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">4</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">4</tspan></text>
 </g><path
              id="path418"
              style="fill:#dc322f;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -620,7 +622,7 @@
                  id="tspan424"
                  y="0"
                  x="0"
-                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Light;-inkscape-font-specification:Aller">c</tspan></text>
+                 style="font-size:18px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller">c</tspan></text>
 </g><g
              id="g426"><path
                id="path428"
@@ -644,7 +646,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.1919999 8.3920002"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">pre</tspan></text>
 </g><g
              id="g444"><path
                id="path446"
@@ -668,7 +670,7 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.296 7.9920001"
-                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
+                 style="font-size:8px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#268bd2;stroke-width:0.25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">eff</tspan></text>
 </g><path
              id="path462"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -680,7 +682,7 @@
                  id="tspan468"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">6</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">6</tspan></text>
 </g><path
              id="path470"
              style="fill:#4a8e00;fill-opacity:1;fill-rule:evenodd;stroke:none"
@@ -692,7 +694,7 @@
                  id="tspan476"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">5</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">5</tspan></text>
 </g><g
              id="g478"><path
                id="path480"
@@ -709,7 +711,7 @@
                  id="tspan488"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">3</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">3</tspan></text>
 </g><g
              id="g490"><path
                id="path492"
@@ -726,7 +728,7 @@
                  id="tspan500"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">4</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">4</tspan></text>
 </g><g
              id="g502"><path
                id="path504"
@@ -744,13 +746,14 @@
                  sodipodi:role="line"
                  y="0"
                  x="0 4.4039998"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">-5</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">-5</tspan></text>
 </g><g
              id="g514"><path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
                id="path516"
                style="fill:none;stroke:#657b83;stroke-width:2.26398993;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
-               d="m 170.1,741.4 28.3,0 0,-17 38,0"
-               inkscape:connector-curvature="0" /></g><path
+               d="m 153.15297,741.4 45.24703,0 0,-17 38,0" /></g><path
              id="path518"
              style="fill:#657b83;fill-opacity:1;fill-rule:evenodd;stroke:none"
              d="m 249.4,724.4 -13.6,4.5 0,-9.1 13.6,4.6 z"
@@ -761,9 +764,8 @@
                  id="tspan524"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#dc322f;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVuSans">☠</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#dc322f;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:DejaVuSans;-inkscape-font-specification:DejaVuSans">☠</tspan></text>
 </g><g
-             id="g526" /><g
              id="g528"><path
                id="path530"
                style="fill:none;stroke:#657b83;stroke-width:2.26398993;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
@@ -779,7 +781,7 @@
                  id="tspan538"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">6</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">6</tspan></text>
 </g><g
              id="g540"><path
                id="path542"
@@ -796,7 +798,7 @@
                  id="tspan550"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">4</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">4</tspan></text>
 </g><g
              id="g552"><path
                id="path554"
@@ -807,14 +809,13 @@
              style="fill:#657b83;fill-opacity:1;fill-rule:evenodd;stroke:none"
              d="m 249.4,724.4 -13.6,4.5 0,-9.1 13.6,4.6 z"
              inkscape:connector-curvature="0" /><g
-             id="g558" /><g
              id="g560"><text
                id="text562"
                transform="matrix(1,0,0,-1,226.9,742.2)"><tspan
                  id="tspan564"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">4</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">4</tspan></text>
 </g><g
              id="g566"><path
                id="path568"
@@ -831,13 +832,14 @@
                  id="tspan576"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">5</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">5</tspan></text>
 </g><g
              id="g578"><path
+               sodipodi:nodetypes="cccc"
+               inkscape:connector-curvature="0"
                id="path580"
                style="fill:none;stroke:#657b83;stroke-width:2.26398993;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
-               d="m 206.9,698.9 2.9,0 0,25.5 26.6,0"
-               inkscape:connector-curvature="0" /></g><path
+               d="m 199.31843,698.9 10.48157,0 0,25.5 26.6,0" /></g><path
              id="path582"
              style="fill:#657b83;fill-opacity:1;fill-rule:evenodd;stroke:none"
              d="m 249.4,724.4 -13.6,4.5 0,-9.1 13.6,4.6 z"
@@ -848,7 +850,7 @@
                  id="tspan588"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#dc322f;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVuSans">☠</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#dc322f;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:DejaVuSans;-inkscape-font-specification:DejaVuSans">☠</tspan></text>
 </g><g
              id="g590"><path
                id="path592"
@@ -865,5 +867,5 @@
                  id="tspan600"
                  y="0"
                  x="0"
-                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller Display;-inkscape-font-specification:AllerDisplay">2</tspan></text>
+                 style="font-size:12px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#4a8e00;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:AllerDisplay;-inkscape-font-specification:AllerDisplay">2</tspan></text>
 </g></g></g></g></g></svg>

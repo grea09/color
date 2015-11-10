@@ -1,2 +1,5 @@
+*~
 /dist/
 /nbproject/private/
+*.pdf
+/build/
