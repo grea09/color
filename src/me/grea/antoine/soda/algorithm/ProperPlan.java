@@ -14,6 +14,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Goal;
+import static me.grea.antoine.soda.utils.Collections.*;
 
 /**
  *
@@ -34,9 +35,8 @@ public class ProperPlan {
                 }
             }
             relevants.addAll(candidates);
-
         }
-        return plan; //TODO unthreaten + loop a little ?
+        return plan;
     }
     
 
@@ -48,9 +48,13 @@ public class ProperPlan {
                 if (action.effects.contains(precondition)) {
                     plan.addVertex(action);
                     Edge edge = plan.addEdge(action, (Action) goal);
-                    if (edge != null) // FIXME Find a way for that
+                    if (edge != null)
                     {
-                        edge.label = precondition;
+                        edge.labels = set(precondition);
+                    }
+                    else
+                    {
+                        plan.getEdge(action, (Action) goal).labels.add(precondition);
                     }
                     relevants.add(action);
                 }

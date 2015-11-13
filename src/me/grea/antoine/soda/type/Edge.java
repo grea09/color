@@ -5,18 +5,20 @@
  */
 package me.grea.antoine.soda.type;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.jgrapht.graph.DefaultEdge;
 
 /**
  *
  * @author antoine
  */
-public class Edge<T> extends DefaultEdge {
-    public T label;
+public class Edge extends DefaultEdge {
+    public Set<Integer> labels = new HashSet<>();
 
     @Override
     public String toString() {
-        return getSource()+ " =("+ label +")> " + getTarget();
+        return getSource()+ " =("+ (labels.isEmpty() ? "☠" : labels) +")> " + getTarget();
     }
     
 }

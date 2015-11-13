@@ -5,24 +5,28 @@
  */
 package me.grea.antoine.soda;
 
-import me.grea.antoine.soda.type.Problem;
 import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Action;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import me.grea.antoine.log.Log;
-import org.jgrapht.DirectedGraph;
-import me.grea.antoine.soda.algorithm.POP;
-import me.grea.antoine.soda.algorithm.POPMinus;
+import me.grea.antoine.soda.algorithm.DefectResolver;
+import me.grea.antoine.soda.algorithm.PartialOrderPlanning;
 import me.grea.antoine.soda.algorithm.ProperPlan;
+import me.grea.antoine.soda.algorithm.SoftSolving;
+import me.grea.antoine.soda.exception.Failure;
+import me.grea.antoine.soda.exception.Success;
+import org.jgrapht.DirectedGraph;
+import me.grea.antoine.soda.type.Problem;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import static me.grea.antoine.soda.utils.Collections.*;
 
 /**
  *
  * @author antoine
  */
-public class PSPTest {
+public class Main {
 
     /**
      * @param args the command line arguments
@@ -30,7 +34,7 @@ public class PSPTest {
     public static void main(String[] args) {
         // TODO code application logic here
         Action initial = new Action(null, set(1, 2));
-        Action goal = new Action(set(3, 4, -5, 6), null);
+        Action goal = new Action(set(-2, 3, 4, -5, 6), null);
         Set<Action> actions = set(new Action(set(1), set(3, 5)),
                 new Action(set(2), set(4)),
                 new Action(set(4), set(-5)),
@@ -42,26 +46,32 @@ public class PSPTest {
                 new Action(set(-7, 8), set(-8, 7)),
                 new Action(set(7, -8), set(8, -7))
         );
-        DirectedGraph<Action, Edge> plan = new DefaultDirectedGraph<>(Edge.class);//ProperPlan.plan(goal, actions);
+        DirectedGraph<Action, Edge> plan = ProperPlan.plan(goal, actions);
         plan.addVertex(initial);
         plan.addVertex(goal);
-        
+
         Problem problem = new Problem(initial, goal, actions, plan);
+        DefectResolver.clean(problem);
 
         System.out.println(problem);
+        PartialOrderPlanning pop = new PartialOrderPlanning(problem);
 
-        POP.solve(problem);
-        
-        
+        while (true) {
+            try {
+                pop.solve();
+            } catch (Success ex) {
+                Log.i(ex);
+                DefectResolver.clean(problem);
+                break;
+            } catch (Failure ex) {
+                Log.e(ex);
+                SoftSolving.heal(problem);
+            }
+        }
+
         Log.i("Finih !");
         Log.out.println("Solution {\n\t" + problem.planToString() + "}");
         Log.out.println("Violation : " + problem.violation());
-        POPMinus.clean(problem);
     }
-
-    public static <T> Set<T> set(T... list) {
-        return new HashSet<>(Arrays.asList(list));
-    }
-
 
 }

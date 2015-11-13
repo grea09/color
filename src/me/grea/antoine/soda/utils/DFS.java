@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.grea.antoine.soda.algorithm;
+package me.grea.antoine.soda.utils;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -32,7 +32,7 @@ public class DFS {
             V current = stack.pop();
             for (E edge : plan.outgoingEdgesOf(current)) {
                 V frontier = plan.getEdgeTarget(edge);
-                if (frontier == target && --k == 0) {
+                if (frontier == target && --k <= 0) {
                     return true;
                 }
                 if (visited.contains(frontier)) {

@@ -13,7 +13,7 @@ import org.jgrapht.DirectedGraph;
 import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Goal;
-import me.grea.antoine.soda.utils.Sets;
+import me.grea.antoine.soda.utils.Collections;
 
 /**
  *
@@ -82,11 +82,10 @@ public class Correlator {
         Count total = new Count(countProperties(plan1), plan1.vertexSet().size()).min(
                 new Count(countProperties(plan2), plan2.vertexSet().size()));
         Count common = new Count(
-                Sets.union(
-                        Sets.intersection(preconditions(plan1), preconditions(plan2)),
-                        Sets.intersection(effects(plan1), effects(plan2))
+                Collections.union(Collections.intersection(preconditions(plan1), preconditions(plan2)),
+                        Collections.intersection(effects(plan1), effects(plan2))
                 ).size(),
-                Sets.intersection(plan1.vertexSet(), plan2.vertexSet()).size());
+                Collections.intersection(plan1.vertexSet(), plan2.vertexSet()).size());
         return total.correlation(common);
     }
     

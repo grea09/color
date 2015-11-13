@@ -5,14 +5,20 @@
  */
 package me.grea.antoine.soda.utils;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import jdk.nashorn.internal.runtime.arrays.ArrayLikeIterator;
 
 /**
  *
  * @author http://www.java2s.com/Code/Java/Collections-Data-Structure/Setoperationsunionintersectiondifferencesymmetricdifferenceissubsetissuperset.htm
  */
-public class Sets {
+public class Collections {
     public static <T> Set<T> union(Set<T> setA, Set<T> setB) {
     Set<T> tmp = new HashSet<>(setA);
     tmp.addAll(setB);
@@ -49,5 +55,17 @@ public class Sets {
   public static <T> boolean isSuperset(Set<T> setA, Set<T> setB) {
     return setA.containsAll(setB);
   }
+  
+  public static <T> Set<T> set(T... list) {
+        return new HashSet<>(Arrays.asList(list));
+    }
+  
+  public static <T> Deque<T> queue(T... list) {
+        return new ArrayDeque<>(Arrays.asList(list));
+    }
+  
+  public static <T> List<T> list(T... list) {
+        return new ArrayList<>(Arrays.asList(list));
+    }
     
 }

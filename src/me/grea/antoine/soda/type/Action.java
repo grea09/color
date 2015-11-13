@@ -7,6 +7,7 @@ package me.grea.antoine.soda.type;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -42,6 +43,7 @@ public class Action extends Goal {
         }
         this.fake = fake;
     }
+    
 
     @Override
     public String toString() {
