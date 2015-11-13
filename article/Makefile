@@ -1,4 +1,6 @@
 FILTERS=--filter pandoc-svg.py --filter pandoc-fignos --filter pandoc-citeproc
+
+
 SRC= $(wildcard *.md)
 PDF= $(SRC:.md=.pdf)
 
