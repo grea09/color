@@ -10,36 +10,42 @@ abstract: |
 
   It consists of two paragraphs but that is more than enough for it to be awesome.
   
-bibliography: zotero.bib
-documentclass: ieeeconf
-csl: ieee.csl
+bibliography: latex/zotero.bib
+documentclass: latex/ieeeconf
+csl: latex/ieee.csl
 smart: yes
 standalone: yes
 numbersections: yes
+latex-engine: xelatex
 
 ---
 <!-- TODO discuss order of authors-->
 
-
 # Introduction {-}
 <!-- The Soft Ordering and Defect Aware Partial Ordering Planning algorithm (SODA POP)
 This name is PERFECT ! -->
-<!--TODO Online planning -->
 
+For some time Partial Order Planning (POP) has been the most popular approach to planning resolution. This kind of algorithms are based on *least commitment strategy* on plan step ordering that can allow actions to be flexibly interleaved during execution [@weld_introduction_1994]. Thus the way the search is made using flexible partial plan as a search space allowed for more versatility for a wide variety of uses. As of more recent years, new state space search models and heuristics [@richter_lama_2011] have been demonstrated to be more efficient than POP planners due to the simplicity and relevance of states representation opposed to partial plans [@ghallab_automated_2004]. This have made the search of performance the main axis of research for planning in the community.
 
-For some time Partial Order Planning (POP) has been the most popular approach to planning resolution. **POP algorithms are based on least commitment strategy on plan step ordering that can allow actions to be flexibly interleaved during execution [@weild94].** Thus the way the search is made using flexible partial plan as a search space allowed for more versatility for a wide variety of uses. As of more recent years, new state space search models and heuristics [@richter_lama_2011] have been demonstrated to be more efficient than POP planners due to the simplicity and relevance of states representation opposed to partial plans [@ghallab_automated_2004]. This have made the search of performance the main axis of research for planning in the community.
+While this goal is justified, it shadows other problems that some practical applications cause. For example, the flexibility of Plan Space Planning (PSP) is an obvious advantage for applications needing online planning: plans can be repaired on the fly as new informations and objectives enter the system. The idea of using POP for online planning and repair plans instead of replanning everything isn't new [@van_der_krogt_plan_2005], but has never been paired with the resilience that some other cognitive applications may need, especially when dealing with sensors data and noise.
 
-While this goal is justified, it shadows other problems that some practical applications cause. For example, the flexibility of Plan Space Planning (PSP) is an obvious advantage for applications needing online planning: plans can be repaired on the fly as new informations and objectives enter the system **citer (+ une ligne d'explication?) Benton et/ou Krogt et/ou autres ?** <!-- FIXME REF ? -->. Some other cognitive applications may provide approximate plans to be refined **par exemple ?**. These can contain errors and imperfections that will decrease significantly the efficiency of the computation and the quality of the output plan. Others AI applications need complete plans that detail the reasons behind a failure and what are its consequences on the rest of the steps to achieve the provided goal. **Peut être donner en exemple la reco d'intention avec planif inverse ?**
+This resilience allows also other usages as plan manipulation can get easier by fixing errors in the logic of the planning algorithm to make sense of the actions to take. These client softwares might provide plans that can contain errors and imperfections that will decrease significantly the efficiency of the computation and the quality of the output plan.
 
-These problems call for new ways to improve the answer and behavior of a planner in order to provide relevant plan information pointing out exactly what needs to be done in order to make a planning problem solvable, even in the case of obviously broken input data. We aim to solve this in the present paper while preserving the advantages of PSP algorithms. Our Soft Ordering and Defect Aware Partial Ordering Planning (SODA POP) algorithm will target those issues. **Détailler en quelques lignes ce que tu proposes dans SODA**
+Adding to that, these plans may become totally unsolvable. This problem is to our knowledge no treated in planning of all forms (state planning, PSP, and even constraint satisfaction planning) as usually the aim is to find a solution relative to the original plan (wich makes sense). But as we proceed we can need to have a mechanism of *problem* fixing. This will allow soft solving of any problem regardless of its solvability.
 
-**Plan de l'article**
+One of the application that needs these improvements is plan recognition with the particular use of inverted off-the-shelf planners to infer the pursued goal of an agent where online planning and resilience is particularly important.
+
+These problems call for new ways to improve the answer and behavior of a planner in order to provide relevant plan information pointing out exactly what needs to be done in order to make a planning problem solvable, even in the case of obviously broken input data. We aim to solve this in the present paper while preserving the advantages of PSP algorithms. Our Soft Ordering and Defect Aware Partial Ordering Planning (SODA POP) algorithm will target those issues.
+
+Our new set of auxiliary algorithms allow to make POP algorithm more resilient, efficient and relevant. This is done by premeptively computing proper plans for goals, solving the new types of defects that input plans may provide and by healing compromised plan by extending the initial problem to allow resolution.
+
+To explain this work we will first describe a few notions, notations and specificities of POP existing POP algorithms. Then present and illustrate their limitations, categorising the different defects arising from the resilience problem and explaining our complementary algorithms, their uses and properties. To finish we will compare the performance, resilence and quality of POP and our solution.
 
 # Plan Space Planning Definitions
 <!-- TODO Scénario -->
-In order to present our work and explain examples we will introduce a way of representation for schema and notations for mathematical representation. **citer la figure 1!**
+In order to present our work and explain examples we will introduce a way of representation for schema in the figure @fig:legend and notations for mathematical representation.
 
-![Global legend for how partial plans are represented in the current paper](legend.svg) {#fig:legend}
+![Global legend for how partial plans are represented in the current paper](graphics/legend.svg) {#fig:legend}
 
 ## Fluents
 
@@ -109,11 +115,11 @@ From that point the base algorithm is very similar for any implementation of POP
 This standard way of doing have seen multiple improvement over expressiveness like with UCPOP [@penberthy_ucpop:_1992], hierarchical task network to add more user control over sub-plans [@bechon_hipop:_2014], cognition with defeasible reasoning [@garcia_defeasible_2008], or speed with multiple ways to implement the popular fast forward method from state planning [@coles_forward-chaining_2010]. However, all these variants do not treat the problem of online planning, resilience and soft solving.
 Indeed, these problems can affect POP's performance and quality as they can interfere with POP's inner working.
 
-![A simple problem that will be used throughout this paper](problem.svg) {#fig:problem}
+![A simple problem that will be used throughout this paper](graphics/problem.svg) {#fig:problem}
 
 Before continuing, we present a simple example of classical POP execution with the problem represented in figure @fig:problem. We didn't represented empty preconditions or effects to improve readability. Here we have an initial state $I = \langle \emptyset , \{ 1, 2 \} \rangle$ and a goal $G = \langle \{ 3, 4, -5, 6 \}, \emptyset \rangle$ encoded as dummy steps. We also introduce actions that aren't steps yet but that are provided by $A$. The action $a$, $b$ and  $c$ are normal actions that are useful to achieve the goal. The action $t$ is meant to be threatening to the plan's integrity and will generate threats. The actions $u$, $v$, $w$ and $x$ are toxic actions. We introduce $u$ and $v$ as useless actions, $w$ as a dead-end action and $x$ as a contradictory action.
 
-![Standard POP result to the problem](pop.svg) {#fig:pop}
+![Standard POP result to the problem](graphics/pop.svg) {#fig:pop}
 
 As explained, this problem has been crafted to illustrate problems with standard POP implementations. We give the resulting plan of standard POP in figure @fig:pop. We can see some problems as for how the plan has been built. The action $v$ is being used even if it is useless since $b$ already provided fluent $4$. We can also notice that despite being contradictory the action $x$ raised no alarm. As for ordering constraints we can clearly see that the link $a \to t$ is redundant with the path $a \xrightarrow{5} c \to t$ that already put that constraint by transitivity. Also some problems arise durring execution with the selection of $w$ that causes a dead-end.
 
@@ -124,6 +130,29 @@ All these issues are caused by what we call defects as they aren't regular PSP f
 In order to improve POP algorithms' resilience, online performance and plan quality we propose a set of auxiliary algorithms that provides POP with a clean and efficiently populated initial plan.
 
 ## Proper plan generation
+<!-- TODO Pseudo Algorithme + examples-->
+```{#properplan .java caption="Java code for proper plan generation"}
+public static Plan properPlan(Goal goal, Set<Action> actions) {
+    Plan plan = new Plan();
+    Set<Action> relevants = satisfy(goal, actions, plan);
+    /* The satisfy function iterate throught participating actions and add the causal links */
+    Deque<Action> open = new ArrayDeque<>(relevants);
+    //queue of opened relevant actions
+    while (!open.isEmpty()) {
+        Action action = open.pop();
+        Set<Action> candidates = satisfy(action, actions, plan);
+        /* Searching for candidates that satisfy the selected providing action*/
+        for (Action candidate : candidates) {
+            if (!relevants.contains(candidate)) {
+                /* Only the one not threated already are added to ensure convergence */
+                open.push(candidate);
+            }
+        }
+        relevants.addAll(candidates);
+    }
+    return plan;
+}
+```````
 
 As in online planning goals can be known in advance, we add a new mechanism that generates proper plans for goals. We define for that the concept of participating action. An action $a$ participates in a goal $G$ if and only if $a$ has an effect $f$ that is needed to accomplish $G$ or that is needed to accomplish another participating action's preconditions. A proper plan is a partial plan that contains all participating actions as steps and causal links that bind them with the step they are participating in. This proper plan is independent form an initial step that we might not have at the time of that generation.
 
@@ -134,7 +163,7 @@ This can independently be replaced with a quick forward chaining in other applic
 The aim here is to efficiently populate most of the plan without guarantee about completeness and soundness. This way we can make POP much more efficient as most of the selection is done by the time it starts.
 
 ## Defect resolution {#defects}
-<!-- TODO Algorithme + exemple -->
+<!-- TODO Pseudo Algorithme + examples-->
 
 When the POP algorithm is used to refine a given plan (that wasn't generated with POP or that was altered), a set of new defects can be present in it interfering in the resolution and sometimes making it impossible to solve. To clarify, those aren't regular POP flaws but new problems that classical POP can't solve. The aim of this auxiliary algorithm is to clean the plans from such defects in order to improve computational time, resilience and plan quality. It should be noted that in some cases cleaning plans will increase the number of flaws in the plan but will always improve the overall quality of it. <!--TODO prove that -->
 
@@ -178,50 +207,56 @@ This defect can happen in POP generated plans to some extends. A redundant link 
 #### Competing causal links
 Causal links can be found to compete with one another. This can't happen in POP but won't be fixed by the algorithm. A competing link $a_i \xrightarrow{f} a_k$ competes with another link $a_j \xrightarrow{f} a_k$ if it provides the same fluent to the same action.
 
-We remove the link that has the lower outgoing degree of their source. If they have the same outgoing degree we choose on the higher incoming degree. This ensure that the least useful action get cut from the plan as a useless action. <!-- TODO better formulation + explaining the thing + math -->
+In order to prun the less useful actions we need to remove the less interesting link. In order to elect the best one we compare their respective providing action. We choose the link having the providing action with the lesser outgoing degree in the planning graph. This indicate that the action is participating to more other actions. If both actions have the same outgoing degree then we take remove the action with the most incoming degree. This means that we remove the more needy action.
 
 #### Useless actions
 Actions can sometimes have no use in a plan as they don't contribute to it. It is the case of orphans actions (actions without any links) and in a completed plan actions that are dead ends (action with no outgoing path to the goal). We also consider useless actions that doesn't have effects (except the goal step).
 <!-- FIXME make that an option since Ramirez's method needs this to be off-->
 
 ## Soft Resolution
+<!-- TODO Pseudo Algorithme + examples-->
 
-This auxiliary algorithm is meant to deal with failure. It will heal the plan to make the failure recoverable for the next iteration of POP. Of course it can't fix the plan by keeping the problem as it is. This of course breaks some properties as the algorithm no longer adhere to the specification of the input, but in exchange it will always issue a valid plan whatever happens. For more information on this property go take a look at the  [appropriate section bellow](#hypersoundness).
+This auxiliary algorithm is meant to deal with failure. It will heal the plan to make the failure recoverable for the next iteration of POP. Of course it can't fix the plan by keeping the problem as it is. This obviously breaks some properties as the algorithm no longer adhere to the specification of the input, but in exchange it will always issue a valid plan whatever happens. For more information on this property go take a look at the  [appropriate section bellow](#hypersoundness).
 
 Soft failure is useful when the precision and validity of the output isn't the most important criteria we look for. In some cases (like in recognition processes) it is more useful to have an output even if it is not exact than no output at all. That is why we propose a soft failing mechanism for POP algorithms.
 
-We need to define a few new notions first then we will explain the algorithm.
+We need to define a few new notions first then we will explain the healing algorithm.
 
 ### Needer
-A needer is an action that is needing resolution related to a flaw. The needer of a subgoal is the action that has an unsatisfied precondition and for a threat it is the target of the threatened causal link. <!--TODO formalize -->
+A needer is an action that is needing resolution related to a flaw. The needer depends on the type of the flaw.
+
+#### Subgoal needer
+For a subgoal $a_n \xrightarrow{s} a_s$ the needer is the action $a_n$ that has an unsatisfied precondition in the current partial plan.
+
+#### Threat needer
+The needer of a threat $a_t$ of a link $a_p \xrightarrow{t} a_n$ is the target $a_n$ of the threatened causal link.
 
 ### Proper fluents
-A proper fluent of a flaw is the flew that caused the flaw. For a subgoal it is the unsatisfied precondition and for a threat it is the fluent of the threatened causal link. <!--TODO formalize -->
+A proper fluent of a flaw is the one that caused the flaw. For a subgoal $a_n \xrightarrow{s} a_s$ it is the unsatisfied precondition $s$ and for a threat $a_t$ of a causal link $a_p \xrightarrow{t} a_n$ it is the fluent $t$ held by the threatened causal link.
+
+### Saviour
+The saviour of a flaw is the forged action $a_s = \langle \emptyset, \{p\} \rangle | a_s \notin A$ with $p$ being the proper fluent of the flaw.
 
 ### Healers
-The concept of healer is made to target rogue flaws that caused total failure. A healer is a forged resolver that solve the need for a given flaw. The general formula of a healer is the following :
-$$a_h \xrightarrow{f} a_n$$ <!--TODO healer action ?-->
-with $a_n$ the needer of the flaw and the crafted action $a_f = \langle \emptyset, f \rangle$ with $f$ being the proper fluent of the flaw.
+The concept of healer is made to target rogue flaws that caused total failure. A healer is a resolver that is built around the saviour of the flaw to provide for it. The general formula of a healer is the following :
+$$a_s \xrightarrow{p} a_n$$
+with $a_s$ being the saviour of the flaw.
 
-For threats we need an additional healer specified as $a_t \to a_h$ with $a_t$ being the threatening action.
-
+For threats we need an additional healer specified as an ordering constraint from the threatening action to the saviour $a_t \to a_s$ to ensure that the saviour acts after the threat and therefore provides the proper fluent for the needer.
 
 ### Violation degree
-
+The violation degree $v(p)$ of a plan $p$ is an indicator of the health of a partial plan. It is the sum of the number of flaws and the number of saviours in the plan.
 
 ### Healing process
 
-The method is to keep track of reversions in the algorithm by storing the partial plan and the unsatisfiable flaw each time a non deterministic choice fails. We note the set of these failed plans $F$. As the POP algorithm encounter a final failure this auxiliary algorithm get invoked. The aim is to evaluate each backtracking partial plan to choose the best one.
+The healing method is to keep track of reversions in the algorithm by storing the partial plan and the unsatisfiable flaw each time a non deterministic choice fails. We note the set of these failed plans $F$. As the POP algorithm encounter a final failure this auxiliary algorithm get invoked. The aim is to evaluate each backtracking partial plan to choose the best one.
 
+Therefore we add an order relation for $F$ noted 
+$$\prec : p \prec q \iff v(p) < v(q) | \{p, q\} \subset F$$ <!-- FIXME necessary ? -->
 
+Once the POP algorithm fails completely the soft failing algorithm can be invoked to heal the plan. It choose the best plan $b | \forall p \in F, b \prec p$ to heal it. If two plans have the same violation degree the algorithm choose one arbitrarily <!-- FIXME better if chosen by order of occurence-->.
 
-Once the algorithm fails completely the soft failing algorithm kicks in and choose the best plan. To sort incomplete plans we use the length of the plan and the degree of violation.
-
-The length of a plan is the number of actions in the plan's graph : $\left| P \right| = \left| A_P \right|$ and the violation degree is the number of flaws remaining divided by the number of links in the plan.
-<!--FIXME Check if there is a better more formal indicator and better notation-->
-The quality of a plan is the length of it times the violation degree.<!--FIXME Or is it ? -->
-
-The better plan is then selected to be refined by previous defect resolution method. It is then inputed again in POP algorithm <!-- TODO or is it ? --> and we recursively repeat the steps. This stops when the plan doesn't change between two iterations or if we reached a defined number of iterations. The resulting plan is returned with violation information about it for the caller to handle. 
+The healing process is similar to how POP works : we apply the healer of the flaw that caused the failure of the partial plan we chosen. We empty the set $F$ to allow POP to iterate further since the flaw is resolved. The healing process can be done for each unsolved flaws as POP fails repeatedly. This ensure some interesting properties.
 
 
 # Properties of the algorithms
@@ -240,14 +275,9 @@ The hyper soundness of our combined algorithm is proven using the convergence of
 ## Enhancement for online planning
 
 # Experimental results
-
+<!-- TODO obviously -->
 
 # Conclusion {-}
-
-
-<!-- # Unused sample -->
-<!-- ![Caption](WordCloud.svg) {#fig:description}
-The figure @fig:description is awesome-->
 
 # References
 

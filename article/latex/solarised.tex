@@ -1,0 +1,46 @@
+\usepackage{xcolor, listings}
+
+%\newcommand\definecolor{\expandafter\definecolor\expandafter}
+
+% We now define the sixteen \solarized{} colors.
+\definecolor{solarized-base03} {RGB}{000, 043, 054}
+\definecolor{solarized-base02} {RGB}{007, 054, 066}
+\definecolor{solarized-base01} {RGB}{088, 110, 117}
+\definecolor{solarized-base00} {RGB}{101, 123, 131}
+\definecolor{solarized-base0}  {RGB}{131, 148, 150}
+\definecolor{solarized-base1}  {RGB}{147, 161, 161}
+\definecolor{solarized-base2}  {RGB}{238, 232, 213}
+\definecolor{solarized-base3}  {RGB}{253, 246, 227}
+\definecolor{solarized-yellow} {RGB}{181, 137, 000}
+\definecolor{solarized-orange} {RGB}{203, 075, 022}
+\definecolor{solarized-red}    {RGB}{220, 050, 047}
+\definecolor{solarized-magenta}{RGB}{211, 054, 130}
+\definecolor{solarized-violet} {RGB}{108, 113, 196}
+\definecolor{solarized-blue}   {RGB}{038, 139, 210}
+\definecolor{solarized-cyan}   {RGB}{042, 161, 152}
+\definecolor{solarized-green}  {RGB}{133, 153, 000}
+
+\lstset{
+    basicstyle={\footnotesize\ttfamily},
+    numbers=left,
+    keywordstyle=\color{solarized-orange}\bfseries,
+%    identifierstyle=\color{solarized-base02},
+    stringstyle=\color{solarized-cyan},
+    commentstyle=\color{solarized-base1}\itshape,
+    numberstyle=\tiny\color{solarized-base0},
+    columns=flexible,
+    stepnumber=1,
+    numbersep=5pt,
+    backgroundcolor=\color{solarized-base3},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=true,
+    breakautoindent=true,
+    escapeinside={\%*}{*)},
+    linewidth=\textwidth,
+    basewidth=0.5em,
+}

@@ -1,18 +1,18 @@
-FILTERS=--filter pandoc-svg.py --filter pandoc-fignos --filter pandoc-citeproc
-
-
 SRC= $(wildcard *.md)
 PDF= $(SRC:.md=.pdf)
 
-SVG= $(wildcard *.svg)
-BAD_PDF = $(SVG:.svg=.pdf)
+SVG= $(wildcard graphics/*.svg)
+GENERATED_PDF = $(SVG:.svg=.pdf)
+
+ARGS=--latex-engine=xelatex --listings -H latex/solarised.tex
+FILTERS=--filter filters/pandoc-svg.py --filter pandoc-fignos --filter pandoc-citeproc --filter filters/code-minipage
 
 all:$(PDF)
 
 .PHONY: clean
 
 %.pdf: %.md
-	pandoc $(FILTERS) $< -o $@
+	pandoc $(FILTERS) $(ARGS) $< -o $@
 
-clean: $(BAD_PDF)
-	rm $<
+clean:
+	rm $(GENERATED_PDF)
