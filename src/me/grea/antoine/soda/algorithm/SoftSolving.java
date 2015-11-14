@@ -26,7 +26,7 @@ import static me.grea.antoine.soda.utils.Collections.*;
 public class SoftSolving {
 
     public static void heal(Problem problem) {
-        double minViolation = Double.POSITIVE_INFINITY;
+        double minViolation = Double.POSITIVE_INFINITY; // double for infinity
         DirectedGraph<Action, Edge> best = problem.plan;
         Flaw annoyer = null;
         for (Map.Entry<Flaw, DirectedGraph<Action, Edge>> fail : problem.partialSolutions.entrySet()) {

@@ -80,6 +80,19 @@ public class DefectResolver {
                     action.preconditions.remove(-fluent); //TODO see consequences
                 }
             });
+            
+            if(action.effects.containsAll(action.preconditions) && !action.preconditions.isEmpty()
+                    && action != problem.goal && action != problem.initial)
+            { // BUG in Jgrapht
+                Log.w("Toxic action " + action + " removed !");
+                problem.actions.remove(action);
+                problem.plan.removeVertex(action);
+                continue;
+            }
+            if(action.effects.removeAll(action.preconditions))
+            {
+                Log.w("Action " + action + " has been cleaned !");
+            }
         }
     }
 
@@ -164,18 +177,6 @@ public class DefectResolver {
     private static void beUsefull(Problem problem) {
         HashSet<Action> actions = new HashSet<>(problem.actions);
         for (Action action : actions) {
-            if(action.effects.containsAll(action.preconditions)
-                    && action != problem.goal && action != problem.initial)
-            { // BUG in Jgrapht
-                Log.w("Toxic action " + action + " removed !");
-                problem.actions.remove(action);
-                problem.plan.removeVertex(action);
-                continue;
-            }
-            if(action.effects.removeAll(action.preconditions))
-            {
-                Log.w("Action " + action + " has been cleaned !");
-            }
             if (action.effects.isEmpty()
                     && action != problem.goal && action != problem.initial) { //not providing
                 Log.w("Useless action " + action + " removed !");
