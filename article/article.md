@@ -25,16 +25,19 @@ numbersections: yes
 <!-- The Soft Ordering and Defect Aware Partial Ordering Planning algorithm (SODA POP)
 This name is PERFECT ! -->
 <!--TODO Online planning -->
-For some time Partial Order Planning (POP) has been the most popular approach to planning resolution. The way the search is made using flexible partial plan as a search space allowed for more versatility for a wide variety of uses. As of more recent years, new state space search models and heuristics [@richter_lama_2011] have been demonstrated to be more efficient than POP planners due to the simplicity and relevance of states representation opposed to partial plans [@ghallab_automated_2004]. This have made the search of performance the main axis of research for planning in the community.
 
-While this goal is justified, it shadows other problems that some practical applications causes. For example, for applications needing online planning the flexibility of Plan Space Planning (PSP) is an obvious advantage : plans can be repaired on the fly as new informations and objectives enter the system <!-- FIXME REF ? -->. Some other cognitive applications may provide approximate plans to be refined. These can contain errors and imperfections that will decrease significantly the efficiency of the computation and the quality of the output plan. Others AI applications needs complete plans that details the reasons behind a failure and what are its consequences on the rest of the steps to achieve the provided goal.
 
-These problems call for new ways to improve the answer and behavior of a planner in order to provide relevant plan information pointing out exactly what needs to be done in order to make a planning problem solvable, even in the case of obviously broken input data. We aim to solve this in the present paper while preserving the advantages of PSP algorithms. Our Soft Ordering and Defect Aware Partial Ordering Planning (SODA POP) algorithm will target those issues.
+For some time Partial Order Planning (POP) has been the most popular approach to planning resolution. **POP algorithms are based on least commitment strategy on plan step ordering that can allow actions to be flexibly interleaved during execution [@weild94].** Thus the way the search is made using flexible partial plan as a search space allowed for more versatility for a wide variety of uses. As of more recent years, new state space search models and heuristics [@richter_lama_2011] have been demonstrated to be more efficient than POP planners due to the simplicity and relevance of states representation opposed to partial plans [@ghallab_automated_2004]. This have made the search of performance the main axis of research for planning in the community.
 
+While this goal is justified, it shadows other problems that some practical applications cause. For example, the flexibility of Plan Space Planning (PSP) is an obvious advantage for applications needing online planning: plans can be repaired on the fly as new informations and objectives enter the system **citer (+ une ligne d'explication?) Benton et/ou Krogt et/ou autres ?** <!-- FIXME REF ? -->. Some other cognitive applications may provide approximate plans to be refined **par exemple ?**. These can contain errors and imperfections that will decrease significantly the efficiency of the computation and the quality of the output plan. Others AI applications need complete plans that detail the reasons behind a failure and what are its consequences on the rest of the steps to achieve the provided goal. **Peut être donner en exemple la reco d'intention avec planif inverse ?**
+
+These problems call for new ways to improve the answer and behavior of a planner in order to provide relevant plan information pointing out exactly what needs to be done in order to make a planning problem solvable, even in the case of obviously broken input data. We aim to solve this in the present paper while preserving the advantages of PSP algorithms. Our Soft Ordering and Defect Aware Partial Ordering Planning (SODA POP) algorithm will target those issues. **Détailler en quelques lignes ce que tu proposes dans SODA**
+
+**Plan de l'article**
 
 # Plan Space Planning Definitions
 <!-- TODO Scénario -->
-In order to present our work and explain examples we will introduce a way of representation for schema and notations for mathematical representation.
+In order to present our work and explain examples we will introduce a way of representation for schema and notations for mathematical representation. **citer la figure 1!**
 
 ![Global legend for how partial plans are represented in the current paper](legend.svg) {#fig:legend}
 
@@ -82,7 +85,7 @@ A step $a_t$ is said to threaten a causal link $a_i \xrightarrow{t} a_j$ if and 
 $$\neg t \in eff(a_t) \land a_i \succ a_t \succ a_j \models L$$ 
 Said otherwise, the action has a possible complementary effect that can be inserted between two actions needing this fluent while being consistant with the ordering constraint in $L$.
 
-The usual resolvers are either $a_t \to a_i$ or $a_j \to a_t$ which are called respectively promotion and demotion links. Another resolver is a called a white knight that is an action $a_k$ that reestablish $t$ after $a_t$
+The usual resolvers are either $a_t \to a_i$ or $a_j \to a_t$ which are called respectively promotion and demotion links. Another resolver is called a white knight that is an action $a_k$ that reestablish $t$ after $a_t$.
 
 ## Consistency
 A partial plan is consistent if it contains no ordering cycles. That means that the directed graph formed by step as vertices and causal links as edges isn't cyclical. This is important to guarantee the soundness of the algorithm.
@@ -96,19 +99,19 @@ We call a flat plan valid if and only if it can be functionally applied on an em
 A partial plan which generates only valid flat plans is a solution to the given problem.
 
 # Classical POP
-Partial Order Planning (POP) is a popular implementation of the general PSP algorithm. It is proven to be sound and complete [@erol_umcp:_1994]. The completeness of the algorithm guarantees that if the problem has a solution it will be found by the algorithm and the soundness assures that all answer from the algorithm is valid. POP refines a partial plans by trying to fix its flaws.
+Partial Order Planning (POP) is a popular implementation of the general PSP algorithm. It is proven to be sound and complete [@erol_umcp:_1994]. The completeness of the algorithm guarantees that if the problem has a solution it will be found by the algorithm and the soundness assures that all answer from the algorithm is valid. POP refines a partial plan by trying to fix its flaws.
 
 ## Description
-From that point the base algorithm is very similar for any implementation of POP : Using an agenda of flaws that is efficiently updated after each refinement of the plan. A flaw is selected for resolution and we use a non deterministic choice operator to pick a resolver for the flaw. The resolver in inserted in the plan and we recursively call the algorithm on the new plan. On failure we return to the last non deterministic choice to pick another resolver. The algorithm ends when the agenda is empty or when there is no more resolver to pick for a given flaw.
+From that point the base algorithm is very similar for any implementation of POP : using an agenda of flaws that is efficiently updated after each refinement of the plan. A flaw is selected for resolution and we use a non deterministic choice operator to pick a resolver for the flaw. The resolver is inserted in the plan and we recursively call the algorithm on the new plan. On failure we return to the last non deterministic choice to pick another resolver. The algorithm ends when the agenda is empty or when there is no more resolver to pick for a given flaw.
 
 ## Limitations
 
-This standard way of doing have seen multiple improvement over expressiveness like with UCPOP [@penberthy_ucpop:_1992], hierarchical task network to add more user control over sub-plans [@bechon_hipop:_2014], cognition with defeasible reasoning [@garcia_defeasible_2008], or speed with multiple ways to implement the popular fast forward method from state planning [@coles_forward-chaining_2010]. However, all these variants doesn't treat the problem of online planning, resilience and soft solving.
+This standard way of doing have seen multiple improvement over expressiveness like with UCPOP [@penberthy_ucpop:_1992], hierarchical task network to add more user control over sub-plans [@bechon_hipop:_2014], cognition with defeasible reasoning [@garcia_defeasible_2008], or speed with multiple ways to implement the popular fast forward method from state planning [@coles_forward-chaining_2010]. However, all these variants do not treat the problem of online planning, resilience and soft solving.
 Indeed, these problems can affect POP's performance and quality as they can interfere with POP's inner working.
 
 ![A simple problem that will be used throughout this paper](problem.svg) {#fig:problem}
 
-Before, continuing we present a simple example of classical POP execution with the problem represented in figure @fig:problem. We didn't represented empty preconditions or effects to improve readability. Here we have an initial state $I = \langle \emptyset , \{ 1, 2 \} \rangle$ and a goal $G = \langle \{ 3, 4, -5, 6 \}, \emptyset \rangle$ encoded as dummy steps. We also introduce actions that aren't steps yet but that are provided by $A$. The action $a$, $b$ and  $c$ are normal actions that are useful to achieve the goal. The action $t$ is meant to be threatening to the plan's integrity and will generate threats. The actions $u$, $v$, $w$ and $x$ are toxic actions. We introduce $u$ and $v$ as useless actions, $w$ as a dead-end action and $x$ as a contradictory action.
+Before continuing, we present a simple example of classical POP execution with the problem represented in figure @fig:problem. We didn't represented empty preconditions or effects to improve readability. Here we have an initial state $I = \langle \emptyset , \{ 1, 2 \} \rangle$ and a goal $G = \langle \{ 3, 4, -5, 6 \}, \emptyset \rangle$ encoded as dummy steps. We also introduce actions that aren't steps yet but that are provided by $A$. The action $a$, $b$ and  $c$ are normal actions that are useful to achieve the goal. The action $t$ is meant to be threatening to the plan's integrity and will generate threats. The actions $u$, $v$, $w$ and $x$ are toxic actions. We introduce $u$ and $v$ as useless actions, $w$ as a dead-end action and $x$ as a contradictory action.
 
 ![Standard POP result to the problem](pop.svg) {#fig:pop}
 
