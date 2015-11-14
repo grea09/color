@@ -9,11 +9,10 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.graph.DefaultDirectedGraph;
 import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Goal;
+import me.grea.antoine.soda.type.Plan;
 import static me.grea.antoine.soda.utils.Collections.*;
 
 /**
@@ -22,15 +21,22 @@ import static me.grea.antoine.soda.utils.Collections.*;
  */
 public class ProperPlan {
 
-    public static DirectedGraph<Action, Edge> plan(Goal goal, Set<Action> actions) {
-        DirectedGraph<Action, Edge> plan = new DefaultDirectedGraph<>(Edge.class);
+    public static Plan properPlan(Goal goal, Set<Action> actions) {
+        Plan plan = new Plan();
         Set<Action> relevants = satisfy(goal, actions, plan);
+        /* The satisfy function iterate throught 
+        participating actions and add the causal links */
         Deque<Action> open = new ArrayDeque<>(relevants);
+        //queue of opened relevant actions
         while (!open.isEmpty()) {
             Action action = open.pop();
-            Set<Action> candidates = satisfy(goal, actions, plan);
+            Set<Action> candidates = satisfy(action, actions, plan);
+            /* Searching for candidates that satisfy 
+            the selected providing action*/
             for (Action candidate : candidates) {
                 if (!relevants.contains(candidate)) {
+                    /* Only the one not threated already 
+                    are added to ensure convergence */
                     open.push(candidate);
                 }
             }
@@ -38,9 +44,8 @@ public class ProperPlan {
         }
         return plan;
     }
-    
 
-    private static Set<Action> satisfy(Goal goal, Set<Action> actions, DirectedGraph<Action, Edge> plan) {
+    private static Set<Action> satisfy(Goal goal, Set<Action> actions, Plan plan) {
         Set<Action> relevants = new HashSet<>();
         plan.addVertex((Action) goal);
         for (int precondition : goal.preconditions) {
@@ -48,12 +53,9 @@ public class ProperPlan {
                 if (action.effects.contains(precondition)) {
                     plan.addVertex(action);
                     Edge edge = plan.addEdge(action, (Action) goal);
-                    if (edge != null)
-                    {
+                    if (edge != null) {
                         edge.labels = set(precondition);
-                    }
-                    else
-                    {
+                    } else {
                         plan.getEdge(action, (Action) goal).labels.add(precondition);
                     }
                     relevants.add(action);

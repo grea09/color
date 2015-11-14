@@ -76,7 +76,7 @@ public class SubGoal extends Flaw {
         return new HashSet<>(subgoals.values());
     }
     
-    public static int count(DirectedGraph<Action, Edge> plan, Action goal) {
+    public static int count(Plan plan, Action goal) {
         Set<Integer> subgoals = set();
         Deque<Action> open = queue(goal);
         while (!open.isEmpty()) {

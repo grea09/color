@@ -14,6 +14,7 @@ import me.grea.antoine.soda.exception.Success;
 import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Flaw;
+import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.type.Problem;
 import me.grea.antoine.soda.type.Resolver;
 import me.grea.antoine.soda.type.SubGoal;
@@ -78,7 +79,7 @@ public class PartialOrderPlanning {
                 Log.w("REVERT !");
                 resolver.revert(problem.plan);
             }
-            problem.partialSolutions.put(flaw, (DirectedGraph<Action, Edge>) ((DefaultDirectedGraph<Action, Edge>) problem.plan).clone());
+            problem.partialSolutions.put(flaw,(Plan) problem.plan.clone());
         }
         Log.w("Plan unsolvable !!!");
         throw new Failure(flaw);

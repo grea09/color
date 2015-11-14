@@ -17,6 +17,7 @@ import me.grea.antoine.soda.algorithm.ProperPlan;
 import me.grea.antoine.soda.algorithm.SoftSolving;
 import me.grea.antoine.soda.exception.Failure;
 import me.grea.antoine.soda.exception.Success;
+import me.grea.antoine.soda.type.Plan;
 import org.jgrapht.DirectedGraph;
 import me.grea.antoine.soda.type.Problem;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -46,7 +47,7 @@ public class Main {
                 new Action(set(-7, 8), set(-8, 7)),
                 new Action(set(7, -8), set(8, -7))
         );
-        DirectedGraph<Action, Edge> plan = ProperPlan.plan(goal, actions);
+        Plan plan = ProperPlan.properPlan(goal, actions);
         plan.addVertex(initial);
         plan.addVertex(goal);
 

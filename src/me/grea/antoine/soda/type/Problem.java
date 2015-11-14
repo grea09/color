@@ -19,10 +19,10 @@ public class Problem {
     public Action initial;
     public Action goal;
     public Set<Action> actions; // not including those above
-    public DirectedGraph<Action, Edge> plan;
-    public Map<Flaw, DirectedGraph<Action, Edge>> partialSolutions = new HashMap<>();
+    public Plan plan;
+    public Map<Flaw, Plan> partialSolutions = new HashMap<>();
 
-    public Problem(Action initial, Action goal, Set<Action> actions, DirectedGraph<Action, Edge> plan) {
+    public Problem(Action initial, Action goal, Set<Action> actions, Plan plan) {
         this.initial = initial;
         this.goal = goal;
         this.actions = actions;

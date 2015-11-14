@@ -9,9 +9,6 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
-import me.grea.antoine.log.Log;
-import me.grea.antoine.soda.exception.Failure;
-import me.grea.antoine.soda.utils.DFS;
 import static me.grea.antoine.soda.utils.Collections.*;
 import org.jgrapht.DirectedGraph;
 
@@ -61,7 +58,7 @@ public class Threat extends Flaw {
         return union(healers, set(new Resolver(breaker, healers.iterator().next().source, 0)));
     }
 
-    public static int count(DirectedGraph<Action, Edge> plan) {
+    public static int count(Plan plan) {
         int count = 0;
         for (Action troubleMaker : plan.vertexSet()) {
             for (int effect : troubleMaker.effects) {
@@ -70,7 +67,7 @@ public class Threat extends Flaw {
                         if (fluent == -effect) { //NEVER have a 0 effect
                             Action source = plan.getEdgeSource(oposite);
                             Action target = plan.getEdgeTarget(oposite);
-                            if (!DFS.reachable(plan, troubleMaker, source) && !DFS.reachable(plan, target, troubleMaker)) {
+                            if (!plan.reachable( troubleMaker, source) && !plan.reachable(target, troubleMaker)) {
                                 count++;
                             }
                         }
@@ -89,7 +86,7 @@ public class Threat extends Flaw {
                     if (fluent == -effect) { //NEVER have a 0 effect
                         Action source = problem.plan.getEdgeSource(oposite);
                         Action target = problem.plan.getEdgeTarget(oposite);
-                        if (!DFS.reachable(problem.plan, troubleMaker, source) && !DFS.reachable(problem.plan, target, troubleMaker)) {
+                        if (!problem.plan.reachable(troubleMaker, source) && !problem.plan.reachable(target, troubleMaker)) {
                             related.add(new Threat(troubleMaker, oposite, fluent, problem));
                         }
                     }

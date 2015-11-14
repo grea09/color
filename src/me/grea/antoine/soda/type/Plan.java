@@ -3,35 +3,35 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.grea.antoine.soda.utils;
+package me.grea.antoine.soda.type;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
-import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.DefaultDirectedGraph;
 
 /**
  *
  * @author antoine
  */
-public class DFS {
+public class Plan extends DefaultDirectedGraph<Action, Edge>{
 
-    public static <V, E> boolean reachable(DirectedGraph<V, E> plan, V source, V target) {
-        return kReachable(plan, source, target, 1);
+    public Plan() {
+        super(Edge.class);
     }
     
-    public static <V, E> boolean kReachable(DirectedGraph<V, E> plan, V source, V target, int k) {
+    public boolean kReachable(Action source, Action target, int k) {
         if (source == target) {
             return true;
         }
-        Set<V> visited = new HashSet<>();
-        Deque<V> stack = new ArrayDeque<>();
+        Set<Action> visited = new HashSet<>();
+        Deque<Action> stack = new ArrayDeque<>();
         stack.push(source);
         while (!stack.isEmpty()) {
-            V current = stack.pop();
-            for (E edge : plan.outgoingEdgesOf(current)) {
-                V frontier = plan.getEdgeTarget(edge);
+            Action current = stack.pop();
+            for (Edge edge : outgoingEdgesOf(current)) {
+                Action frontier = getEdgeTarget(edge);
                 if (frontier == target && --k <= 0) {
                     return true;
                 }
@@ -45,4 +45,8 @@ public class DFS {
         return false;
     }
 
+    public boolean reachable(Action source, Action target) {
+        return kReachable(source, target, 1);
+    }
+    
 }

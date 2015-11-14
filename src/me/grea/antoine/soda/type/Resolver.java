@@ -8,9 +8,6 @@ package me.grea.antoine.soda.type;
 import java.util.HashSet;
 import java.util.Set;
 import me.grea.antoine.log.Log;
-import me.grea.antoine.soda.type.Action;
-import me.grea.antoine.soda.type.Edge;
-import me.grea.antoine.soda.utils.DFS;
 import org.jgrapht.DirectedGraph;
 import static me.grea.antoine.soda.utils.Collections.*;
 
@@ -31,7 +28,7 @@ public class Resolver {
         this.fluent = fluent;
     }
 
-    public void apply(DirectedGraph<Action, Edge> plan) {
+    public void apply(Plan plan) {
         plan.addVertex(source);
         plan.addVertex(target);
         edge = plan.addEdge(source, target);
@@ -45,7 +42,7 @@ public class Resolver {
         }
     }
 
-    public void revert(DirectedGraph<Action, Edge> plan) {
+    public void revert(Plan plan) {
         plan.removeEdge(edge);
         if (plan.outDegreeOf(target) == 0) {
             plan.removeVertex(target);
@@ -55,7 +52,7 @@ public class Resolver {
         }
     }
 
-    public boolean duplicate(DirectedGraph<Action, Edge> plan) {
+    public boolean duplicate(Plan plan) {
         return plan.containsEdge(source, target) && plan.getEdge(source, target).labels.contains(fluent);
     }
 

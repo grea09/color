@@ -13,6 +13,7 @@ import org.jgrapht.DirectedGraph;
 import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Goal;
+import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.utils.Collections;
 
 /**
@@ -23,7 +24,7 @@ public class Correlator {
 
     public Map<Set<Goal>, List<Count>> correlation;
 
-    private static int countProperties(DirectedGraph<Action, Edge> plan1) {
+    private static int countProperties(Plan plan1) {
         int count = 0;
         count = plan1.vertexSet().stream().map((action)
                 -> action.preconditions.size() + action.effects.size()
@@ -31,7 +32,7 @@ public class Correlator {
         return count;
     }
 
-    private static Set<Integer> preconditions(DirectedGraph<Action, Edge> plan1) {
+    private static Set<Integer> preconditions(Plan plan1) {
         Set<Integer> properties = new HashSet();
         for (Action action : plan1.vertexSet()) {
             properties.addAll(action.preconditions);
@@ -39,7 +40,7 @@ public class Correlator {
         return properties;
     }
 
-    private static Set<Integer> effects(DirectedGraph<Action, Edge> plan1) {
+    private static Set<Integer> effects(Plan plan1) {
         Set<Integer> properties = new HashSet();
         for (Action action : plan1.vertexSet()) {
             properties.addAll(action.effects);
@@ -78,7 +79,7 @@ public class Correlator {
 
     }
 
-    public double correlation(DirectedGraph<Action, Edge> plan1, DirectedGraph<Action, Edge> plan2) {
+    public double correlation(Plan plan1, Plan plan2) {
         Count total = new Count(countProperties(plan1), plan1.vertexSet().size()).min(
                 new Count(countProperties(plan2), plan2.vertexSet().size()));
         Count common = new Count(
@@ -89,7 +90,7 @@ public class Correlator {
         return total.correlation(common);
     }
     
-    public double ramirez(DirectedGraph<Action, Edge> base, DirectedGraph<Action, Edge> observed) {
+    public double ramirez(Plan base, Plan observed) {
         return base.vertexSet().size() - observed.vertexSet().size();
     }
 

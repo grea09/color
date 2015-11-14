@@ -13,6 +13,7 @@ import me.grea.antoine.soda.Main;
 import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Flaw;
+import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.type.Problem;
 import me.grea.antoine.soda.type.Resolver;
 import me.grea.antoine.soda.type.SubGoal;
@@ -27,9 +28,9 @@ public class SoftSolving {
 
     public static void heal(Problem problem) {
         double minViolation = Double.POSITIVE_INFINITY; // double for infinity
-        DirectedGraph<Action, Edge> best = problem.plan;
+        Plan best = problem.plan;
         Flaw annoyer = null;
-        for (Map.Entry<Flaw, DirectedGraph<Action, Edge>> fail : problem.partialSolutions.entrySet()) {
+        for (Map.Entry<Flaw, Plan> fail : problem.partialSolutions.entrySet()) {
             Log.v("Considering : " + fail);
             double currentViolation = violation(fail.getValue(), problem.goal);
             Log.d("Violation = " +currentViolation);
@@ -47,7 +48,7 @@ public class SoftSolving {
         Log.i("Plan healed !");
     }
 
-    private static long violation(DirectedGraph<Action, Edge> partial, Action goal) {
+    private static long violation(Plan partial, Action goal) {
         return SubGoal.count(partial, goal) + Threat.count(partial) + 
                 (partial.vertexSet().stream().filter((action) -> (action.fake)).count());
     }
