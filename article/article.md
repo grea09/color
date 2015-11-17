@@ -128,6 +128,29 @@ A partial plan is valid if and only if it is consistent and if all the flat plan
 Partial Order Planning (POP) is a popular implementation of the general PSP algorithm. It is proven to be sound and complete [@erol_umcp:_1994]. The completeness of the algorithm guarantees that if the problem has a solution it will be found by the algorithm. The soundness assures that any answer from the algorithm is valid. POP refines a partial plan by trying to fix its flaws.
 
 ## Description
+
+<div id="pop" class="algorithm" caption="Classical Partial Order Planning algorithm">
+\Function{pop}{Queue of Flaws $agenda$, Problem $P$}
+    \State \Call{populate}{$agenda$, $P$} \Comment{Only on first call}
+    \If{$agenda = \emptyset$}
+        \State \Return Success \Comment{Stop all recursion}
+    \EndIf
+    \State Flaw $f\gets agenda.pop$ 
+    \Comment{First element of the queue}
+    \State Resolvers $R \gets$ \Call{resolvers}{$f$, $P$} 
+    \Comment{Ordered list of resolvers to try}
+    \ForAll{$r \in R$} \Comment{Choice operator}
+        \State \Call{apply}{$r$, $P.p$}
+        \If{\Call{consistent}{$P.p$}} 
+            \State \Call{pop}{$agenda \cup$ \protect\Call{relatedFlaws}{$f$}, $P$}
+        \Else 
+            \State \Call{revert}{$r$, $P.p$}
+        \EndIf
+    \EndFor
+    \State \Return Failure \Comment{Return to last choice of resolver}
+\EndFunction
+</div>
+
 From that point the base algorithm is very similar for any implementation of POP : using an agenda of flaws that is efficiently updated after each refinement of the plan. A flaw is selected for resolution and we use a non deterministic choice operator to pick a resolver for the flaw. The resolver is inserted in the plan and we recursively call the algorithm on the new plan. On failure we return to the last non deterministic choice to pick another resolver. The algorithm ends when the agenda is empty or when there is no more resolver to pick for a given flaw. <!-- TODO a voir, mais ca serait peut être intéressant de donner l'algo en pseudo-code, surtout si dans la suite, tu précises à quels endroits tes algo auxiliaires se greffent à l'algo de base ...'-->
 
 ## Limitations
@@ -152,29 +175,24 @@ In order to improve POP algorithms' resilience, online performance and plan qual
 ## Proper plan generation
 <!-- TODO Comme preciser dans ton TODO, il manque ici un example; peut être que cela expliquera mieux, car en l'état ca n'est pas très clair -->
 
-<!-- TODO Pseudo Algorithme + examples-->
-```{#properplan .java caption="Java code for proper plan generation"}
-public static Plan properPlan(Goal goal, Set<Action> actions) {
-    Plan plan = new Plan();
-    Set<Action> relevants = satisfy(goal, actions, plan);
-    /* The satisfy function iterate throught participating actions and add the causal links */
-    Deque<Action> open = new ArrayDeque<>(relevants);
-    //queue of opened relevant actions
-    while (!open.isEmpty()) {
-        Action action = open.pop();
-        Set<Action> candidates = satisfy(action, actions, plan);
-        /* Searching for candidates that satisfy the selected providing action*/
-        for (Action candidate : candidates) {
-            if (!relevants.contains(candidate)) {
-                /* Only the one not threated already are added to ensure convergence */
-                open.push(candidate);
-            }
-        }
-        relevants.addAll(candidates);
-    }
-    return plan;
-}
-```````
+<!-- TODO examples-->
+<div id="properplan" class="algorithm" caption="Proper plan generation algorithm for a given goal $g$">
+\Function{properPlan}{Goal $g$, Actions $A$}
+    \State Partial Plan $p \gets \emptyset$
+    \State Actions $relevants \gets$ \Call{satisfy}{$g$, $A$, $p$}
+    \Comment{Satisfy given goal with all necessary actions and causal links}
+    \State Queue of Actions $open \gets relevants$
+    \While{$open \neq \emptyset$}
+        \State Action $a\gets open.pop$
+        \State Actions $candidates \gets$ \Call{satisfy}{$a$, $A$, $p$}
+        \ForAll{$candidate \in candidates$}
+            \If{$candidate \notin relevants$}
+                \State $open.push(candidate)$
+            \EndIf
+        \EndFor
+    \EndWhile
+\EndFunction
+</div>
 
 As in online planning goals can be known in advance, we add a new mechanism that generates proper plans for goals. <!-- TODO préciser que c'est fait en offline, et que initial step inconnu en offline --> We define for that the concept of *participating action*. An action $a$ participates in a goal $G$ if and only if $a$ has an effect $f$ that is needed to accomplish $G$ or that is needed to accomplish another participating action's preconditions. <!-- TODO  Les participating action sont des actions de l'espace d'action A ? --> A proper plan is a partial plan that contains all participating actions as steps and causal links that bind them with the step they are participating in. This proper plan is independent from the initial step because we might not have the initial step at the time of the proper plan generation. 
 
@@ -188,6 +206,30 @@ The aim here is to efficiently populate most of the plan without guarantee about
 
 ## Defect resolution {#defects}
 <!-- TODO Pseudo Algorithme + examples-->
+<div id="defectresolution" class="algorithm" caption="Defect resolution algorithm">
+\Function{clean}{Problem $P$}
+    \State \Call{illegal}{$P$}
+    \State \Call{interfering}{$P$}
+\EndFunction
+
+\Function{illegal}{Problem $P$}
+    \State \Call{assert}{$pre(P.I) = \emptyset$}
+    \State \Call{assert}{$eff(P.G) = \emptyset$}
+    \State $P.p.A_p \gets P.p.A_p \cup \{P.I, P.G\}$
+    \State \Call{breakCycles}{$P$}
+    \State Actions $actions \gets P.A \cup P.p.A_p$
+    \ForAll{Action $a \in actions$}
+        \State \Call{inconsistent}{$a$, $P$}
+        \State \Call{toxic}{$a$, $P$}
+    \EndFor
+    \State \Call{liarLinks}{$P$}
+\EndFunction
+
+\Function{interfering}{Problem $P$}
+    \State \Call{repeating}{$P$}
+    \State \Call{useless}{$P$}
+\EndFunction
+</div>
 
 When the POP algorithm is used to refine a given plan (that was not generated with POP or that was altered), a set of new defects can be present in it interfering in the resolution and sometimes making it impossible to solve. We emphasize that these defects are not regular POP flaws but new problems that classical POP can't solve. The aim of this auxiliary algorithm is to clean the plans from such defects in order to improve computational time, resilience and plan quality  <!-- TODO préciser ici ou dans section 1 comment est définie la qualité d'un plan -->. It should be noted that in some cases cleaning plans will increase the number of flaws in the plan but will always improve the overall quality of it. <!--TODO prove that --> <!-- TODO Préciser comment/où la résolution de défauts s'ajoute à l'algo POP ... -->
 
@@ -239,8 +281,29 @@ In order to prune the least useful actions <!-- TODO  ? -->, we need to remove t
 Actions can sometimes have no use in a plan as they don't contribute to it. It is the case of orphans actions (actions without any links) and <!-- TODO (proposition de changement de phrase:) of dead end actions in a completed plan (action with no outgoing path to the goal)  -->. We also consider useless actions that have no effects (except the goal step).
 <!-- FIXME make that an option since Ramirez's method needs this to be off-->
 
-## Soft Resolution
+## Soft resolution
 <!-- TODO Pseudo Algorithme + examples-->
+<div id="softresolution" class="algorithm" caption="Soft resolution healing algorithm">
+\Function{heal}{Problem $P$}
+    \State int $minViolation \gets \infty$
+    \State Plan $best \gets P.p$
+    \State Flaw $annoyer$
+    \ForAll{$\langle flaw, plan \rangle \in P.partialSolutions$}
+        \State int $currentViolation \gets$ \Call{violation}{$plan$, $P.G$}
+        \If{$currentViolation < minViolation$}
+            \State $best \gets plan$
+            \State $annoyer \gets flaw$
+            \State $minViolation \gets currentViolation$
+        \EndIf
+    \EndFor
+    \State $P.p \gets best$
+    \State $P.partialSolutions \gets \emptyset$
+    \ForAll{Resolver $resolver \in$ \Call{healers}{$annoyer$}}
+        \State \Call{apply}{$resolver$, $P.p$}
+    \EndFor
+\EndFunction
+</div>
+
 
 This auxiliary algorithm is meant to deal with failure. It will heal the plan to make the failure recoverable for the next iteration of POP. Of course it can't fix the plan by keeping the problem as it is. This obviously breaks some properties as the algorithm no longer adheres to the specification of the input, but in exchange it will always issue a valid plan whatever happens. For more information on this property go take a look at the  [appropriate section bellow](#hypersoundness).
 
@@ -287,7 +350,8 @@ The healing process is similar to how POP works : we apply the healer of the fla
 <!-- TODO Donner pseudo code de l'algo -->
 
 
-# Properties of the algorithms ***SODA POP properties ?*
+# Properties of the algorithms 
+<!-- TODO SODA POP properties ? -->
 After defining the way our algorithms work we will focus on the properties that can be achieved by combining them together.
 <!-- TODO La combinaison de toutes les méthodes proposée donne SODA POP ? Le préciser ici (sinon SODA POP n'apparait que dans l'intro et le titre, il faut dire à un moment ce que c'est ! -->
 
@@ -296,7 +360,8 @@ As to our knowledge no proof of the convergence of POP has been done we want to 
 
 The classic planning problem is already proven to be decidable without functions in the fluents [@ghallab_automated_2004]. Therefore we can categorise the termination cases. In the case of a solvable problem, POP is proven to be complete. This ensures convergence in that case. Now for the more complex case of unsolvable problems we need to refer to the way POP works. POP algorithm will seek to solve flaws. At any time there is a finite number of flaws since the plans have a finite number of steps. As POP resolves these flaws it will either continue until resolution or until failure. The problem is that POP can encounter loops in the dependancies of actions or in threats resolution. These loops can't occur in POP algorithm since a cycle in the ordering constraints instantly causes a failure as the plan isn't consistent anymore. This prooves that POP always converges. <!-- FIXME Moar maths ! -->
 
-## <!-- TODO SODA POP Hyper soundness ? --> Hyper soundness {#hypersoundeness}
+## Hyper soundness {#hypersoundeness}
+<!-- TODO SODA POP Hyper soundness ? -->
 Now that we proved that regular POP converges we can introduce the next property : hyper soundness. An algorithm is said to be hyper sound when it gives a valid solution for all problems including unsolvable ones. We note that this property isn't compatible with consistency regarding the original problem but still does regarding the derived problem that includes all fake actions in $A$. <!-- TODO note mathematically an A' and explain with more details -->
 
 The hyper soundness of our combined algorithm is proven using the convergence of POP and the way the Soft solving behaves. As a POP fails it will issue flawed partial plans. As we fix the flaws artificially we make sure that this failure won't happen again in the next iteration of POP on the fixed plan. As the number of flaws is finite and POP converges, the whole algorithm will converge with all flaws solved therefore issuing a valid plan. <!-- FIXME Moar maths ! -->
@@ -308,22 +373,10 @@ The hyper soundness of our combined algorithm is proven using the convergence of
 
 # Conclusion {-}
 
+<!-- TODO say source code will be available -->
+
 # DRAFT ?????
 
-<div class="definition" name="Flueeents" id="">
-
-</div>
-
-
-<div id="sdsd" class="algorithm" caption="Flueeents">
-\If {$i\geq maxval$}
-\State $i\gets 0$
-\Else
-\If {$i+k\leq maxval$}
-\State $i\gets i+k$
-\EndIf
-\EndIf
-</div>
 
 <div id="sdsd" class="proof">
 Here is my proof:
