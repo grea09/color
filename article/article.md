@@ -11,12 +11,14 @@ abstract: |
   It consists of two paragraphs but that is more than enough for it to be awesome.
   
 bibliography: latex/zotero.bib
-documentclass: latex/ieeeconf
+documentclass: article
 csl: latex/ieee.csl
 smart: yes
 standalone: yes
 numbersections: yes
 latex-engine: xelatex
+section-divs: yes
+markdown_in_html_blocks: yes
 
 ---
 <!-- TODO discuss order of authors-->
@@ -278,6 +280,28 @@ The hyper soundness of our combined algorithm is proven using the convergence of
 <!-- TODO obviously -->
 
 # Conclusion {-}
+
+# DRAFT ?????
+
+<div id="fluents" class="definition" name="Flueeents">
+Spoonnnefezrf
+</div>
+
+
+<div id="sdsd" class="algorithm" caption="Flueeents">
+\If {$i\geq maxval$}
+\State $i\gets 0$
+\Else
+\If {$i+k\leq maxval$}
+\State $i\gets i+k$
+\EndIf
+\EndIf
+</div>
+
+<div id="sdsd" class="proof">
+Here is my proof:
+$$a^2 + b^2 = c^2 \qedhere$$
+</div>
 
 # References
 
