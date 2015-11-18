@@ -6,9 +6,7 @@ author:
     Laetitia MATIGNON
 tags: [nothing, nothingness]
 abstract: |
-  This is the best of all abstracts ever !
-
-  It consists of two paragraphs but that is more than enough for it to be awesome.
+  In cognitive applications the needs of ordering action to reach a goal created the dommain of automated planning. This domain is actually domined by researches arround performance and the advances in state based planning has eclipsed other less efficient ways of doing. Partial Ordering Planning (POP) is one of the most flexible way to order actions and create plan that can be refined easily. This can be used to achieve greater resilience, repairing capabilities and soft resolution that applications like online plan recognision or decision making can benefit from. This calls for new solutions that our set of algorithm named Soft Ordering and Defect Aware Partial Ordering Planning (SODA POP) targets with plan quality in mind. The algorithm seeks a new set of defects in broken input and actions in order to fix them and even to derive the problem in order to always output a valid plan in case the problem is imposible to solve.
   
 bibliography: latex/zotero.bib
 documentclass: article
@@ -16,8 +14,7 @@ csl: latex/ieee.csl
 smart: yes
 standalone: yes
 numbersections: yes
-latex-engine: xelatex
-section-divs: yes
+latex-engine: pdflatex
 markdown_in_html_blocks: yes
 
 ---
@@ -37,7 +34,7 @@ Adding to that, these plans may become totally unsolvable. This problem is to ou
 
 One of the application that needs these improvements is plan recognition with the particular use of off-the-shelf planners to infer the pursued goal of an agent where online planning and resilience is particularly important. <!-- TODO préciser ? -->
 
-These problems call for new ways to improve the answer and behavior of a planner. These improvements must provide relevant plan information pointing out exactly what needs to be done in order to make a planning problem solvable, even in the case of obviously broken input data. We aim to solve this in this paper while preserving the advantages of PSP algorithms (flexibly, easy fixing of plans, soudness and completeness)>. Our Soft Ordering and Defect Aware Partial Ordering Planning (SODA POP) algorithm will target those issues.
+These problems call for new ways to improve the answer and behavior of a planner. These improvements must provide relevant plan information pointing out exactly what needs to be done in order to make a planning problem solvable, even in the case of obviously broken input data. We aim to solve this in this paper while preserving the advantages of PSP algorithms (flexibly, easy fixing of plans, soudness and completeness). Our Soft Ordering and Defect Aware Partial Ordering Planning (SODA POP) algorithm will target those issues.
 
 Our new set of auxiliary algorithms allows to make POP algorithm more resilient, efficient and relevant. This is done by pre-emptively computing proper plans for goals, by solving new kinds of defects that input plans may provide, and by healing compromised plan by extending the initial problem to allow resolution.
 
@@ -198,7 +195,11 @@ In order to improve POP algorithms' resilience, online performance and plan qual
 \EndFunction
 </div>
 
-As in online planning goals can be known in advance, we add a new mechanism that generates proper plans for goals. We take advantage of the fact that this step can be done offline to improve performance for online planning. This offline execution prevents us to access the details of the initial state of the world as it will be defined at runtime. We define for that the concept of *participating action*. An action $a \in A$ participates in a goal $G$ if and only if $a$ has an effect $f$ that is needed to accomplish $G$ or that is needed to accomplish another participating action's preconditions. <!-- Q:Les participating action sont des actions de l'espace d'action A ? A:Oui --> A proper plan is a partial plan that contains all participating actions as steps and causal links that bind them with the step they are participating in. This proper plan is independent from the initial step because we might not have the initial step at the time of the proper plan generation. 
+As in online planning goals can be known in advance, we add a new mechanism that generates proper plans for goals. We take advantage of the fact that this step can be done offline to improve performance for online planning. This offline execution prevents us to access the details of the initial state of the world as it will be defined at runtime. We define for that the concept of *participating action*. An action $a \in A$ participates in a goal $G$ if and only if $a$ has an effect $f$ that is needed to accomplish $G$ or that is needed to accomplish another participating action's preconditions. <!-- Q:Les participating action sont des actions de l'espace d'action A ? A:Oui --> A proper plan is a partial plan that contains all participating actions as steps and causal links that bind them with the step they are participating in. This proper plan is independent from the initial step because we might not have the initial step at the time of the proper plan generation.
+
+On our example it illustrate really well the need for resilience. The algorithm simply recursively chose the actions and end up with the partial plan represented in figure @fig:proper. The partial plan doesn't have an initial state (because of its offline nature). This plan also shows several cycles and obvious problems. Moreover the plan has all the steps of the correct final plan and therefore remove the subgoal search in POP if it uses this plan has input (after it has been cleaned obviously).
+
+![Proper plan of the example goal](graphics/proper.svg) {#fig:proper}
 
 This auxiliary algorithm is therefore used as a caching mechanism for online planning. The algorithm starts to populate the proper plan with a quick and incomplete backward chaining.
 
@@ -287,6 +288,7 @@ In order to prune the least useful actions <!-- FIXME  ? -->, we need to remove 
 <div class="definition" name="Useless actions">
 Actions can sometimes have no use in a plan as they don't contribute to it. It is the case of orphans actions (actions without any links) and <!-- FIXME (proposition de changement de phrase:) of dead end actions in a completed plan (action with no outgoing path to the goal)  -->. We also consider useless actions that have no effects (except the goal step).
 <!-- FIXME make that an option since Ramirez's method needs this to be off-->
+<!-- FIXME recursif -->
 </div>
 
 ## Soft resolution
@@ -373,7 +375,7 @@ After defining the way our algorithms work we will focus on the properties that 
     \State \Call{clean}{$P$}
     \State bool $valid \gets false$
     \While{$\lnot valid$}
-        $valid \gets$ \State \Call{pop}{$P$} $= Success$
+        \State $valid \gets$ \Call{pop}{$P$} $= Success$
         \If{$valid$} \State \Call{clean}{$P$} \State \Return $Success$ \EndIf
         \State \Call{heal}{$P$}
     \EndWhile
