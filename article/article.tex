@@ -9,11 +9,10 @@
 \else % if luatex or xelatex
   \ifxetex
     \usepackage{mathspec}
-    \usepackage{xltxtra,xunicode}
   \else
     \usepackage{fontspec}
   \fi
-  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
   \newcommand{\euro}{€}
 \fi
 % use upquote if available, for straight quotes in verbatim environments
@@ -23,23 +22,13 @@
 \usepackage{microtype}
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
-\ifxetex
-  \usepackage[setpagesize=false, % page size defined by xetex
-              unicode=false, % unicode breaks when used with xetex
-              xetex]{hyperref}
-\else
-  \usepackage[unicode=true]{hyperref}
-\fi
-\usepackage[usenames,dvipsnames]{color}
-\hypersetup{breaklinks=true,
-            bookmarks=true,
-            pdfauthor={Antoine GRÉA Samir AKNINE Laetitia MATIGNON},
+\usepackage{hyperref}
+\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
+\hypersetup{unicode=true,
             pdftitle={SODA POP : Robust online Partial Ordering Planning for real life applications},
-            colorlinks=true,
-            citecolor=blue,
-            urlcolor=blue,
-            linkcolor=magenta,
-            pdfborder={0 0 0}}
+            pdfauthor={Antoine GRÉA Samir AKNINE Laetitia MATIGNON},
+            pdfborder={0 0 0},
+            breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
 \usepackage{listings}
 \usepackage{graphicx,grffile}
@@ -128,10 +117,20 @@ applications}
 \begin{document}
 \maketitle
 \begin{abstract}
-This is the best of all abstracts ever !
-
-It consists of two paragraphs but that is more than enough for it to be
-awesome.
+In cognitive applications the needs of ordering action to reach a goal
+created the dommain of automated planning. This domain is actually
+domined by researches arround performance and the advances in state
+based planning has eclipsed other less efficient ways of doing. Partial
+Ordering Planning (POP) is one of the most flexible way to order actions
+and create plan that can be refined easily. This can be used to achieve
+greater resilience, repairing capabilities and soft resolution that
+applications like online plan recognision or decision making can benefit
+from. This calls for new solutions that our set of algorithm named Soft
+Ordering and Defect Aware Partial Ordering Planning (SODA POP) targets
+with plan quality in mind. The algorithm seeks a new set of defects in
+broken input and actions in order to fix them and even to derive the
+problem in order to always output a valid plan in case the problem is
+imposible to solve.
 \end{abstract}
 
 \section*{Introduction}\label{introduction}
@@ -186,9 +185,9 @@ planner. These improvements must provide relevant plan information
 pointing out exactly what needs to be done in order to make a planning
 problem solvable, even in the case of obviously broken input data. We
 aim to solve this in this paper while preserving the advantages of PSP
-algorithms (flexibly, easy fixing of plans, soudness and
-completeness)\textgreater{}. Our Soft Ordering and Defect Aware Partial
-Ordering Planning (SODA POP) algorithm will target those issues.
+algorithms (flexibly, easy fixing of plans, soudness and completeness).
+Our Soft Ordering and Defect Aware Partial Ordering Planning (SODA POP)
+algorithm will target those issues.
 
 Our new set of auxiliary algorithms allows to make POP algorithm more
 resilient, efficient and relevant. This is done by pre-emptively
@@ -471,7 +470,7 @@ better than a more coherent but complex one.
 All these issues are caused by what we call \emph{defects} as they are
 not regular PSP flaws but they still cause problems with execution and
 results. We will address these defects and propose a way to fix them in
-\hyperref[defects]{the next section}.
+\protect\hyperlink{defects}{the next section}.
 
 \section{Auxiliary algorithms to POP}\label{auxiliary-algorithms-to-pop}
 
@@ -512,11 +511,26 @@ and causal links that bind them with the step they are participating in.
 This proper plan is independent from the initial step because we might
 not have the initial step at the time of the proper plan generation.
 
+On our example it illustrate really well the need for resilience. The
+algorithm simply recursively chose the actions and end up with the
+partial plan represented in figure \ref{fig:proper}. The partial plan
+doesn't have an initial state (because of its offline nature). This plan
+also shows several cycles and obvious problems. Moreover the plan has
+all the steps of the correct final plan and therefore remove the subgoal
+search in POP if it uses this plan has input (after it has been cleaned
+obviously).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics{graphics/proper.pdf}
+\caption{Proper plan of the example goal\label{fig:proper}}
+\end{figure}
+
 This auxiliary algorithm is therefore used as a caching mechanism for
 online planning. The algorithm starts to populate the proper plan with a
 quick and incomplete backward chaining.
 
-\hyperdef{}{defects}{\subsection{Defect resolution}\label{defects}}
+\hypertarget{defects}{\subsection{Defect resolution}\label{defects}}
 
 \begin{algorithm}\caption{Defect resolution algorithm}\label{defectresolution}\begin{algorithmic}
 
@@ -693,8 +707,8 @@ course it can't fix the plan by keeping the problem as it is. This
 obviously breaks some properties as the algorithm no longer adheres to
 the specification of the input, but in exchange it will always issue a
 valid plan whatever happens. For more information on this property go
-take a look at the \hyperref[hypersoundness]{appropriate section
-bellow}.
+take a look at the \protect\hyperlink{hypersoundness}{appropriate
+section bellow}.
 
 Soft failure is useful when the precision and validity of the output is
 not the most important criteria we look for. In some cases (like in
@@ -798,9 +812,9 @@ properties that can be achieved by combining them together.
 
 \Function{soda}{Problem $P$} \State \(P.p \gets\)
 \Call{properPlan}{$P.G$, $P.A$} \State \Call{clean}{$P$} \State bool
-\(valid \gets false\) \While{$\lnot valid$} \(valid \gets\)
-\State \Call{pop}{$P$} \(= Success\) \If{$valid$}
-\State \Call{clean}{$P$} \State \Return \(Success\) \EndIf
+\(valid \gets false\) \While{$\lnot valid$} \State \(valid \gets\)
+\Call{pop}{$P$} \(= Success\) \If{$valid$} \State \Call{clean}{$P$}
+\State \Return \(Success\) \EndIf
         \State \Call{heal}{$P$} \EndWhile
 \EndFunction
 
@@ -853,45 +867,46 @@ planning}\label{enhancement-for-online-planning}
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
 
-\hyperdef{}{ref-weldux5fintroductionux5f1994}{\label{ref-weldux5fintroductionux5f1994}}
+\hypertarget{refs}{}
+\hypertarget{ref-weldux5fintroductionux5f1994}{}
 {[}1{]} D. S. Weld, ``An introduction to least commitment planning,''
 \emph{AI magazine}, vol. 15, no. 4, p. 27, 1994.
 
-\hyperdef{}{ref-richterux5flamaux5f2011}{\label{ref-richterux5flamaux5f2011}}
+\hypertarget{ref-richterux5flamaux5f2011}{}
 {[}2{]} S. Richter, M. Westphal, and M. Helmert, ``LAMA 2008 and 2011,''
 in \emph{International Planning Competition}, 2011, pp. 117--124.
 
-\hyperdef{}{ref-ghallabux5fautomatedux5f2004}{\label{ref-ghallabux5fautomatedux5f2004}}
+\hypertarget{ref-ghallabux5fautomatedux5f2004}{}
 {[}3{]} M. Ghallab, D. S. Nau, and P. Traverso, \emph{Automated
 planning: theory and practice}. Amsterdam ; Boston: Elsevier/Morgan
 Kaufmann, 2004.
 
-\hyperdef{}{ref-vanux5fderux5fkrogtux5fplanux5f2005}{\label{ref-vanux5fderux5fkrogtux5fplanux5f2005}}
+\hypertarget{ref-vanux5fderux5fkrogtux5fplanux5f2005}{}
 {[}4{]} R. Van Der Krogt and M. De Weerdt, ``Plan Repair as an Extension
 of Planning.'' in \emph{ICAPS}, 2005, vol. 5, pp. 161--170.
 
-\hyperdef{}{ref-erolux5fumcp:ux5f1994}{\label{ref-erolux5fumcp:ux5f1994}}
+\hypertarget{ref-erolux5fumcp:ux5f1994}{}
 {[}5{]} K. Erol, J. A. Hendler, and D. S. Nau, ``UMCP: A Sound and
 Complete Procedure for Hierarchical Task-network Planning.'' in
 \emph{AIPS}, 1994, vol. 94, pp. 249--254.
 
-\hyperdef{}{ref-penberthyux5fucpop:ux5f1992}{\label{ref-penberthyux5fucpop:ux5f1992}}
+\hypertarget{ref-penberthyux5fucpop:ux5f1992}{}
 {[}6{]} J. S. Penberthy, D. S. Weld, and others, ``UCPOP: A Sound,
 Complete, Partial Order Planner for ADL.'' \emph{Kr}, vol. 92, pp.
 103--114, 1992.
 
-\hyperdef{}{ref-bechonux5fhipop:ux5f2014}{\label{ref-bechonux5fhipop:ux5f2014}}
+\hypertarget{ref-bechonux5fhipop:ux5f2014}{}
 {[}7{]} P. Bechon, M. Barbier, G. Infantes, C. Lesire, and V. Vidal,
 ``HiPOP: Hierarchical Partial-Order Planning,'' in \emph{STAIRS 2014:
 Proceedings of the 7th European Starting AI Researcher Symposium}, 2014,
 vol. 264, p. 51.
 
-\hyperdef{}{ref-garciaux5fdefeasibleux5f2008}{\label{ref-garciaux5fdefeasibleux5f2008}}
+\hypertarget{ref-garciaux5fdefeasibleux5f2008}{}
 {[}8{]} D. R. García, A. J. García, and G. R. Simari, ``Defeasible
 reasoning and partial order planning,'' in \emph{Foundations of
 Information and Knowledge Systems}, Springer, 2008, pp. 311--328.
 
-\hyperdef{}{ref-colesux5fforward-chainingux5f2010}{\label{ref-colesux5fforward-chainingux5f2010}}
+\hypertarget{ref-colesux5fforward-chainingux5f2010}{}
 {[}9{]} A. J. Coles, A. Coles, M. Fox, and D. Long, ``Forward-Chaining
 Partial-Order Planning.'' in \emph{ICAPS}, 2010, pp. 42--49.
 
