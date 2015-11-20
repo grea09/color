@@ -73,7 +73,7 @@ public class DefectResolver {
         }
     }
 
-    private static void inconsistent(Action action, Problem problem) {
+    public static void inconsistent(Action action, Problem problem) {
 
         Set<Integer> effects = new HashSet<>(action.effects);
         effects.stream().filter((fluent) -> (fluent > 0 && action.effects.contains(-fluent))).forEach((fluent) -> {
@@ -101,13 +101,18 @@ public class DefectResolver {
         preconditions.stream().filter((fluent) -> (fluent > 0 && action.preconditions.contains(-fluent))).forEach((fluent) -> {
             Log.w(action + " is illegal ! Contradiction fixed");
             Set<Integer> linked = set();
-            for (Edge edge : problem.plan.incomingEdgesOf(action)) {
-                linked.addAll(edge.labels);
-            }
-            if (linked.contains(fluent)) {
-                action.preconditions.remove(-fluent);
-            } else if (linked.contains(-fluent)) {
-                action.preconditions.remove(fluent);
+            if (problem.plan.containsVertex(action)) {
+                for (Edge edge : problem.plan.incomingEdgesOf(action)) {
+                    linked.addAll(edge.labels);
+                }
+                if (linked.contains(fluent)) {
+                    action.preconditions.remove(-fluent);
+                } else if (linked.contains(-fluent)) {
+                    action.preconditions.remove(fluent);
+                } else {
+                    action.preconditions.remove(fluent);
+                    action.preconditions.remove(-fluent); //TODO see consequences
+                }
             } else {
                 action.preconditions.remove(fluent);
                 action.preconditions.remove(-fluent); //TODO see consequences
@@ -115,7 +120,7 @@ public class DefectResolver {
         });
     }
 
-    private static void toxic(Action toxic, Problem problem) {
+    public static void toxic(Action toxic, Problem problem) {
         if (toxic.effects.containsAll(toxic.preconditions) && !toxic.preconditions.isEmpty()
                 && toxic != problem.goal && toxic != problem.initial) { // BUG in Jgrapht
             Log.w("Toxic action " + toxic + " removed !");

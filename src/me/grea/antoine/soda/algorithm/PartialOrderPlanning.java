@@ -11,17 +11,13 @@ import java.util.Set;
 import me.grea.antoine.log.Log;
 import me.grea.antoine.soda.exception.Failure;
 import me.grea.antoine.soda.exception.Success;
-import me.grea.antoine.soda.type.Action;
-import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Flaw;
 import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.type.Problem;
 import me.grea.antoine.soda.type.Resolver;
 import me.grea.antoine.soda.type.SubGoal;
 import me.grea.antoine.soda.type.Threat;
-import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.CycleDetector;
-import org.jgrapht.graph.DefaultDirectedGraph;
 
 /**
  *
@@ -82,6 +78,7 @@ public class PartialOrderPlanning {
             problem.partialSolutions.put(flaw,(Plan) problem.plan.clone());
         }
         Log.w("Plan unsolvable !!!");
+        problem.partialSolutions.put(flaw,(Plan) problem.plan.clone());
         throw new Failure(flaw);
     }
 }

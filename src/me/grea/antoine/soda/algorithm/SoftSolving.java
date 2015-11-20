@@ -5,20 +5,15 @@
  */
 package me.grea.antoine.soda.algorithm;
 
-import java.util.HashSet;
 import java.util.Map;
 import me.grea.antoine.log.Log;
-import org.jgrapht.DirectedGraph;
-import me.grea.antoine.soda.Main;
 import me.grea.antoine.soda.type.Action;
-import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Flaw;
 import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.type.Problem;
 import me.grea.antoine.soda.type.Resolver;
 import me.grea.antoine.soda.type.SubGoal;
 import me.grea.antoine.soda.type.Threat;
-import static me.grea.antoine.soda.utils.Collections.*;
 
 /**
  *

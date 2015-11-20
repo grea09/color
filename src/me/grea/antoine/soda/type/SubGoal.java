@@ -55,8 +55,10 @@ public class SubGoal extends Flaw {
     public static Set<SubGoal> find(Problem problem) {
         Map<Integer, SubGoal> subgoals = new HashMap<>();
         Deque<Action> open = queue(problem.goal);
+        Set<Action> closed = set();
         while (!open.isEmpty()) {
             Action current = open.pollLast();
+            closed.add(current);
 //            for (int effect : current.effects) {
 //                subgoals.remove(effect);
 //            }
@@ -72,6 +74,7 @@ public class SubGoal extends Flaw {
                 }
                 open.addFirst(problem.plan.getEdgeSource(edge));
             }
+            open.removeAll(closed);
         }
         return new HashSet<>(subgoals.values());
     }
@@ -79,8 +82,10 @@ public class SubGoal extends Flaw {
     public static int count(Plan plan, Action goal) {
         Set<Integer> subgoals = set();
         Deque<Action> open = queue(goal);
+        Set<Action> closed = set();
         while (!open.isEmpty()) {
             Action current = open.pollLast();
+            closed.add(current);
             for (int precondition : current.preconditions) {
                 subgoals.add(precondition);
             }
@@ -88,6 +93,7 @@ public class SubGoal extends Flaw {
                 subgoals.removeAll(edge.labels);
                 open.addFirst(plan.getEdgeSource(edge));
             }
+            open.removeAll(closed);
         }
         return subgoals.size();
     }

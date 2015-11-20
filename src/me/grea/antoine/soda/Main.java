@@ -14,6 +14,7 @@ import me.grea.antoine.log.Log;
 import me.grea.antoine.soda.algorithm.DefectResolver;
 import me.grea.antoine.soda.algorithm.PartialOrderPlanning;
 import me.grea.antoine.soda.algorithm.ProperPlan;
+import me.grea.antoine.soda.algorithm.Soda;
 import me.grea.antoine.soda.algorithm.SoftSolving;
 import me.grea.antoine.soda.exception.Failure;
 import me.grea.antoine.soda.exception.Success;
@@ -28,6 +29,7 @@ import static me.grea.antoine.soda.utils.Collections.*;
  * @author antoine
  */
 public class Main {
+    
 
     /**
      * @param args the command line arguments
@@ -47,28 +49,13 @@ public class Main {
                 new Action(set(-7, 8), set(-8, 7)),
                 new Action(set(7, -8), set(8, -7))
         );
-        Plan plan = ProperPlan.properPlan(goal, actions);
-        plan.addVertex(initial);
-        plan.addVertex(goal);
 
-        Problem problem = new Problem(initial, goal, actions, plan);
-        DefectResolver.clean(problem);
+        Problem problem = new Problem(initial, goal, actions, new Plan());
+        
 
         System.out.println(problem);
-        PartialOrderPlanning pop = new PartialOrderPlanning(problem);
-
-        while (true) {
-            try {
-                pop.solve();
-            } catch (Success ex) {
-                Log.i(ex);
-                DefectResolver.clean(problem);
-                break;
-            } catch (Failure ex) {
-                Log.e(ex);
-                SoftSolving.heal(problem);
-            }
-        }
+        
+        Soda.solve(problem);
 
         Log.i("Finih !");
         Log.out.println("Solution {\n\t" + problem.planToString() + "}");

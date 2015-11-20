@@ -19,13 +19,13 @@ import jdk.nashorn.internal.runtime.arrays.ArrayLikeIterator;
  * @author http://www.java2s.com/Code/Java/Collections-Data-Structure/Setoperationsunionintersectiondifferencesymmetricdifferenceissubsetissuperset.htm
  */
 public class Collections {
-    public static <T> Set<T> union(Set<T> setA, Set<T> setB) {
+    public static <T> Set<T> union(Set<? extends T> setA, Set<? extends T> setB) {
     Set<T> tmp = new HashSet<>(setA);
     tmp.addAll(setB);
     return tmp;
   }
 
-  public static <T> Set<T> intersection(Set<T> setA, Set<T> setB) {
+  public static <T> Set<T> intersection(Set<? extends T> setA, Set<? extends T> setB) {
     Set<T> tmp = new HashSet<>();
     setA.stream().filter((x) -> (setB.contains(x))).forEach((x) -> {
         tmp.add(x);
@@ -33,13 +33,13 @@ public class Collections {
     return tmp;
   }
 
-  public static <T> Set<T> difference(Set<T> setA, Set<T> setB) {
+  public static <T> Set<T> difference(Set<? extends T> setA, Set<? extends T> setB) {
     Set<T> tmp = new HashSet<>(setA);
     tmp.removeAll(setB);
     return tmp;
   }
 
-  public static <T> Set<T> symDifference(Set<T> setA, Set<T> setB) {
+  public static <T> Set<T> symDifference(Set<? extends T> setA, Set<? extends T> setB) {
     Set<T> tmpA;
     Set<T> tmpB;
 
@@ -48,11 +48,11 @@ public class Collections {
     return difference(tmpA, tmpB);
   }
 
-  public static <T> boolean isSubset(Set<T> setA, Set<T> setB) {
+  public static <T> boolean isSubset(Set<? extends T> setA, Set<? extends T> setB) {
     return setB.containsAll(setA);
   }
 
-  public static <T> boolean isSuperset(Set<T> setA, Set<T> setB) {
+  public static <T> boolean isSuperset(Set<? extends T> setA, Set<? extends T> setB) {
     return setA.containsAll(setB);
   }
   

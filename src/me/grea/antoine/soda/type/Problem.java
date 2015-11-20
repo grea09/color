@@ -6,6 +6,7 @@
 package me.grea.antoine.soda.type;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.jgrapht.DirectedGraph;
@@ -21,12 +22,19 @@ public class Problem {
     public Set<Action> actions; // not including those above
     public Plan plan;
     public Map<Flaw, Plan> partialSolutions = new HashMap<>();
+    
+    public Problem()
+    {
+        this(new Action(), new Action(), new HashSet<>(), new Plan());
+    }
 
     public Problem(Action initial, Action goal, Set<Action> actions, Plan plan) {
         this.initial = initial;
         this.goal = goal;
         this.actions = actions;
         this.plan = plan;
+        plan.addVertex(initial);
+        plan.addVertex(goal);
     }
 
     public Problem(Problem other) {
