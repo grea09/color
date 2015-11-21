@@ -22,21 +22,21 @@ markdown_in_html_blocks: yes
 <!-- The Soft Ordering and Defect Aware Partial Ordering Planning algorithm (SODA POP)
 This name is PERFECT ! -->
 
-For some time Partial Order Planning (POP) has been the most popular approach to planning resolution. This kind of algorithms are based on *least commitment strategy* on plan step ordering that can allow actions to be flexibly interleaved during execution [@weld_introduction_1994]. Thus the way the search is made using flexible partial plan as a search space allowed for more versatility for a wide variety of uses. As of more recent years, new state space search models and heuristics [@richter_lama_2011] have been demonstrated to be more efficient than POP planners due to the simplicity and relevance of states representation opposed to partial plans [@ghallab_automated_2004]. This have made the search of performance the main axis of research for planning in the community <!-- TODO Ref -->.
+For some time Partial Order Planning (POP) has been the most popular approach to planning resolution. This kind of algorithm is based on *least commitment strategy* on plan step ordering that can allow actions to be flexibly interleaved during execution [@weld_introduction_1994]. Thus the way the search is made using flexible partial plan as a search space allowed for more versatility for a wide variety of uses. As of more recent years, new state space search models and heuristics [@richter_lama_2011] have been demonstrated to be more efficient than POP planners due to the simplicity and relevance of states representation opposed to partial plans [@ghallab_automated_2004]. This have made the search of performance the main axis of research for planning in the community <!-- TODO Ref -->.
 
-While this goal is justified, it shadows other problems that some practical applications cause. For example, the flexibility of Plan Space Planning (PSP) is an obvious advantage for applications needing online planning: plans can be repaired on the fly as new informations and objectives enter the system. The idea of using POP for online planning and repairing plans instead of replanning everything is not new [@van_der_krogt_plan_2005], but has never been paired with the resilience that some other cognitive applications may need, especially when dealing with sensors data and noise.
+While this goal is justified, it shadows other problems that some practical applications cause. For example, the flexibility of Plan Space Planning (PSP) is an obvious advantage for applications needing online planning: plans can be repaired on the fly to take into account new information and new objectives. The idea of using POP for online planning and repairing plans instead of replanning everything is not new [@van_der_krogt_plan_2005], but has never been paired with the resilience that some other cognitive applications may need, especially when dealing with sensors data and noise.
 
-This resilience makes fixing errors easier than with an external algorithm as the plan logic allows for context driven decision on the way to repair the issues. For example if an action becomes unrelevant or incoherent the flaw in the partial plan makes the problem to fix explicit and therefore easier to fix. The client softwares might sometimes provide plans that can contain errors and imperfections that will decrease significantly the efficiency of the computation and the quality of the output plan.
+This resilience makes fixing errors easier than with an external algorithm as the plan logic allows for context driven decision on the way to repair the issues. For example if an action becomes unrelevant or incoherent the flaw in the partial plan makes the problem to fix explicit and therefore easier to fix <!-- TODO 2 phrases précédentes pas claire -->. The client softwares might sometimes provide plans that can contain errors and imperfections that will decrease significantly the efficiency of the computation and the quality of the output plan.
 
 Adding to that, these plans may become totally unsolvable. This problem is to our knowledge not treated in planning of all forms (state planning, PSP, and even constraint satisfaction planning) as usually the aim is to find a solution relative to the original plan (which makes sense). But as we proceed a mechanism of *problem* fixing may be required. This will allow soft solving of any problem regardless of its solvability.
 
-One of the application that needs these improvements is plan recognition with the particular use of off-the-shelf planners to infer the pursued goal of an agent where online planning and resilience is particularly important [@ramirez_plan_2009]. This method adds dummy actions that needs to be satisfied as the actions gets observed and a system that is able to repair plan in real time will allow such an application. Another application is decision-making in dynamical environment. Indeed having a plan that details all steps and explicit the ones that are not possible can help decide of the line of action to take.
+One of the application that needs these improvements is plan recognition with the particular use of off-the-shelf planners to infer the pursued goal of an agent where online planning and resilience is particularly important [@ramirez_plan_2009]. This method adds dummy actions that need to be satisfied as the actions gets observed. Such application requires a system able to repair plan in real time. Another one is decision-making in dynamical environment. Indeed having a plan that details all steps and explicits the ones that are not possible can help decide the line of action to take <!-- line of action ? A reformuler-->.
 
 These problems call for new ways to improve the answer and behavior of a planner. These improvements must provide relevant plan information pointing out exactly what needs to be done in order to make a planning problem solvable, even in the case of obviously broken input data. This paper aims to solve this while preserving the advantages of PSP algorithms (flexibility, easy fixing of plans, soudness and completeness). Our Soft Ordering and Defect Aware Partial Ordering Planning (SODA POP) algorithm will target those issues.
 
 Our new set of auxiliary algorithms allows to make POP algorithm more resilient, efficient and relevant. This is done by pre-emptively computing proper plans for goals, by solving new kinds of defects that input plans may provide, and by healing compromised plan by extending the initial problem to allow resolution.
 
-To explain this work we first describe a few notions, notations and specificities of existing POP algorithms. Then we present and illustrate their limitations, categorising the different defects arising from the resilience problem and explaining our complementary algorithms, their uses and properties. To finish we compare the performance, resilence and quality of POP and our solution.
+To explain this work we first describe a few notions, notations and specificities of existing POP algorithms. Then we present and illustrate their limitations, categorising the different defects arising from the resilience problem and explaining our complementary algorithms, their uses and properties. To finish we compare the performance, resilience and quality of our SODA algorithm versus POP.
 
 # Definitions
 <!-- TODO Scénario --> 
@@ -59,14 +59,12 @@ A state is defined as a set of fluents. States can be additively combined. We no
 
 <div class="definition" name="Action">
 An action is a state operator. It is represented as a tuple $a = \langle pre, eff \rangle$ with $pre$ and $eff$ being sets of fluents, respectively the preconditions and the effects of $a$. An action can be used only in a state that verifies its preconditions. We note $s \models a \Leftrightarrow pre(a) \subset s$ the verification of an action $a$ by a state $s$.
+</div>
 
 An action $a$ can be functionally applied to a state $s$ following :
 $$a:= \substack{ \left\{ s \models a \middle| s \in S\right\} \to S\\
     a(s) \mapsto s + eff(a)}$$ 
-with $S$ being the set of all states.
-</div>
-
-There are some special names for actions. An action with no preconditions is synonymous to a state and one with empty effect is called a goal.
+with $S$ being the set of all states. There are some special names for actions. An action with no preconditions is synonymous to a state and one with empty effect is called a goal.
 
 
 
@@ -81,7 +79,7 @@ $P = \langle A, I, G, p \rangle$ with :
 * $A$ the set of all actions.
 
 <div class="definition" name="Partial Plan">
-A *partial plan* is a tuple $p = \langle A_p, L\rangle$ where $A_p$ is a set of steps (actions) and $L$ is a set of causal links of the form $a_i \xrightarrow{f} a_j$, such that $\{ a_i, a_j \} \subset A_p \land f \in eff(a_i) \cap pre(a_j)$ or said otherwise that $f$ is provided by $a_i$ to $a_j$ via this causal link. We include the ordering constraints of PSP in the causal links. An ordering constraint is noted $a_i \to a_j$ and means that the plan consider $a_i$ as a step that is prior to $a_j$ without specific cause (usually because of threat resolution).
+A *partial plan* is a tuple $p = \langle A_p, L\rangle$ where $A_p$ is a set of steps (actions) and $L$ is a set of causal links of the form $a_i \xrightarrow{f} a_j$, such that $\{ a_i, a_j \} \subset A_p \land f \in eff(a_i) \cap pre(a_j)$ or said otherwise that $f$ is provided by $a_i$ to $a_j$ via this causal link. We include the ordering constraints of PSP in the causal links. An ordering constraint is noted $a_i \to a_j$ and means that the plan considers $a_i$ as a step that is prior to $a_j$ without specific cause (usually because of threat resolution).
 </div>
 
 The figure @fig:legend details how the elements of partial plans are represented in the diagrams of this paper.
@@ -107,7 +105,7 @@ In other words, the action has a possible complementary effect that can be inser
 
 ### Resolvers
 
-Resolvers are a set of actions and causal links $r = \langle A_r , L_r \rangle$ that fixes flaws. A resolver for a subgoal is an action $a_r \in A$ that has $s$ as an effect $s \in eff(a_r)$ inserted along with a causal link noted $a_r \xrightarrow{s} a_s$. The usual resolvers for a threat are either $a_t \to a_i$ or $a_j \to a_t$ which are called respectively promotion and demotion links. Another resolver is called a white knight that is an action $a_k$ that reestablish $t$ after $a_t$ along with an ordering constraint $a_t \to a_k$ and a causal link $a_k \xrightarrow{t} a_j$.
+Resolvers are a set of actions and causal links $r = \langle A_r , L_r \rangle$ that fixes flaws. A resolver for a subgoal is an action $a_r \in A$ that has $s$ as an effect $s \in eff(a_r)$ inserted along with a causal link noted $a_r \xrightarrow{s} a_s$. The usual resolvers for a threat are either $a_t \to a_i$ or $a_j \to a_t$ which are called respectively promotion and demotion links. Another resolver is called a white knight that is an action $a_k$ that reestablishes $t$ after $a_t$ along with an ordering constraint $a_t \to a_k$ and a causal link $a_k \xrightarrow{t} a_j$.
 
 ### Solution
 The solution of a PSP problem is a valid partial plan that respect the specification of said problem (only using actions in $A$ and having the correct initial and goal step).
@@ -124,12 +122,14 @@ We call a flat plan valid if and only if it can be functionally applied on an em
 
 
 <div class="definition" name="Validity">
-A partial plan is valid if and only if it is consistent and if all the flat plan that can be generated are valid.
+A partial plan is valid if and only if it is consistent and if all flat plans that can be generated are valid.
 </div>
 
 
 # Classical POP
-Partial Order Planning (POP) is a popular implementation of the general PSP algorithm. It is proven to be sound and complete [@erol_umcp:_1994]. The completeness of the algorithm guarantees that if the problem has a solution it will be found by the algorithm. The soundness assures that any answer from the algorithm is valid. POP refines a partial plan by trying to fix its flaws.
+Partial Order Planning (POP) is a popular implementation of the general PSP algorithm. It refines a partial plan by trying to fix its flaws and is proven to be sound and complete [@erol_umcp:_1994]. 
+
+<!-- J'ai enleve ces definitions connu pour le gain de place ...The completeness of the algorithm guarantees that if the problem has a solution it will be found by the algorithm. The soundness assures that any answer from the algorithm is valid.--> 
 
 ## Description
 
@@ -155,13 +155,14 @@ Partial Order Planning (POP) is a popular implementation of the general PSP algo
 \EndFunction
 </div>
 
-From that point the base algorithm is very similar for any implementation of POP : using an agenda of flaws that is efficiently updated after each refinement of the plan. A flaw is selected for resolution and we use a non deterministic choice operator to pick a resolver for the flaw. The resolver is inserted in the plan and we recursively call the algorithm on the new plan. On failure we return to the last non deterministic choice to pick another resolver. The algorithm ends when the agenda is empty or when there is no more resolver to pick for a given flaw. 
+<!-- From that point the base algorithm is very similar for any implementation of POP--> 
+Algorithm 1 presents the base algorithm for a planer in the plan space. POP implementation uses an agenda of flaws that is efficiently updated after each refinement of the plan. A flaw is selected for resolution and we use a non deterministic choice operator to pick a resolver for the flaw. The resolver is inserted in the plan and we recursively call the algorithm on the new plan. On failure we return to the last non deterministic choice to pick another resolver. The algorithm ends when the agenda is empty or when there is no more resolver to pick for a given flaw. 
 
 ## Limitations
 
 This standard way of doing have seen multiple improvements over expressiveness like with UCPOP [@penberthy_ucpop:_1992], hierarchical task network to add more user control over sub-plans [@bechon_hipop:_2014], cognition with defeasible reasoning [@garcia_defeasible_2008], or speed with multiple ways to implement the popular fast forward method from state planning [@coles_forward-chaining_2010]. However, all these variants do not treat the problem of online planning, resilience and soft solving.
 
-Some other closer works like [@van_der_krogt_plan_2005] treats the problem of online planning by removing big chuncks of the partial plan by identifying incorect trees in the plan. This along with heuristic choise of unrefinemment strategies. This causes an heavy replanning of the problem even if only one action needed removal. This also lead to an exponantial number of plan to consider. This is a big problem when trying to adapt a plan with minimal changes due to replanning.
+Some other closer works like [@van_der_krogt_plan_2005] treats the problem of online planning by removing big chuncks of the partial plan by identifying incorrect trees in the plan. This along with heuristic choice of unrefinement strategies <!--TODO manque un verbe dans cette phrase ?-->. This causes an heavy replanning of the problem even if only one action needs removal. This also leads to an exponential number of plans to consider. This is a big problem when trying to adapt a plan with minimal changes due to replanning.
 
 Indeed, all these problems can affect POP's performance and quality as they can interfere with POP's inner working when the algorithm is able to give an answer at all.
 
@@ -174,13 +175,13 @@ Before continuing, we present a simple example of classical POP execution with t
 
 This example has been crafted to illustrate problems with standard POP implementations. We give a possible resulting plan of standard POP in figure @fig:pop. We can see some issues as for how the plan has been built. The action $v$ is being used even if it is useless since $b$ already provided fluent $4$. We can also notice that despite being contradictory the action $x$ raised no alarm. As for ordering constraints we can clearly see that the link $a \to t$ is redundant with the path $a \xrightarrow{5} c \to t$ that already puts that constraint by transitivity. Also some problems arise during execution with the selection of $w$ that causes a dead-end.
 
-Of course the flaw selection mechanism of certain variant can prevent that to happen in that case. But often flaw selection mechanisms are more speed oriented and will do little if a toxic action seems to fit better than a more coherent but complex one.
+Of course the flaw selection mechanism of certain variant can prevent that to happen in that case. But often flaw selection mechanisms are more speed oriented and will do little if a toxic action seems to fit better than a more coherent but complex one <!-- TODO citer au moins une ref qui utilise un tel mecanisme de selection de menace!-->.
 
 All these issues are caused by what we call *defects* as they are not regular PSP flaws but they still cause problems with execution and results. We will address these defects and propose a way to fix them in [the next section](#defects).
 
 # Auxiliary algorithms to POP
 
-In order to improve POP algorithms' resilience, online performance and plan quality, we propose a set of auxiliary algorithms that provides POP with a clean and efficiently populated initial plan. The complete algorithm will be presented in [the next section](#soda) as a combinaison of all auxiliary algorithms and regular POP.
+In order to improve POP algorithms' resilience, online performance and plan quality, we propose a set of auxiliary algorithms that provides POP with a clean and efficiently populated initial plan. The complete algorithm will be presented in [the next section](#soda) as a combination of all auxiliary algorithms and classical POP.
 
 ## Proper plan generation
 
@@ -202,14 +203,17 @@ In order to improve POP algorithms' resilience, online performance and plan qual
 \EndFunction
 </div>
 
-As in online planning goals can be known in advance, we add a new mechanism that generates proper plans for goals. We take advantage of the fact that this step can be done offline to improve performance for online planning. This offline execution prevents us to access the details of the initial state of the world as it will be defined at runtime. We define for that the concept of *participating action*. An action $a \in A$ participates in a goal $G$ if and only if $a$ has an effect $f$ that is needed to accomplish $G$ or that is needed to accomplish another participating action's preconditions. <!-- Q:Les participating action sont des actions de l'espace d'action A ? A:Oui --> A proper plan is a partial plan that contains all participating actions as steps and causal links that bind them with the step they are participating in. This proper plan is independent from the initial step because we might not have the initial step at the time of the proper plan generation.
+As in online planning goals can be known in advance, we propose a new mechanism that generates proper plans for goals. We take advantage of the fact that this step can be done offline to improve the performance of online planning. Proper plans are independent from initial steps which are undefined at the time of the proper plan generation. The objective is to reduce <!-- TODO reduce plutot que remove (moins fort ?)--> the subgoal search in POP by using a clean proper plan as an input partial plan to POP. It is therefore used as a caching mechanism for online planning.
 
-![Proper plan of the example goal](graphics/proper.svg) {#fig:proper}
+We define the concept of *participating action*. An action $a \in A$ participates in a goal $G$ if and only if $a$ has an effect $f$ that is needed to accomplish $G$ or to accomplish another participating action's preconditions. <!-- Q:Les participating action sont des actions de l'espace d'action A ? A:Oui --> A proper plan is a partial plan that contains all participating actions as steps and causal links that bind them with the step they are participating in. Proper plan generation, detailed in Algorithm 2, recursively chooses participating actions<!--TODO verifier ma phrase et peut être compléter l'explication de l'algo...-->. It starts to populate the proper plan with a quick and incomplete backward chaining.
+    <!--This offline execution prevents us to access the details of the initial state of the world as it will be defined at runtime. -->
 
-On our example it illustrate really well the need for resilience. The algorithm simply recursively chose the actions and end up with the partial plan represented in figure @fig:proper. The partial plan doesn't have an initial state (because of its offline nature). This plan also shows several cycles and obvious problems. Moreover the plan has all the steps of the correct final plan and therefore remove the subgoal search in POP if it uses this plan has input (after it has been cleaned obviously).
+<!--This proper plan is independent from the initial step because we might not have the initial step at the time of the proper plan generation.-->
 
-This auxiliary algorithm is therefore used as a caching mechanism for online planning. The algorithm starts to populate the proper plan with a quick and incomplete backward chaining.
+![Proper plan obtained with the example of figure @fig:problem](graphics/proper.svg) {#fig:proper}
 
+<!--On our example it illustrate really well the need for resilience.--> 
+Once applied on the example of figure @fig:problem, proper plan generation returns the partial plan presented in figure @fig:proper. This partial plan doesn't have initial state because of its offline nature. It also shows several cycles and obvious problems. However it has all the steps of the correct final plan. <!--Proper plan generation removes the subgoal search in POP if a clean proper plan is used as an input plan.  (after it has been cleaned obviously).-->
 
 ## Defect resolution {#defects}
 
