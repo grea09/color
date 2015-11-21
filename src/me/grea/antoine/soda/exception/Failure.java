@@ -5,7 +5,7 @@
  */
 package me.grea.antoine.soda.exception;
 
-import me.grea.antoine.soda.type.Flaw;
+import me.grea.antoine.soda.type.flaw.Flaw;
 
 /**
  *

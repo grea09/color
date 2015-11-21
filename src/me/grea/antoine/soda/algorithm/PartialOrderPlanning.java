@@ -11,12 +11,12 @@ import java.util.Set;
 import me.grea.antoine.log.Log;
 import me.grea.antoine.soda.exception.Failure;
 import me.grea.antoine.soda.exception.Success;
-import me.grea.antoine.soda.type.Flaw;
+import me.grea.antoine.soda.type.flaw.Flaw;
 import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.type.Problem;
-import me.grea.antoine.soda.type.Resolver;
-import me.grea.antoine.soda.type.SubGoal;
-import me.grea.antoine.soda.type.Threat;
+import me.grea.antoine.soda.type.flaw.Resolver;
+import me.grea.antoine.soda.type.flaw.SubGoal;
+import me.grea.antoine.soda.type.flaw.Threat;
 import org.jgrapht.alg.CycleDetector;
 
 /**
@@ -38,47 +38,49 @@ public class PartialOrderPlanning {
         agenda.addAll(Threat.find(problem));
     }
 
-    public void solve() throws Success, Failure {
-        Log.d(agenda);
-        if(agenda.isEmpty())
+    public static void solve(Problem problem) throws Failure {
+        PartialOrderPlanning pop = new PartialOrderPlanning(problem);
+        try {
+            pop.refine();
+        } catch (Success ex) {
+        }
+        //Logically shouldn't go there
+    }
+
+    public void refine() throws Success, Failure {
+        Log.d("Agenda " + agenda);
+        if (agenda.isEmpty()) {
             throw new Success();
+        }
         Flaw flaw = agenda.pop();
         Log.d("Resolving " + flaw);
         Deque<Resolver> resolvers = flaw.resolvers();
         Log.d("Resolver " + resolvers);
-        for(Resolver resolver : resolvers)
-        {
+        for (Resolver resolver : resolvers) {
             Log.d("Trying with " + resolver);
-            
-            if(!resolver.duplicate(problem.plan)) {
+
+            if (!resolver.duplicate(problem.plan)) {
                 resolver.apply(problem.plan);
-            }
-            else
-            {
+            } else {
                 continue;
             }
-            
-            if(!new CycleDetector<>(problem.plan).detectCyclesContainingVertex(resolver.target))
-            {
+
+            if (!new CycleDetector<>(problem.plan).detectCyclesContainingVertex(resolver.target)) {
                 Set<Flaw> related = resolver.related(problem);
-                for(Flaw newFlaw : related)
-                {
-                    if(! agenda.contains(newFlaw))
-                    {
+                for (Flaw newFlaw : related) {
+                    if (!agenda.contains(newFlaw)) {
                         agenda.addLast(newFlaw);
                     }
                 }
-                solve();
-            }
-            else
-            {
+                refine();
+            } else {
                 Log.w("REVERT !");
                 resolver.revert(problem.plan);
             }
-            problem.partialSolutions.put(flaw,(Plan) problem.plan.clone());
+            problem.partialSolutions.put(flaw, (Plan) problem.plan.clone());
         }
         Log.w("Plan unsolvable !!!");
-        problem.partialSolutions.put(flaw,(Plan) problem.plan.clone());
+        problem.partialSolutions.put(flaw, (Plan) problem.plan.clone());
         throw new Failure(flaw);
     }
 }

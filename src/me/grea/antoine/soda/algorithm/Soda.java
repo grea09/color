@@ -24,9 +24,8 @@ public class Soda {
         PartialOrderPlanning pop = new PartialOrderPlanning(problem);
         while (true) {
             try {
-                pop.solve();
+                pop.refine();
             } catch (Success ex) {
-                Log.i(ex);
                 DefectResolver.clean(problem);
                 break;
             } catch (Failure ex) {

@@ -12,12 +12,12 @@ import me.grea.antoine.log.Log;
 import me.grea.antoine.soda.exception.Failure;
 import me.grea.antoine.soda.exception.Success;
 import me.grea.antoine.soda.type.Action;
-import me.grea.antoine.soda.type.Flaw;
+import me.grea.antoine.soda.type.flaw.Flaw;
 import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.type.Problem;
-import me.grea.antoine.soda.type.Resolver;
-import me.grea.antoine.soda.type.SubGoal;
-import me.grea.antoine.soda.type.Threat;
+import me.grea.antoine.soda.type.flaw.Resolver;
+import me.grea.antoine.soda.type.flaw.SubGoal;
+import me.grea.antoine.soda.type.flaw.Threat;
 import org.jgrapht.alg.CycleDetector;
 import static me.grea.antoine.soda.utils.Collections.*;
 

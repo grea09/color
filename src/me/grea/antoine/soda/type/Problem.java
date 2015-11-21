@@ -5,6 +5,7 @@
  */
 package me.grea.antoine.soda.type;
 
+import me.grea.antoine.soda.type.flaw.Flaw;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

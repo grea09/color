@@ -3,14 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.grea.antoine.soda.type;
+package me.grea.antoine.soda.type.flaw;
 
+import me.grea.antoine.soda.type.flaw.Resolver;
 import java.util.Deque;
 import java.util.Objects;
 import java.util.Set;
 import me.grea.antoine.log.Log;
 import me.grea.antoine.soda.algorithm.PartialOrderPlanning;
 import me.grea.antoine.soda.type.Action;
+import me.grea.antoine.soda.type.Action;
+import me.grea.antoine.soda.type.Problem;
 import me.grea.antoine.soda.type.Problem;
 import static me.grea.antoine.soda.utils.Collections.set;
 

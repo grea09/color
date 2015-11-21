@@ -21,19 +21,12 @@ import me.grea.antoine.soda.type.Problem;
  */
 public class Test {
     
-    public static void main(String[] args)
+    public static void main(String[] args) throws Failure
     {
-        Set<Problem> problems = ValidProblemGenerator.generate(10, 20);
+        Set<Problem> problems = ValidProblemGenerator.generate(100, 20);
         for(Problem problem : problems)
         {
-            PartialOrderPlanning pop = new PartialOrderPlanning(problem);
-            try {
-                pop.solve();
-            } catch (Success ex) {
-                Log.i(ex);
-            } catch (Failure ex) {
-                Log.f(ex);
-            }
+            PartialOrderPlanning.solve(problem);
         }
     }
     

@@ -3,12 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package me.grea.antoine.soda.type;
+package me.grea.antoine.soda.type.flaw;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
+import me.grea.antoine.soda.type.Action;
+import me.grea.antoine.soda.type.Edge;
+import me.grea.antoine.soda.type.Plan;
+import me.grea.antoine.soda.type.Problem;
 import static me.grea.antoine.soda.utils.Collections.*;
 import org.jgrapht.DirectedGraph;
 

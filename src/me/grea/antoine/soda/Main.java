@@ -5,23 +5,14 @@
  */
 package me.grea.antoine.soda;
 
-import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Action;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 import me.grea.antoine.log.Log;
-import me.grea.antoine.soda.algorithm.DefectResolver;
-import me.grea.antoine.soda.algorithm.PartialOrderPlanning;
 import me.grea.antoine.soda.algorithm.ProperPlan;
 import me.grea.antoine.soda.algorithm.Soda;
-import me.grea.antoine.soda.algorithm.SoftSolving;
-import me.grea.antoine.soda.exception.Failure;
-import me.grea.antoine.soda.exception.Success;
 import me.grea.antoine.soda.type.Plan;
-import org.jgrapht.DirectedGraph;
 import me.grea.antoine.soda.type.Problem;
-import org.jgrapht.graph.DefaultDirectedGraph;
+import me.grea.antoine.soda.type.defect.CompetingAction;
 import static me.grea.antoine.soda.utils.Collections.*;
 
 /**
