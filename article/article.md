@@ -161,13 +161,13 @@ From that point the base algorithm is very similar for any implementation of POP
 
 This standard way of doing have seen multiple improvements over expressiveness like with UCPOP [@penberthy_ucpop:_1992], hierarchical task network to add more user control over sub-plans [@bechon_hipop:_2014], cognition with defeasible reasoning [@garcia_defeasible_2008], or speed with multiple ways to implement the popular fast forward method from state planning [@coles_forward-chaining_2010]. However, all these variants do not treat the problem of online planning, resilience and soft solving.
 
-Some other closer works like [@van_der_krogt_plan_2005] treats the problem of online planning by removing big chuncks of the partial plan by identifying incorect trees in the plan. This causes an heavy replanning of the problem even if only one action needed removal. This is a big problem when trying to adapt a plan with minimal changes due to replanning.
+Some other closer works like [@van_der_krogt_plan_2005] treats the problem of online planning by removing big chuncks of the partial plan by identifying incorect trees in the plan. This along with heuristic choise of unrefinemment strategies. This causes an heavy replanning of the problem even if only one action needed removal. This also lead to an exponantial number of plan to consider. This is a big problem when trying to adapt a plan with minimal changes due to replanning.
 
 Indeed, all these problems can affect POP's performance and quality as they can interfere with POP's inner working when the algorithm is able to give an answer at all.
 
 ![A simple problem that will be used throughout this paper](graphics/problem.svg) {#fig:problem}
 
-Before continuing, we present a simple example of classical POP execution with the problem represented in figure @fig:problem. We did not represent empty preconditions or effects to improve readability. Here we have an initial state $I = \langle \emptyset , \{ 1, 2 \} \rangle$ and a goal $G = \langle \{ 3, 4, -5, 6 \}, \emptyset \rangle$ encoded as dummy steps. We also introduce actions that are not steps yet but that are provided by $A$. The actions $a$, $b$ and  $c$ are normal actions that are useful to achieve the goal. The action $t$ is meant to be threatening to the plan's integrity and will generate threats. We introduce $u$ as a useless action, $v$ as a toxic action, $w$ as a dead-end action and $x$ as a contradictory action. These notions will be defined [later](#defects).
+Before continuing, we present a simple example of classical POP execution with the problem represented in figure @fig:problem. We did not represent empty preconditions or effects to improve readability. Here we have an initial state $I = \langle \emptyset , \{ 1, 2 \} \rangle$ and a goal $G = \langle \{ 3, 4, -5, 6 \}, \emptyset \rangle$ encoded as dummy steps. We also introduce actions that are not steps yet but that are provided by $A$. The actions $a$, $b$ and  $c$ are normal actions that are useful to achieve the goal. The action $t$ is meant to be threatening to the plan's integrity and will generate threats. We introduce $u$ and $v$ as a toxic actions, $w$ as a dead-end action and $x$ as a contradictory action. These notions will be defined [later](#defects).
 
 
 ![Standard POP result to the problem](graphics/pop.svg) {#fig:pop}
@@ -215,26 +215,21 @@ This auxiliary algorithm is therefore used as a caching mechanism for online pla
 
 <div id="defectresolution" class="algorithm" caption="Defect resolution algorithm">
 \Function{clean}{Problem $P$}
-    \State \Call{illegal}{$P$}
-    \State \Call{interfering}{$P$}
-\EndFunction
-
-\Function{illegal}{Problem $P$}
     \State \Call{assert}{$pre(P.I) = \emptyset$}
     \State \Call{assert}{$eff(P.G) = \emptyset$}
     \State $P.p.A_p \gets P.p.A_p \cup \{P.I, P.G\}$
-    \State \Call{breakCycles}{$P$}
-    \State Actions $actions \gets P.A \cup P.p.A_p$
-    \ForAll{Action $a \in actions$}
-        \State \Call{inconsistent}{$a$, $P$}
-        \State \Call{toxic}{$a$, $P$}
-    \EndFor
-    \State \Call{liarLinks}{$P$}
+    \State $defects \gets$ \Call{findDefects}{$P$}
+    \State \Call{fix}{$defects$, $P$}
 \EndFunction
 
-\Function{interfering}{Problem $P$}
-    \State \Call{repeating}{$P$}
-    \State \Call{useless}{$P$}
+\Function{fix}{Defects $defects$, Problem $P$}
+    \ForAll{Defect $d \in defects$}
+        \State $defect.$\Call{fix}{} \Comment{Fixing is proper to the defect}
+    \EndFor
+\EndFunction
+
+\Function{findDefects}{Problem $P$}
+    \State \Return \Call{illegal}{$P$} $+$ \Call{interfering}{$P$}
 \EndFunction
 </div>
 
@@ -253,20 +248,20 @@ These defects are usually hypothesized out by regular models. They are illegal u
 <div class="definition" name="Cycles">
 A plan cannot contain cycles as it makes it impossible to complete. Cycles are usually detected as they are inserted in a plan but poor input can potentially contains them and breaks the POP algorithm as it cannot undo cycles.
 </div>
-We use a popular and simple Depth First Search (DFS) algorithm to detect cycles. Upon cycle detection the algorithm can remove arbitrarily a link in the cycle to break it. The most effective solution is to remove the link that is the farthest from the goal travelling backward as it would be that link that would have been last added in the regular POP algorithm.
-<!--TODO prove that and also code that-->
+We use strongly connected component detection algorithm to detect cycles. Upon cycle detection the algorithm can remove arbitrarily a link in the cycle to break it. The most effective solution is to remove the link that is the farthest from the goal travelling backward as it would be that link that would have been last added in the regular POP algorithm. But finding this is extremely time consuming and most of the time the cycles are of one or two actions so we choose to keep that algorithm simpler and faster.
+<!--FIXME prove that and also code that-->
 
 <div class="definition" name="Inconsistent actions">
 In a plan some actions can be illegal for POP. Those are the actions that are contradictory. An action $a$ is contradictory if and only if 
-$$\{f, \lnot f \} \in eff(a) \lor \{f, \lnot f \} \in pre(a)$$
+$$\exists f \{f, \lnot f \} \in eff(a) \lor \{f, \lnot f \} \in pre(a)$$
 </div>
 We remove only one of those effect or preconditions based on the usage of the action in the rest of the plan. If none of those are used we choose to remove both. In our example in figure @fig:problem the action $x$ is one of these inconsistent actions with fluent $2$ and $-2$ in its effects.
 
 <div class="definition" name="Toxic actions">
-These actions are those that have effects that are already in their preconditions. This can damage a plan as well as make the execution of POP algorithm much longer than necessary. They are defined as :
-$$a | pre(a) \cap eff(a) \neq \emptyset$$
+These actions are those that have effects that are already in their preconditions or empty effects. This can damage a plan as well as make the execution of POP algorithm much longer than necessary. They are defined as :
+$$a | pre(a) \cap eff(a) \neq \emptyset \lor eff(a) = \emptyset$$
 </div>
-This is fixed of one of two ways : if the action has only some of its fluent toxic ($pre(a) \nsubseteq eff(a)$) then the toxic fluents are removed following $eff(a) = eff(a)-pre(a)$, otherwise the action is removed alltogether from plan and $A$. For example in figure @fig:problem the action $v$ is a toxic action as the fluent $4$ is in the effects and preconditions. In this case the action $v$ will be removed by the algorithm as it doesn't have any other fluents.
+This is fixed by removing the toxic fluents ($pre(a) \nsubseteq eff(a)$) following $eff(a) = eff(a)-pre(a)$. If the effects gets empty the action is removed alltogether from plan and $A$. For example in figure @fig:problem the actions $u$ and $v$ are a toxic action as the fluent $4$ is in the effects and preconditions of $v$. In this case these actions will be removed by the algorithm as it doesn't have any other effects.
 
 <div class="definition" name="Liar links">
 The defects can be related to incorrect links. The first of which are liar links : a link that doesn't reflect the preconditions or effect of its source and target. We can note 
@@ -274,7 +269,7 @@ $$a_i \xrightarrow{f} a_j | f \notin eff(a_i) \cap pre(a_j)$$
 </div>
 A liar link can be either already present in the data or created by the removal of an effect of an inconsistent or toxic action (with the causal link still remaining).
 
-To resolve the problem we either replace $f$ with a saviour, i.e. a fluent in $eff(a_i) \cap pre(a_j)$ that isn't already provided, or we delete the link all together.
+We call lies fluents that participates in the lies. To resolve the problem we remove $f$ and add all saviour fluents, i.e. a fluent in $eff(a_i) \cap pre(a_j)$ that isn't already provided. We delete the link all together if it doesn't link any fluents.
 
 ### Interference defects
 This kind of defects is not as toxic as the illegal ones: they won't make the plan unsolvable but they can still cause performance drops in POP execution. These can appear more often in regular POP results as they are not targeted by standard implementations.
@@ -291,16 +286,51 @@ This cannot happen in classical POP algorithm so it is not handled by it. The mu
 
 ![Example of choice for cutting competing links based on usefulness of actions](graphics/competing.svg) {#fig:competing} <!-- FIXME Use Aller bold for fluent-->
 
-In order to prune the least useful actions, we need to remove the least interesting link. In order to elect the best one, we compare their respective providing action. We choose the link having the providing action with the smaller outgoing degree in the planning graph. This indicates that the action is participating to more other actions. If both actions have the same outgoing degree then we remove the action with the most incoming degree. This means that we remove the more needy action.
+In order to prune the least useful actions, we need to remove the least interesting link. In order to elect the best one, we compare their respective providing action. 
+<div class="definition" name="Usefullness of an action">
+The usefullness of an action is the number of participating links (outgoing causal links) divided by the number of needing links (incoming causal links). If there are no needing links, or the action is either an initial step or a goal the usefulness is $+\infty$. The usefulness of saviour action is $0$.
+</div>
+
+We choose the link with the source action having the highest usefulness. This makes replacing unecessary saviour actions and allows to therefore reduce the usefulness of the least action in the hope it will become orphan and pruned from the plan.
 
 In the example figure @fig:competing the action $a_j$ on the left participates much more than the action $a_i$ and therefore the link to be removed would be $a_i \xrightarrow{f} a_k$. On the right example the actions doesn't have different outgoing links but the action $a_j$ is here much needier than its competitor and therefore the link to be removed is the link $a_j \xrightarrow{f} a_k$.
 
-
-<div class="definition" name="Useless actions">
-Actions can sometimes have no use in a plan as they don't contribute to it. It is the case of orphans actions (actions without any links) and action with no outgoing path to the goal (meaning that it doesn't participates in the plan). We also consider useless actions that have no effects (except the goal step).
-<!-- FIXME recursif -->
-<!-- FIXME ONLINE how to remove the fake actions ???? -->
+<div class="definition" name="Orphan actions">
+Actions can sometimes have no use in a plan as they don't contribute to it. It is the case of orphans actions (actions without any links) and action with no outgoing path to the goal (meaning that it doesn't participates in the plan). That also concerns action that would become orphan if another orphan action is removed.
 </div>
+
+In order to fix this we derive the idea of the backward removal tree of [@van_der_krogt_plan_2005]. The idea is to remove an action if all its outgoing causal links are leading to useless actions. We iterate over all actions until no new useless action is discovered. All useless actions are then removed from the plan.
+
+<div id="orphanaction_find" class="algorithm" caption="Orphan actions finding algorithm">
+\Function{$OrphanAction.$find}{Problem $P$}
+    \State Actions $orphan \gets \emptyset$
+    \State int $oldSize$
+    \Repeat
+        \State $oldSize \gets \#orphan$
+        \ForAll{Action $step \in P.p.A_p$}
+            \If{$step \in orphan$}
+                \State continue
+            \EndIf
+            \State int $towardOrphan \gets 0$
+            \State Causal Links $outgoing \gets$ \protect\Call{outgoingEdgesOf}{$step$, $P.p$}
+            \ForAll{Causal Link $link \in outgoing$}
+                \If{$link.target \in orphan$}
+                    \State $towardOrphan ++$
+                \EndIf
+            \EndFor
+            \If{$\#outgoing = towardOrphan \land step \notin \{ P.I, P.G\}$}
+                \State $orphan \gets orphan \cup \{step\}$
+            \EndIf
+        \EndFor
+    \Until{$oldSize \neq \#orphan$}
+    \State \Return $orphan$
+\EndFunction
+</div>
+
+<div class="definition" name="Competing actions">
+In the same way links can be competing toward a common needer, there are sometimes in the plan actions that are more suited to achieve a goal. These actions are taken into account if they are more useful than the source of the link, if they wouldn't cause a cycle and if they have effects that are carried by the link.
+</div>
+In such a case the link is removed and another one is formed by the better suited action.
 
 ## Soft resolution
 <!-- TODO examples-->
@@ -437,9 +467,9 @@ SODA POP algorithms can be used in dynamic online environments to allow a robust
 
 For the first execution of the online planning the initial state is added to the problem and the defect detection is applied with the rest of the SODA POP algorithms. This will give the first plan. 
 
-On change of environment the previous plan is modified accordingly and then fed to the defect detection and SODA algorithm again. This must be done each time the plan is modified in order to actualise the plan. <!-- FIXME The online part won't remove actions that aren't needed anymore ... -->
+On change of environment the previous plan is modified accordingly and then fed to the defect detection and SODA algorithm again. This must be done each time the plan is modified in order to actualise the plan. The new plan will have all defects fixed. For example a saviour action can be removed if the initial step or a new action becomes competing with it and actions with liar link to a removed fluent in the goal will become probably an orphan.
 
-In practice this will generate little to no iteration of the algorithm. <!-- The main problem here is that some actions may remain in the plan even if they are obsolete from the initial step !!!  -->
+In practice this will generate little to no iteration of the algorithm.
 
 
 # Experimental results
@@ -450,4 +480,3 @@ In practice this will generate little to no iteration of the algorithm. <!-- The
 <!-- TODO say source code will be available -->
 
 # References
-

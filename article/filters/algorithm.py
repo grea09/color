@@ -36,7 +36,7 @@ def algorithms(key, value, format, meta):
                     caption = '\\caption{' + value + '}'
                 else:
                     caption = ""
-                return([latex('\\begin{algorithm}' + caption + label + '\\begin{algorithmic}')] + contents +
+                return([latex('\\begin{algorithm}' + caption + label + '\\begin{algorithmic}[1]')] + contents +
                        [latex('\\end{algorithmic}\\end{algorithm}')])
             elif format == "html" or format == "html5":
                 global theoremcount
