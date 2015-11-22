@@ -5,12 +5,17 @@
  */
 package me.grea.antoine.soda.test;
 
+import me.grea.antoine.soda.test.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import me.grea.antoine.soda.algorithm.OldDefectResolver;
 import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Problem;
+import me.grea.antoine.soda.type.flaw.Flaw;
+import static me.grea.antoine.soda.utils.Collections.*;
+import static java.lang.Math.*;
+import me.grea.antoine.log.Log;
 
 /**
  *
@@ -27,8 +32,9 @@ public class ValidActionGenerator {
     }
 
     public static Action generate(int enthropy) {
-        Action action = new Action(Dice.rollNonZero(-enthropy, enthropy, Dice.roll((int) (Math.log10(enthropy) + 1))),
-                Dice.rollNonZero(-enthropy, enthropy, Dice.roll((int) (Math.log10(enthropy) + 1))));
+        Action action = new Action(Dice.rollNonZero(-enthropy, enthropy, Dice.roll((int) round(log10(enthropy) + 1))),
+                Dice.rollNonZero(-enthropy, enthropy, Dice.roll((int) round(log10(enthropy) + 1))));
+        clean(action);
         return action;
     }
 
@@ -39,8 +45,8 @@ public class ValidActionGenerator {
         return action;
     }
 
-    private static void clean(Action action) {
-        action.effects.removeAll(action.preconditions);
+    public static void clean(Action action) {
+        action.preconditions.removeAll(action.effects);
         Set<Integer> dirty = new HashSet<>(action.effects);
         Set<Integer> cleaned = new HashSet<>();
         for (int effect : dirty) {

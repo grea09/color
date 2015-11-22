@@ -15,15 +15,19 @@ import org.jgrapht.graph.DefaultDirectedGraph;
  *
  * @author antoine
  */
-public class Plan extends DefaultDirectedGraph<Action, Edge>{
+public class Plan extends DefaultDirectedGraph<Action, Edge> {
 
     public Plan() {
         super(Edge.class);
     }
-    
-    public boolean kReachable(Action source, Action target, int k) {
+
+    public boolean reachable(Action source, Action target, int k, Set<Edge> forbiden) {
         if (source == target) {
             return true;
+        }
+        if(forbiden == null)
+        {
+            forbiden = new HashSet<>();
         }
         Set<Action> visited = new HashSet<>();
         Deque<Action> stack = new ArrayDeque<>();
@@ -31,6 +35,9 @@ public class Plan extends DefaultDirectedGraph<Action, Edge>{
         while (!stack.isEmpty()) {
             Action current = stack.pop();
             for (Edge edge : outgoingEdgesOf(current)) {
+                if (forbiden.contains(edge)) {
+                    continue;
+                }
                 Action frontier = getEdgeTarget(edge);
                 if (frontier == target && --k <= 0) {
                     return true;
@@ -45,8 +52,16 @@ public class Plan extends DefaultDirectedGraph<Action, Edge>{
         return false;
     }
 
-    public boolean reachable(Action source, Action target) {
-        return kReachable(source, target, 1);
+    public boolean reachable(Action source, Action target, int k) {
+        return reachable(source, target, k, null);
     }
     
+    public boolean reachable(Action source, Action target, Set<Edge> forbiden) {
+        return reachable(source, target, 1, forbiden);
+    }
+    
+    public boolean reachable(Action source, Action target) {
+        return reachable(source, target, 1, null);
+    }
+
 }

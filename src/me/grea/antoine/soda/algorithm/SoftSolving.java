@@ -5,15 +5,12 @@
  */
 package me.grea.antoine.soda.algorithm;
 
-import java.util.Map;
 import me.grea.antoine.log.Log;
-import me.grea.antoine.soda.type.Action;
+import me.grea.antoine.soda.type.PartialSolution;
 import me.grea.antoine.soda.type.flaw.Flaw;
 import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.type.Problem;
 import me.grea.antoine.soda.type.flaw.Resolver;
-import me.grea.antoine.soda.type.flaw.SubGoal;
-import me.grea.antoine.soda.type.flaw.Threat;
 
 /**
  *
@@ -25,27 +22,20 @@ public class SoftSolving {
         double minViolation = Double.POSITIVE_INFINITY; // double for infinity
         Plan best = problem.plan;
         Flaw annoyer = null;
-        for (Map.Entry<Flaw, Plan> fail : problem.partialSolutions.entrySet()) {
-            Log.v("Considering : " + fail);
-            double currentViolation = violation(fail.getValue(), problem.goal);
-            Log.d("Violation = " +currentViolation);
+        for (PartialSolution partialSolution : problem.partialSolutions) {
+            double currentViolation = partialSolution.remaining.size() +
+                    (partialSolution.plan.vertexSet().stream().filter((action) -> (action.fake)).count());
             if (currentViolation < minViolation) {
-                best = fail.getValue();
-                annoyer = fail.getKey();
+                best = partialSolution.plan;
+                annoyer = partialSolution.cause;
                 minViolation = currentViolation;
             }
         }
         problem.plan = best;
-        Log.i("Best partial " +problem.planToString());
         Log.i("Violation : " + minViolation);
         problem.partialSolutions.clear();
         for(Resolver resolver : annoyer.healers() ) { resolver.apply(best); };
         Log.i("Plan healed !");
-    }
-
-    private static long violation(Plan partial, Action goal) {
-        return SubGoal.count(partial, goal) + Threat.count(partial) + 
-                (partial.vertexSet().stream().filter((action) -> (action.fake)).count());
     }
     
 

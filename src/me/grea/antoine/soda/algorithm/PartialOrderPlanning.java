@@ -11,8 +11,8 @@ import java.util.Set;
 import me.grea.antoine.log.Log;
 import me.grea.antoine.soda.exception.Failure;
 import me.grea.antoine.soda.exception.Success;
+import me.grea.antoine.soda.type.PartialSolution;
 import me.grea.antoine.soda.type.flaw.Flaw;
-import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.type.Problem;
 import me.grea.antoine.soda.type.flaw.Resolver;
 import me.grea.antoine.soda.type.flaw.SubGoal;
@@ -48,16 +48,16 @@ public class PartialOrderPlanning {
     }
 
     public void refine() throws Success, Failure {
-        Log.d("Agenda " + agenda);
+//        Log.d("Agenda " + agenda);
         if (agenda.isEmpty()) {
             throw new Success();
         }
         Flaw flaw = agenda.pop();
-        Log.d("Resolving " + flaw);
+//        Log.d("Resolving " + flaw);
         Deque<Resolver> resolvers = flaw.resolvers();
-        Log.d("Resolver " + resolvers);
+//        Log.d("Resolver " + resolvers);
         for (Resolver resolver : resolvers) {
-            Log.d("Trying with " + resolver);
+//            Log.d("Trying with " + resolver);
 
             if (!resolver.duplicate(problem.plan)) {
                 resolver.apply(problem.plan);
@@ -74,13 +74,13 @@ public class PartialOrderPlanning {
                 }
                 refine();
             } else {
-                Log.w("REVERT !");
+//                Log.w("REVERT !");
                 resolver.revert(problem.plan);
             }
-            problem.partialSolutions.put(flaw, (Plan) problem.plan.clone());
+            problem.partialSolutions.push(new PartialSolution(problem.plan, flaw, agenda));
         }
         Log.w("Plan unsolvable !!!");
-        problem.partialSolutions.put(flaw, (Plan) problem.plan.clone());
+        problem.partialSolutions.push(new PartialSolution(problem.plan, flaw, agenda));
         throw new Failure(flaw);
     }
 }

@@ -5,6 +5,7 @@
  */
 package me.grea.antoine.soda.test;
 
+import me.grea.antoine.soda.test.*;
 import java.util.HashSet;
 import java.util.Set;
 import me.grea.antoine.soda.type.Action;

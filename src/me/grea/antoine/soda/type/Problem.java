@@ -5,12 +5,12 @@
  */
 package me.grea.antoine.soda.type;
 
-import me.grea.antoine.soda.type.flaw.Flaw;
-import java.util.HashMap;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
-import org.jgrapht.DirectedGraph;
 
 /**
  *
@@ -22,7 +22,7 @@ public class Problem {
     public Action goal;
     public Set<Action> actions; // not including those above
     public Plan plan;
-    public Map<Flaw, Plan> partialSolutions = new HashMap<>();
+    public Deque<PartialSolution> partialSolutions = new ArrayDeque<>();
     
     public Problem()
     {

@@ -48,7 +48,7 @@ public class DefectResolver {
 
     private static void fix(Collection<Defect> defects, Problem problem) {
         for (Defect defect : defects) {
-            Log.d("[×] " + defect);
+//            Log.d("[×] " + defect);
             defect.fix();
         }
     }

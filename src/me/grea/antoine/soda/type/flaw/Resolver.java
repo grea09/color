@@ -66,7 +66,7 @@ public class Resolver {
         Set<Flaw> related = new HashSet<>();
         related.addAll(SubGoal.related(source, problem));
         related.addAll(Threat.related(source, problem));
-        Log.d("Related flaws " + related);
+//        Log.d("Related flaws " + related);
         return related;
     }
 
