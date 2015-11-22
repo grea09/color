@@ -30,7 +30,7 @@ This resilience makes fixing errors easier than with an external algorithm as th
 
 Adding to that, these plans may become totally unsolvable. This problem is to our knowledge not treated in planning of all forms (state planning, PSP, and even constraint satisfaction planning) as usually the aim is to find a solution relative to the original plan (which makes sense). But as we proceed a mechanism of *problem derivation* may be required. This will allow soft solving of any problem regardless of its resolvability.
 
-One of the applications that needs these improvements is plan recognition with the particular use of off-the-shelf planners to infer the pursued goal of an agent where online planning and resilience is particularly important [@ramirez_plan_2009]. This method adds dummy actions that need to be satisfied by modifying the goal to ensure that the observed plan is selected by the planner. A system that is able to repair plan in real time will ease such an application. Another application is decision-making in dynamical environments. Indeed, having a plan that details all steps and explicits the ones that are not possible, can help decide of the line of action to take.
+One of the applications that needs these improvements is plan recognition with the particular use of off-the-shelf planners to infer the pursued goal of an agent where online planning and resilience is particularly important [@ramirez_plan_2009]. This method adds dummy actions that need to be satisfied by modifying the goal to ensure that the observed plan is selected by the planner. A system that is able to repair plan in real time will ease such an application. Another application is decision-making in dynamical environments. Indeed, having a plan that details all steps and explicits the ones that are not possible, can help decide of the line of action to take<!-- line of action ? A reformuler-->.
 
 These problems call for new ways to improve the answer of a planner. These improvements must provide relevant plan information pointing out exactly what needs to be done in order to make a planning problem solvable, even in the case of obviously inconsistent input data. This paper aims to solve this while preserving the advantages of PSP algorithms (flexibility, easy fixing of plans, soundness and completeness). Our Soft Ordering and Defect Aware Partial Ordering Planning (SODA POP) algorithm will target those issues.
 
@@ -58,13 +58,13 @@ A state is defined as a set of fluents. States can be additively combined. We no
 
 <div class="definition" name="Action">
 An action is a state operator. It is represented as a tuple $a = \langle pre, eff \rangle$ with $pre$ and $eff$ being sets of fluents, respectively the preconditions and the effects of $a$. An action can be used only in a state that verifies its preconditions. We note $s \models a \Leftrightarrow pre(a) \subset s$ the verification of an action $a$ by a state $s$.
+</div>
 
 An action $a$ can be functionally applied to a state $s$ as follows :
 $$a:= \substack{ \left\{ s \models a \middle| s \in S\right\} \to S\\
     a(s) \mapsto s + eff(a)}$$ 
 with $S$ being the set of all states. This means that an action adds all its effect to the state of the world on application (by removing complementary fluents if needed)
 
-</div>
 
 We distinguish between two specific kinds of actions : actions with no preconditions are synonymous to a state and those with empty effect are called a goal.
 
@@ -124,16 +124,18 @@ We call a flat plan valid if and only if it can be functionally applied on an em
 
 
 <div class="definition" name="Validity">
-A partial plan is valid if and only if it is consistent and if all the flat plan that can be generated are valid.
+A partial plan is valid if and only if it is consistent and if all flat plans that can be generated are valid.
 </div>
 
 
 # Classical POP
-Partial Order Planning (POP) is a popular implementation of the general PSP algorithm. It is proven to be sound and complete [@erol_umcp:_1994]. The completeness of the algorithm guarantees that if the problem has a solution it will be found by the algorithm. The soundness assures that any answer from the algorithm is valid. POP refines a partial plan by trying to fix its flaws.
+Partial Order Planning (POP) is a popular implementation of the general PSP algorithm. It refines a partial plan by trying to fix its flaws and is proven to be sound and complete [@erol_umcp:_1994]. 
+
+<!-- J'ai enleve ces definitions connu pour le gain de place ...The completeness of the algorithm guarantees that if the problem has a solution it will be found by the algorithm. The soundness assures that any answer from the algorithm is valid.--> 
 
 ## Description
 
-<div id="pop" class="algorithm" caption="Classical Partial Order Planning algorithm">
+<div id="pop" class="algorithm" caption="Classical Partial Order Planning">
 \Function{pop}{Queue of Flaws $agenda$, Problem $P$}
     \State \Call{populate}{$agenda$, $P$} \Comment{Only on first call}
     \If{$agenda = \emptyset$}
@@ -155,36 +157,37 @@ Partial Order Planning (POP) is a popular implementation of the general PSP algo
 \EndFunction
 </div>
 
-From that point the base algorithm is very similar for any implementation of POP : using an agenda of flaws that is efficiently updated after each refinement of the plan. A flaw is selected for resolution and we use a non deterministic choice operator to pick a resolver for the flaw. The resolver is inserted in the plan and we recursively call the algorithm on the new plan. On failure we return to the last non deterministic choice to pick another resolver. The algorithm ends when the agenda is empty or when there is no more resolver to pick for a given flaw. 
+<!-- From that point the base algorithm is very similar for any implementation of POP--> 
+Algorithm 1 presents the base algorithm for a planer in the plan space. POP implementation uses an agenda of flaws that is efficiently updated after each refinement of the plan. A flaw is selected for resolution and we use a non deterministic choice operator to pick a resolver for the flaw. The resolver is inserted in the plan and we recursively call the algorithm on the new plan. On failure we return to the last non deterministic choice to pick another resolver. The algorithm ends when the agenda is empty or when there is no more resolver to pick for a given flaw. 
 
 ## Limitations
 
 This standard way of doing have seen multiple improvements over expressiveness like with UCPOP [@penberthy_ucpop:_1992], hierarchical task network to add more user control over sub-plans [@bechon_hipop:_2014], cognition with defeasible reasoning [@garcia_defeasible_2008], or speed with multiple ways to implement the popular fast forward method from state planning [@coles_forward-chaining_2010]. However, all these variants do not treat the problem of online planning, resilience and soft solving.
 
-Some other closer works like [@van_der_krogt_plan_2005] treats the problem of online planning by removing big chunks of the partial plan by identifying incorrect trees in the plan. This along with heuristic choice of unrefinemment strategies. This causes a heavy replanning of the problem even if only one action needed removal. This also lead to an exponential number of plan to consider. This is a big problem when trying to adapt a plan with minimal changes due to replanning.
+Some other closer works like [@van_der_krogt_plan_2005] treats the problem of online planning by removing big chunks of the partial plan by identifying incorrect trees in the plan. This along with heuristic choice of unrefinemment strategies. <!--TODO manque un verbe dans cette phrase ?-->This causes a heavy replanning of the problem even if only one action needs removal. This also lead to an exponential number of plan to consider. This is a big problem when trying to adapt a plan with minimal changes due to replanning.
 
 Indeed, all these problems can affect POP's performance and quality as they can interfere with POP's inner working when the algorithm is able to give an answer at all.
 
 ![A simple problem that will be used throughout this paper](graphics/problem.svg) {#fig:problem}
 
-Before continuing, we present a simple example of classical POP execution with the problem represented in figure @fig:problem. We did not represent empty preconditions or effects to improve readability. Here we have an initial state $I = \langle \emptyset , \{ 1, 2 \} \rangle$ and a goal $G = \langle \{ 3, 4, -5, 6 \}, \emptyset \rangle$ encoded as dummy steps. We also introduce actions that are not steps yet but that are provided by $A$. The actions $a$, $b$ and  $c$ are normal actions that are useful to achieve the goal. The action $t$ is meant to be threatening to the plan's integrity and will generate threats. We introduce $u$ and $v$ as a toxic action, $w$ as a dead-end action and $x$ as a contradictory action. These notions will be defined [later](#defects).
+Before continuing, we present a simple example of classical POP execution with the problem represented in figure @fig:problem. We did not represent empty preconditions or effects to improve readability. Here we have an initial state $I = \langle \emptyset , \{ 1, 2 \} \rangle$ and a goal $G = \langle \{ 3, 4, -5, 6 \}, \emptyset \rangle$ encoded as dummy steps. We also introduce actions that are not steps yet but that are provided by $A$. The actions $a$, $b$ and  $c$ are normal actions that are useful to achieve the goal. The action $t$ is meant to be threatening to the plan's integrity and will generate threats. We introduce $u$ and $v$ as toxic actions, $w$ as a dead-end action and $x$ as a contradictory action. These notions will be defined [later](#defects).
 
 
 ![Standard POP result to the problem](graphics/pop.svg) {#fig:pop}
 
 This example has been crafted to illustrate problems with standard POP implementations. We give a possible resulting plan of standard POP in figure @fig:pop. We can see some issues as for how the plan has been built. The action $v$ is being used even if it is useless since $b$ already provided fluent $4$. We can also notice that despite being contradictory the action $x$ raised no alarm. As for ordering constraints, we can clearly see that the link $a \to t$ is redundant with the path $a \xrightarrow{5} c \to t$ that already puts that constraint by transitivity. Also, some problems arise during execution with the selection of $w$ that causes a dead-end.
 
-Of course the flaw selection mechanism of certain variant can prevent that to happen in that case. But often flaw selection mechanisms are more speed oriented and will do little if a toxic action seems to fit better than a more coherent but complex one.
+Of course the flaw selection mechanism of certain variant can prevent that to happen in that case. But often flaw selection mechanisms are more speed oriented and will do little if a toxic action seems to fit better than a more coherent but complex one <!-- TODO citer au moins une ref qui utilise un tel mecanisme de selection de menace!-->.
 
 All these issues are caused by what we call *defects* as they are not regular PSP flaws but they still cause problems with execution and results. We will address these defects and propose a way to fix them in [the next section](#defects).
 
 # Auxiliary algorithms to POP
 
-In order to improve POP algorithms' resilience, online performance and plan quality, we propose a set of auxiliary algorithms that provides POP with a clean and efficiently populated initial plan. The complete algorithm will be presented in [the next section](#soda) as a combination of all auxiliary algorithms and regular POP.
+In order to improve POP algorithms' resilience, online performance and plan quality, we propose a set of auxiliary algorithms that provides POP with a clean and efficiently populated initial plan. The complete algorithm will be presented in [the next section](#soda) as a combination of all auxiliary algorithms and classical POP.
 
 ## Proper plan generation
 
-<div id="properplan" class="algorithm" caption="Proper plan generation algorithm for a given goal $g$">
+<div id="properplan" class="algorithm" caption="Proper plan generation for a given goal $g$">
 \Function{properPlan}{Goal $g$, Actions $A$}
     \State Partial Plan $p \gets \emptyset$
     \State Actions $relevants \gets$ \Call{satisfy}{$g$, $A$, $p$}
@@ -202,18 +205,23 @@ In order to improve POP algorithms' resilience, online performance and plan qual
 \EndFunction
 </div>
 
-As in online planning goals can be known in advance, we add a new mechanism that generates proper plans for goals. We take advantage of the fact that this step can be done offline to improve performance for online planning. This offline execution prevents us to access the details of the initial state of the world as it will be defined at runtime. We define for that the concept of *participating action*. An action $a \in A$ participates in a goal $G$ if and only if $a$ has an effect $f$ that is needed to accomplish $G$ or that is needed to accomplish another participating action's preconditions. <!-- Q:Les participating action sont des actions de l'espace d'action A ? A:Oui --> A proper plan is a partial plan that contains all participating actions as steps and causal links that bind them with the step they are participating in. This proper plan is independent from the initial step because we might not have the initial step at the time of the proper plan generation.
+As in online planning goals can be known in advance, we propose a new mechanism that generates proper plans for goals. We take advantage of the fact that this step can be done offline to improve the performance of online planning. This offline execution prevents us to access the details of the initial state of the world as it will be defined at runtime. We define for that the concept of *participating action*. An action $a \in A$ participates in a goal $G$ if and only if $a$ has an effect $f$ that is needed to accomplish $G$ or that is needed to accomplish another participating action's preconditions. <!-- Q:Les participating action sont des actions de l'espace d'action A ? A:Oui --> A proper plan is a partial plan that contains all participating actions as steps and causal links that bind them with the step they are participating in. This proper plan is independent from the initial step because we might not have the initial step at the time of the proper plan generation.
 
 ![Proper plan of the example goal](graphics/proper.svg) {#fig:proper}
+
+We define the concept of *participating action*. An action $a \in A$ participates in a goal $G$ if and only if $a$ has an effect $f$ that is needed to accomplish $G$ or to accomplish another participating action's preconditions. <!-- Q:Les participating action sont des actions de l'espace d'action A ? A:Oui --> A proper plan is a partial plan that contains all participating actions as steps and causal links that bind them with the step they are participating in. Proper plan generation, detailed in Algorithm 2, recursively chooses participating actions<!--TODO verifier ma phrase et peut être compléter l'explication de l'algo...-->. It starts to populate the proper plan with a quick and incomplete backward chaining.
+    <!--This offline execution prevents us to access the details of the initial state of the world as it will be defined at runtime. -->
 
 On our example it illustrates really well the need for resilience. The algorithm simply recursively chose the actions and end up with the partial plan represented in figure @fig:proper. The partial plan doesn't have an initial state (because of its offline nature). This plan also shows several cycles and obvious problems. Moreover, the plan has all the steps of the correct final plan and therefore remove the subgoal search in POP if it uses this plan has input (after it has been cleaned obviously).
 
 This auxiliary algorithm is therefore used as a caching mechanism for online planning. The algorithm starts to populate the proper plan with a quick and incomplete backward chaining.
 
+<!--On our example it illustrate really well the need for resilience.--> 
+Once applied on the example of figure @fig:problem, proper plan generation returns the partial plan presented in figure @fig:proper. This partial plan doesn't have initial state because of its offline nature. It also shows several cycles and obvious problems. However it has all the steps of the correct final plan. <!--Proper plan generation removes the subgoal search in POP if a clean proper plan is used as an input plan.  (after it has been cleaned obviously).-->
 
 ## Defect resolution {#defects}
 
-<div id="defectresolution" class="algorithm" caption="Defect resolution algorithm">
+<div id="defectresolution" class="algorithm" caption="Defect resolution">
 \Function{clean}{Problem $P$}
     \State \Call{assert}{$pre(P.I) = \emptyset$}
     \State \Call{assert}{$eff(P.G) = \emptyset$}
@@ -239,12 +247,12 @@ When the POP algorithm is used to refine a given plan (that was not generated wi
 Plan quality is an indicator that is measured by the number of defects in a partial plan. There are two specific indicators for a plan quality : the action quality and the link quality. We define the link and action quality as respectively the number of link or action related defects divided by the number of links or actions in the resulting plan.
 $$quality_{action}(p) =  1 - \left( \#ActionDefects(p) \over \#p.A_p \right)$$
 </div>
-From there it is obvious that plan quality will improve over POP since the present algorithm is guaranteed to remove all defects in a plan.
+From there it is obvious that plan quality will improve over POP since the present algorithm <!--TODO quel algo: POP classique ou SODA POP ?--> is guaranteed to remove all defects in a plan. <!--TODO les menaces sont aussi considerees comme des defauts et comptees par plan quality ? si oui le preciser-->
 
 There are two kinds of defects: the illegal defects that violate base hypothesis of PSP and the interference defects that can lead to excessive computational time and to poor plan quality.
 
 ### Illegal defects
-These defects are usually hypothesized out by regular models. They are illegal use of partial plan representation and shouldn't happen under regular circumstances. They may appear if the input is generated by an approximate cognitive model that doesn't ensure consistency of the output or by unchecked corrupted data. These defects will most of the time simply break regular POP algorithms (from existing cycles) or at least make the performances decrease significantly (from toxic actions).
+These defects are usually hypothesized out by regular models. They are illegal use of partial plan representation and shouldn't happen under regular circumstances. They may appear if the input is generated by an approximate cognitive model that doesn't ensure consistency of the output or by unchecked corrupted data. These defects will most of the time simply break regular POP algorithms (from existing cycles <!--TODO ca ne serait pas plutot because of a la place de from ?-->) or at least make the performances decrease significantly (from toxic actions <!--TODO ca ne serait pas plutot because of a la place de from ?-->). Illegal defects and solutions to fix them are presented in the following.
 
 <div class="definition" name="Cycles">
 A plan cannot contain cycles as it makes it impossible to complete. Cycles are usually detected as they are inserted in a plan but poor input can potentially contain them and breaks the POP algorithm as it cannot undo cycles.
@@ -252,20 +260,22 @@ A plan cannot contain cycles as it makes it impossible to complete. Cycles are u
 We use strongly connected component detection algorithm to detect cycles. Upon cycle detection the algorithm can remove arbitrarily a link in the cycle to break it. The most effective solution is to remove the link that is the farthest from the goal traveling backward as it would be that link that would have been last added in the regular POP algorithm. But finding this is extremely time consuming and most of the time the cycles are of one or two actions so we choose to keep that algorithm simpler and faster.
 <!--FIXME prove that and also code that-->
 
-<div class="definition" name="Inconsistent actions">
-In a plan some actions can be illegal for POP. Those are the actions that are contradictory. An action $a$ is contradictory if and only if 
+In a plan some actions can be illegal for POP. Those are the actions that are contradictory. 
+<div class="definition" name="Inconsistent actions"><!--TODO action inconsistente ou contradictoire ? utilise l'un des deux termes ...-->
+An action $a$ is contradictory if and only if 
 $$\exists f \{f, \lnot f \} \in eff(a) \lor \{f, \lnot f \} \in pre(a)$$
 </div>
 We remove only one of those effect or preconditions based on the usage of the action in the rest of the plan. If none of those are used, we choose to remove both. In our example in figure @fig:problem the action $x$ is one of these inconsistent actions with fluent $2$ and $-2$ in its effects.
 
 <div class="definition" name="Toxic actions">
-These actions are those that have effects that are already in their preconditions or empty effects. This can damage a plan as well as make the execution of POP algorithm much longer than necessary. They are defined as :
+Toxic actions are those that have effects that are already in their preconditions or empty effects. This can damage a plan as well as make the execution of POP algorithm much longer than necessary. They are defined as :
 $$a | pre(a) \cap eff(a) \neq \emptyset \lor eff(a) = \emptyset$$
 </div>
-This is fixed by removing the toxic fluents ($pre(a) \nsubseteq eff(a)$) following $eff(a) = eff(a)-pre(a)$. If the effects gets empty the action is removed altogether from plan and $A$. For example in figure @fig:problem the actions $u$ and $v$ are a toxic action as the fluent $4$ is in the effects and preconditions of $v$. In this case these actions will be removed by the algorithm as it doesn't have any other effects.
+They can damage a plan as well as make the execution of POP algorithm much longer than necessary. This is fixed by removing the toxic fluents ($pre(a) \nsubseteq eff(a)$) following $eff(a) = eff(a)-pre(a)$. If the effects becomes empty, the action is removed alltogether from plan and $A$. For example in figure @fig:problem the actions $u$ and $v$ are toxic as the fluent $4$ is in the effects and preconditions of $v$, and $u$ has empty effects. In this case these actions will be removed by the algorithm as they don't have any other effects.
 
+The defects can be related to incorrect links. The first of which are liar links.
 <div class="definition" name="Liar links">
-The defects can be related to incorrect links. The first of which are liar links : a link that doesn't reflect the preconditions or effect of its source and target. We can note 
+A liar link is a link that doesn't reflect the preconditions or effect of its source and target. We can note:
 $$a_i \xrightarrow{f} a_j | f \notin eff(a_i) \cap pre(a_j)$$
 </div>
 A liar link can be either already present in the data or created by the removal of an effect of an inconsistent or toxic action (with the causal link still remaining).
@@ -273,37 +283,43 @@ A liar link can be either already present in the data or created by the removal 
 We call lies fluents that participates in the lies. To resolve the problem we remove $f$ and add all savior fluents, i.e. a fluent in $eff(a_i) \cap pre(a_j)$ that isn't already provided. We delete the link all together if it doesn't link any fluents.
 
 ### Interference defects
-This kind of defects is not as toxic as the illegal ones: they won't make the plan unsolvable but they can still cause performance drops in POP execution. These can appear more often in regular POP results as they are not targeted by standard implementations.
+This kind of defects is not as toxic as the illegal ones: they won't make the plan unsolvable but they can still cause performance drops in POP execution. These can appear more often in regular POP results as they are not targeted by standard implementations. Interference defects and solutions to fix them are presented in the following.
 
+<!--This defect can happen in POP generated plans to some extends. -->
 <div class="definition" name="Redundant links">
-This defect can happen in POP generated plans to some extends. A redundant link have a transitive equivalent of longer length. It means that a link $a_i \to a_j$ is redundant if and only if it exists another path from $a_i$ to $a_j$ of length greater to $1$.
+A redundant link have a transitive equivalent of longer length. It means that a link $a_i \to a_j$ is redundant if and only if it exists another path from $a_i$ to $a_j$ of length greater to $1$.
 </div>
-Since POP relies on those additional links, this part focus on removing the ones that were generated for threat removal purpose to simplify the plan. For example in the figure @fig:pop we can see that the ordering constraint from $a$ to $t$ is redundant with the path $a \xrightarrow{5} c \to t$ in that it isn't needed to resolve the threat. Therefore, the algorithm would remove it. This reduce the number of edges in the plan and therefore simplify it.
+Since POP relies on those additional links, this part focus on removing the ones that were generated for threat removal purpose to simplify the plan. For example in figure @fig:pop we can see that the ordering constraint from $a$ to $t$ is redundant with the path $a \xrightarrow{5} c \to t$ in that it isn't needed to resolve the threat. Therefore, the algorithm would remove it. This reduces the number of edges in the plan and therefore simplifies it.
 
+Causal links can be found to compete with one another. 
 <div class="definition" name="Competing causal links">
-Causal links can be found to compete with one another. A competing link $a_i \xrightarrow{f} a_k$ competes with another link $a_j \xrightarrow{f} a_k$ if it provides the same fluent to the same action.
+A competing link $a_i \xrightarrow{f} a_k$ competes with another link $a_j \xrightarrow{f} a_k$ if it provides the same fluent to the same action.
 </div>
-This cannot happen in classical POP algorithm so it is not handled by it. The multiple links providing the same fluent to the same action is making the plan more complex like redundant links but also can hide useless actions. This is why they must be removed in a way that reveals them and reduce the need for extra unnecessary actions in the plan that would cause more flaws for POP to handle.
+This cannot happen in classical POP algorithm so it is not handled by it. Multiple links providing the same fluent to the same action are making the plan more complex <!--like redundant links but--> and can also hide useless actions. This is why they must be removed in a way that reveals useless actions so as to reduce the need for extra unecessary actions in the plan. Otherwise this would cause more flaws to handle.
 
 ![Example of choice for cutting competing links based on usefulness of actions](graphics/competing.svg) {#fig:competing}
 
-In order to prune the least useful actions, we need to remove the least interesting link. In order to elect the best one, we compare their respective providing action. 
-
-<div class="definition" name="Usefulness of an action">
-The usefulness of an action is the number of participating links (outgoing causal links) divided by the number of needing links (incoming causal links). If there are no needing links, or the action is either an initial step or a goal the usefulness is $+\infty$. The usefulness of savior action is $0$.
+In order to remove the least interesting link in competing causal links, we need to compare their respective providing action to prune the least useful ones. <!--TODO verifier ma phrase si elle est juste ...--> 
+<!-- in competing causal links, we need . In order to elect the best one, we compare their respective providing action. -->
+<div class="definition" name="Usefullness of an action">
+The usefullness of an action is the number of participating links (outgoing causal links) divided by the number of needing links (incoming causal links). If there are no needing links, or the action is either an initial step or a goal the usefulness is $+\infty$. The usefulness of saviour action is $0$.
 </div>
 
-We choose the link with the source action having the highest usefulness. This makes replacing unnecessary savior actions and allows to therefore reduce the usefulness of the least action in the hope it will become orphan and pruned from the plan.
+We choose the link with the source action having the highest usefulness. This replaces unnecessary saviour actions and allows to reduce the usefulness of the least action in the hope it will become orphan and pruned from the plan <!--TODO : refaire cete phrase sans "in the hope " un peu bizarre ...-->.
 
 In the example figure @fig:competing the action $a_j$ on the left participates much more than the action $a_i$ and therefore the link to be removed would be $a_i \xrightarrow{f} a_k$. On the right example the actions doesn't have different outgoing links but the action $a_j$ is here much needier than its competitor and therefore the link to be removed is the link $a_j \xrightarrow{f} a_k$.
 
+<!--TODO: ai et aj a gauche n'ont pas de needing, donc toutes ls 2 sont a usefulness infini ?-->
+On the left example of figure @fig:competing, the action $a_j$ participates much more than the action $a_i$ and therefore the link to be removed would be $a_i \xrightarrow{f} a_k$. On the right example the actions don't have different outgoing links but the action $a_j$ is here much needier than its competitor. Therefore the link to be removed is the link $a_j \xrightarrow{f} a_k$.
+
+Actions can sometimes have no use in a plan as they don't contribute to it. 
 <div class="definition" name="Orphan actions">
-Actions can sometimes have no use in a plan as they don't contribute to it. It is the case of orphans actions (actions without any links) and action with no outgoing path to the goal (meaning that it doesn't participate in the plan). That also concerns action that would become orphan if another orphan action is removed.
+Orphans actions are actions without any links or action with no outgoing path to the goal (meaning that it doesn't participate in the plan). That also concerns action that would become orphan if another orphan action is removed.
 </div>
 
-In order to fix this we derive the idea of the backward removal tree of [@van_der_krogt_plan_2005]. The idea is to remove an action if all its outgoing causal links are leading to useless actions. We iterate over all actions until no new useless action is discovered. All useless actions are then removed from the plan.
+In order to fix this we derive the idea of the backward removal tree of [@van_der_krogt_plan_2005]. The algorithm, detailed in Algorithm 4, removes an action if all its outgoing causal links are leading to useless actions. It iterates over all actions until no new useless action is discovered. All useless actions are then removed from the plan.
 
-<div id="orphanaction_find" class="algorithm" caption="Orphan actions finding algorithm">
+<div id="orphanaction_find" class="algorithm" caption="Orphan actions finding">
 \Function{$OrphanAction.$find}{Problem $P$}
     \State Actions $orphan \gets \emptyset$
     \State int $oldSize$
@@ -336,7 +352,7 @@ In such a case the link is removed and another one is formed by the better suite
 
 ## Soft resolution
 <!-- TODO examples-->
-<div id="softresolution" class="algorithm" caption="Soft resolution healing algorithm">
+<div id="softresolution" class="algorithm" caption="Soft resolution healing">
 \Function{heal}{Problem $P$}
     \State int $minViolation \gets \infty$
     \State Plan $best \gets P.p$
@@ -382,13 +398,15 @@ A proper fluent of a flaw is the one that caused the flaw. For a subgoal $a_n \x
 The savior of a flaw is the forged action $a_s = \langle \emptyset, \{p\} \rangle | a_s \notin A$ with $p$ being the proper fluent of the flaw.
 </div>
 
+The concept of healer is made to target rogue flaws that caused total failure. 
 <div class="definition" name="Healers"> 
-The concept of healer is made to target rogue flaws that caused total failure. A healer is a resolver that is built around the savior of the flaw in order to provide the missing fluents to it. The general formula of a healer is the following :
+A healer is a resolver that is built around the savior of the flaw in order to provide the missing fluents to it. The general formula of a healer is the following :
 $$a_s \xrightarrow{p} a_n$$
 with $a_s$ being the savior of the flaw.
-
-For threats we need an additional healer specified as an ordering constraint from the threatening action to the savior $a_t \to a_s$ to ensure that the savior acts after the threat and therefore provides the proper fluent for the needer.
 </div>
+
+For threats we need an additional healer specified as an ordering constraint from the threatening action to the saviour $a_t \to a_s$ to ensure that the saviour acts after the threat and therefore provides the proper fluent for the needer.
+
 
 <div class="definition" name="Violation degree"> 
 The violation degree $v(p)$ of a plan $p$ is an indicator of the health of a partial plan. It is the sum of the number of flaws and the number of saviors in the plan.
@@ -407,9 +425,9 @@ The healing process is similar to how POP works : we apply the healer of the fla
 
 
 # SODA POP and its properties {#soda}
-After defining the way our algorithms work, we will focus on the properties that can be achieved by combining them together.
+The combination of classical POP and all the auxiliary algorithms presented previously gives SODA POP algorithm detailed in Algorithm 6. In this section we will focus on the properties of SODA POP. <!--that can be achieved by combining them together.-->
 
-<div id="soda" class="algorithm" caption="Combining all algorithms into SODA POP">
+<div id="soda" class="algorithm" caption="SODA POP">
 \Function{soda}{Problem $P$}
     \State $P.p \gets$ \Call{properPlan}{$P.G$, $P.A$} \Comment Offline execution then this will be replaced by the previous online plan adjusted with the environment.
     \State \Call{clean}{$P$}
@@ -458,18 +476,18 @@ We note that this property isn't compatible with consistency regarding the origi
 The hypersoundness of our combined algorithm is proven using the convergence of POP and the way the Soft solving behaves.
 
 <div class="proof" name="Hypersoundness of SODA POP">
-The proper plan and defect fixing algorithms are obviously convergent. The proper plan algorithm can't iterate more than the number of actions (since duplicates are forbidden) and the defect resolution will fix the finite numbers of defects present in the finite partial plan issued by the proper plan algorithm.
+The proper plan and defect fixing algorithms are obviously convergent. The proper plan algorithm cannot iterate more than the number of actions (since duplicates are forbidden) and the defect resolution will fix the finite numbers of defects present in the finite partial plan issued by the proper plan algorithm.
 
-POP is sound and converges. Therefore, if SODA converges it will return a valid solution for $P'$. In the same way we proved for POP, the new healing process converges because it reduces the number of flaws in the partial plan and since this number is finite, the algorithm converges.
+POP is sound and converges. Therefore, if SODA POP converges it will return a valid solution for $P'$. In the same way we proved for POP, the new healing process converges because it reduces the number of flaws in the partial plan and since this number is finite, the algorithm converges.
 </div>
 
 ## Enhancement for online planning
 
-SODA POP algorithms can be used in dynamic online environments to allow a robust way to replan an existing obsolete plan. The first thing to execute prior to the runtime is the generation of the proper plans of all the goals that will be considered. 
+SODA POP algorithm can be used in dynamic online environments to allow a robust way to replan an existing obsolete plan. The first thing to execute prior to the runtime is the generation of the proper plans for all the goals that will be considered. 
 
-For the first execution of the online planning the initial state is added to the problem and the defect detection is applied with the rest of the SODA POP algorithms. This will give the first plan. 
+For the first execution of the online planning the initial state is added to the problem and the defect detection is applied with the rest of the SODA POP algorithm. This will give the first plan. 
 
-On change of environment the previous plan is modified accordingly and then fed to the defect detection and SODA algorithm again. This must be done each time the plan is modified in order to actualize the plan. The new plan will have all defects fixed. For example a savior action can be removed if the initial step or a new action becomes competing with it and actions with liar link to a removed fluent in the goal will become probably an orphan.
+For every change of the environment the previous plan is modified accordingly and then fed to the defect detection and SODA algorithm again. This must be done each time the plan is modified in order to actualize the plan. The new plan will have all defects fixed. For example a savior action can be removed if the initial step or a new action becomes competing with it and actions with liar link to a removed fluent in the goal will become probably an orphan.
 
 In practice this will generate little to no iteration of the algorithm.
 
