@@ -12,6 +12,7 @@ all:$(PDF)
 .PHONY: clean
 
 %.pdf: %.md
+	@rm $@
 	pandoc $(FILTERS) $(ARGS) $< -o $@
 
 clean:

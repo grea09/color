@@ -12,13 +12,13 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   width="399.45728"
+   width="378.82065"
    height="291.03876"
    xml:space="preserve"
    sodipodi:docname="quality.svg"><metadata
      id="metadata8"><rdf:RDF><cc:Work
          rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
      id="defs6"><clipPath
        clipPathUnits="userSpaceOnUse"
        id="clipPath16"><path
@@ -60,17 +60,17 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:zoom="0.89691213"
-     inkscape:cx="408.33945"
-     inkscape:cy="128.87208"
+     inkscape:zoom="1.2684253"
+     inkscape:cx="68.710748"
+     inkscape:cy="173.90428"
      inkscape:window-x="283"
      inkscape:window-y="30"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g534" /><g
+     inkscape:current-layer="g64" /><g
      id="g10"
      inkscape:groupmode="layer"
      inkscape:label="2015-11-22T00:09:07.104_class me.grea.antoine.soda.test.QualityOfPop"
-     transform="matrix(1.25,0,0,-1.25,-87.088762,945.4875)"><g
+     transform="matrix(1.25,0,0,-1.25,-107.72538,945.4875)"><g
        id="g12"><g
          id="g14"
          clip-path="url(#clipPath16)" /></g><g
@@ -656,7 +656,8 @@
 </g></g><g
            id="g512"
            transform="matrix(0,1,-1,0,1012.1648,177.48679)" /><g
-           id="g534"><text
+           id="g534"
+           transform="translate(0,4.8)"><text
              transform="scale(1,-1)"
              id="text536"
              x="143"
@@ -669,86 +670,40 @@
 </g><g
            id="g4574"
            transform="translate(6.4,0)"><g
-             transform="matrix(0,1,-1,0,719.38101,165.68095)"
+             transform="matrix(0,1,-1,0,720.98101,154.48095)"
              id="g3607"><g
-               id="g504"><path
-                 inkscape:connector-curvature="0"
-                 d="m 411.4,652.2 22.6,0"
-                 style="fill:none;stroke:#dc322f;stroke-width:2.26384997;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
-                 id="path506" /></g><g
-               id="g508"><path
-                 inkscape:connector-curvature="0"
-                 d="m 411.4,636.5 22.6,0"
-                 style="fill:none;stroke:#4a8e00;stroke-width:2.26384997;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
-                 id="path510" /></g><g
-               id="g516"><text
-                 transform="matrix(1,0,0,-1,436.9,648.8)"
-                 id="text518"><tspan
-                   style="font-size:10px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller"
-                   x="0 5.1999998 9.6999998 13.49 16.48 22.469999"
-                   y="0"
-                   sodipodi:role="line"
-                   id="tspan520">Action</tspan></text>
-</g><g
-               id="g522"><text
-                 transform="matrix(1,0,0,-1,436.9,633.2)"
-                 id="text524"><tspan
-                   style="font-size:10px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller"
-                   sodipodi:role="line"
-                   id="tspan526"
-                   x="0"
-                   y="0">Link</tspan></text>
+               id="g3288"
+               transform="translate(-3.1535164,-14.969297)"><g
+                 id="g504"><path
+                   id="path506"
+                   style="fill:none;stroke:#dc322f;stroke-width:2.26384997;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
+                   d="m 411.4,652.2 22.6,0"
+                   inkscape:connector-curvature="0" /></g><g
+                 id="g516"><text
+                   id="text518"
+                   transform="matrix(1,0,0,-1,436.9,648.8)"><tspan
+                     id="tspan520"
+                     sodipodi:role="line"
+                     y="0"
+                     x="0 5.1999998 9.6999998 13.49 16.48 22.469999"
+                     style="font-size:10px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller">Action Quality</tspan></text>
 </g></g><g
-             id="g540"><text
-               id="text542"
-               transform="matrix(0,1,1,0,79.4,636.6)"><tspan
-                 id="tspan544"
-                 y="0"
-                 x="0"
-                 style="font-size:9px;font-variant:normal;font-weight:300;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller-Light">Q</tspan></text>
-<text
-               id="text546"
-               transform="matrix(0,1,1,0,79.4,643.4)"><tspan
-                 id="tspan548"
-                 y="0"
-                 x="0"
-                 style="font-size:9px;font-variant:normal;font-weight:300;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller-Light">u</tspan></text>
-<text
-               id="text550"
-               transform="matrix(0,1,1,0,79.4,648.6)"><tspan
-                 id="tspan552"
-                 y="0"
-                 x="0"
-                 style="font-size:9px;font-variant:normal;font-weight:300;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller-Light">a</tspan></text>
-<text
-               id="text554"
-               transform="matrix(0,1,1,0,79.4,653.1)"><tspan
-                 id="tspan556"
-                 y="0"
-                 x="0"
-                 style="font-size:9px;font-variant:normal;font-weight:300;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller-Light">l</tspan></text>
-<text
-               id="text558"
-               transform="matrix(0,1,1,0,79.4,655.3)"><tspan
-                 id="tspan560"
-                 y="0"
-                 x="0"
-                 style="font-size:9px;font-variant:normal;font-weight:300;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller-Light">i</tspan></text>
-<text
-               id="text562"
-               transform="matrix(0,1,1,0,79.4,657.6)"><tspan
-                 id="tspan564"
-                 y="0"
-                 x="0"
-                 style="font-size:9px;font-variant:normal;font-weight:300;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller-Light">t</tspan></text>
-<text
-               id="text566"
-               transform="matrix(0,1,1,0,79.4,660.6)"><tspan
-                 id="tspan568"
-                 y="0"
-                 x="0"
-                 style="font-size:9px;font-variant:normal;font-weight:300;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller-Light">y</tspan></text>
-</g></g><g
+               id="g3295"
+               transform="translate(95.866899,0.63070328)"><g
+                 id="g508"><path
+                   id="path510"
+                   style="fill:none;stroke:#4a8e00;stroke-width:2.26384997;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-opacity:1;stroke-dasharray:none"
+                   d="m 411.4,636.5 22.6,0"
+                   inkscape:connector-curvature="0" /></g><g
+                 id="g522"><text
+                   id="text524"
+                   transform="matrix(1,0,0,-1,436.9,633.2)"><tspan
+                     y="0"
+                     x="0"
+                     id="tspan526"
+                     sodipodi:role="line"
+                     style="font-size:10px;font-variant:normal;font-weight:normal;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;font-family:Aller;-inkscape-font-specification:Aller">Link Quality</tspan></text>
+</g></g></g></g><g
            id="g4540"
            transform="translate(-8.2588351,47.302747)"><path
              inkscape:connector-curvature="0"
