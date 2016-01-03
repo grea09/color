@@ -5,6 +5,7 @@
  */
 package me.grea.antoine.soda.test;
 
+import me.grea.antoine.utils.Dice;
 import me.grea.antoine.soda.test.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,29 +19,25 @@ import me.grea.antoine.soda.type.Problem;
  * @author antoine
  */
 public class CrazyProblemGenerator {
-    
+
     public static Set<Problem> generate(int enthropy, int number) {
         Set<Problem> problems = new HashSet<>(number);
-        while(problems.size() < number)
-        {
+        while (problems.size() < number) {
             Problem problem = new Problem(
-                    new Action(null, Dice.roll(-enthropy, enthropy, enthropy /2)), 
-                    new Action(Dice.roll(-enthropy, enthropy, enthropy /2), null), 
-                    CrazyActionGenerator.generate(enthropy, Dice.roll(enthropy)), 
+                    new Action(null, Dice.roll(-enthropy, enthropy, enthropy / 2)),
+                    new Action(Dice.roll(-enthropy, enthropy, enthropy / 2), null),
+                    CrazyActionGenerator.generate(enthropy, Dice.roll(enthropy)),
                     new Plan()
             );
-            for (int i = 0; i < problem.actions.size()/2; i++) {
+            for (int i = 0; i < problem.actions.size() / 2; i++) {
                 Action source = Dice.pick(problem.actions);
                 Action target = Dice.pick(problem.actions);
                 problem.plan.addVertex(source);
                 problem.plan.addVertex(target);
                 Edge edge = problem.plan.addEdge(source, target);
-                if(edge == null)
-                {
+                if (edge == null) {
                     problem.plan.getEdge(source, target).labels.addAll(source.effects);
-                }
-                else
-                {
+                } else {
                     edge.labels = source.effects;
                 }
             }
@@ -48,5 +45,5 @@ public class CrazyProblemGenerator {
         }
         return problems;
     }
-    
+
 }

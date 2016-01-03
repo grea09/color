@@ -22,10 +22,8 @@ public class Problem {
     public Action goal;
     public Set<Action> actions; // not including those above
     public Plan plan;
-    public Deque<PartialSolution> partialSolutions = new ArrayDeque<>();
-    
-    public Problem()
-    {
+
+    public Problem() {
         this(new Action(), new Action(), new HashSet<>(), new Plan());
     }
 
@@ -43,10 +41,6 @@ public class Problem {
         this.goal = other.goal;
         this.actions = other.actions;
         this.plan = other.plan;
-    }
-
-    public long violation() {
-        return plan.vertexSet().stream().filter((action) -> (action.fake)).count();
     }
 
     @Override

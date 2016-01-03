@@ -8,7 +8,7 @@ package me.grea.antoine.soda.algorithm;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Set;
-import me.grea.antoine.log.Log;
+import me.grea.antoine.utils.Log;
 import me.grea.antoine.soda.exception.Failure;
 import me.grea.antoine.soda.exception.Success;
 import me.grea.antoine.soda.type.PartialSolution;
@@ -59,7 +59,7 @@ public class PartialOrderPlanning {
         for (Resolver resolver : resolvers) {
 //            Log.d("Trying with " + resolver);
 
-            if (!resolver.duplicate(problem.plan)) {
+            if (resolver.appliable(problem.plan)) {
                 resolver.apply(problem.plan);
             } else {
                 continue;
@@ -77,10 +77,10 @@ public class PartialOrderPlanning {
 //                Log.w("REVERT !");
                 resolver.revert(problem.plan);
             }
-            problem.partialSolutions.push(new PartialSolution(problem.plan, flaw, agenda));
+//            problem.partialSolutions.push(new PartialSolution(problem.plan, flaw, agenda));
         }
         Log.w("Plan unsolvable !!!");
-        problem.partialSolutions.push(new PartialSolution(problem.plan, flaw, agenda));
+//        problem.partialSolutions.push(new PartialSolution(problem.plan, flaw, agenda));
         throw new Failure(flaw);
     }
 }

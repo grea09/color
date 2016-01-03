@@ -6,19 +6,21 @@
 package me.grea.antoine.soda.type.flaw;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import me.grea.antoine.log.Log;
+import me.grea.antoine.soda.heuristic.Usefullness;
 import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.type.Problem;
-import static me.grea.antoine.soda.utils.Collections.*;
-import org.jgrapht.DirectedGraph;
+import static me.grea.antoine.utils.Collections.*;
+import me.grea.antoine.utils.Log;
 
 /**
  *
@@ -36,9 +38,16 @@ public class SubGoal extends Flaw {
         if (problem.initial.effects.contains(fluent)) {
             resolvers.addLast(new Resolver(problem.initial, needer, fluent));
         }
-        Set<Action> steps = new HashSet<>(problem.plan.vertexSet());
+        List<Action> steps = new ArrayList<>(problem.plan.vertexSet());
         steps.remove(problem.initial);
-        steps.remove(needer);
+        steps.remove(problem.goal);
+        steps.remove(needer); // Order the actions by utility
+        try{
+        Collections.sort(steps, Usefullness.compare(problem));
+        } catch (IllegalArgumentException ex)
+        {
+            Log.f(problem);
+        }
         for (Action step : steps) {
             if (step.effects.contains(fluent)) {
                 resolvers.addLast(new Resolver(step, needer, fluent));
@@ -46,6 +55,7 @@ public class SubGoal extends Flaw {
         }
         Set<Action> actions = new HashSet<>(problem.actions);
         actions.remove(problem.initial);
+        actions.remove(problem.goal);
         actions.remove(needer);
         actions.removeAll(steps);
         for (Action action : actions) {
@@ -55,7 +65,7 @@ public class SubGoal extends Flaw {
         }
         return resolvers;
     }
-    
+
     public static Set<SubGoal> find(Problem problem) {
         Map<Integer, SubGoal> subgoals = new HashMap<>();
         Deque<Action> open = queue(problem.goal);
@@ -72,8 +82,7 @@ public class SubGoal extends Flaw {
 //                }
             }
             for (Edge edge : problem.plan.incomingEdgesOf(current)) {
-                for(int label : edge.labels)
-                {
+                for (int label : edge.labels) {
                     subgoals.remove(label);
                 }
                 open.addFirst(problem.plan.getEdgeSource(edge));
@@ -82,7 +91,7 @@ public class SubGoal extends Flaw {
         }
         return new HashSet<>(subgoals.values());
     }
-    
+
     public static int count(Plan plan, Action goal) {
         Set<Integer> subgoals = set();
         Deque<Action> open = queue(goal);
@@ -104,17 +113,22 @@ public class SubGoal extends Flaw {
 
     public static Set<SubGoal> related(Action troubleMaker, Problem problem) {
         Set<SubGoal> related = new HashSet<>();
-        for(int precondition : troubleMaker.preconditions)
-        {
-            if(troubleMaker != problem.initial && problem.plan.inDegreeOf(troubleMaker) == 0)
+        Set<Integer> provided = new HashSet<Integer>() {
+            {
+                problem.plan.incomingEdgesOf(troubleMaker).stream().forEach((edge) -> {
+                    addAll(edge.labels);
+                });
+            }
+        };
+        troubleMaker.preconditions.stream().filter((precondition) -> (!provided.contains(precondition))).forEach((precondition) -> {
             related.add(new SubGoal(precondition, troubleMaker, problem));
-        }
+        });
         return related;
     }
-    
+
     @Override
-        public String toString() {
-            return "? =(" + fluent + ")> " + needer;
-        }
+    public String toString() {
+        return "? =(" + fluent + ")> " + needer;
+    }
 
 }

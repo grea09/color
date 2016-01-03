@@ -15,6 +15,7 @@ import java.util.Set;
  * @author antoine
  */
 public class Action extends Goal {
+
     public Set<Integer> effects;
     public final boolean fake;
 
@@ -33,7 +34,7 @@ public class Action extends Goal {
     public Action(Collection<Integer> preconditions, Collection<Integer> effects) {
         this(preconditions, effects, false);
     }
-    
+
     public Action(Collection<Integer> preconditions, Collection<Integer> effects, boolean fake) {
         super(preconditions);
         if (effects == null) {
@@ -43,13 +44,11 @@ public class Action extends Goal {
         }
         this.fake = fake;
     }
-    
 
     @Override
     public String toString() {
-        return  (fake ? "₳" : "A") + 
-                (preconditions.isEmpty() ? '[' : "[ ⊧" + preconditions) + 
-                (effects.isEmpty() ? ']' : " +" + effects + ']');
+        return (fake ? "₳" : "A") + "("
+                + (preconditions.isEmpty() ? "" : "⊧" + preconditions)
+                + (effects.isEmpty() ? "" : "+" + effects) + ")";
     }
-    
 }

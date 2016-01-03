@@ -13,8 +13,7 @@ import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.type.Problem;
-import static me.grea.antoine.soda.utils.Collections.*;
-import org.jgrapht.DirectedGraph;
+import static me.grea.antoine.utils.Collections.*;
 
 /**
  *
@@ -36,13 +35,15 @@ public class Threat extends Flaw {
     @Override
     public Deque<Resolver> resolvers() {
         Deque<Resolver> resolvers = new ArrayDeque<>();
-        if (problem.plan.getEdgeTarget(threatened) != problem.goal) {
+        Action source = problem.plan.getEdgeSource(threatened);
+        Action target = problem.plan.getEdgeTarget(threatened);
+        if (target != problem.goal) {
 //                Log.w("Can't demote after goal step !");
-            resolvers.add(new Resolver(problem.plan.getEdgeTarget(threatened), breaker, 0));
+            resolvers.add(new Resolver(target, breaker));
         }
-        if (problem.plan.getEdgeSource(threatened) != problem.initial) {
+        if (source != problem.initial) {
 //                Log.w("Can't promote before initial step !");
-            resolvers.add(new Resolver(breaker, problem.plan.getEdgeSource(threatened), 0));
+            resolvers.add(new Resolver(breaker, source));
         }
         return resolvers;
     }
@@ -59,7 +60,7 @@ public class Threat extends Flaw {
     public Set<Resolver> healers() {
         Set<Resolver> healers = super.healers();
 
-        return union(healers, set(new Resolver(breaker, healers.iterator().next().source, 0)));
+        return union(healers, set(new Resolver(breaker, healers.iterator().next().source)));
     }
 
     public static int count(Plan plan) {
@@ -71,7 +72,7 @@ public class Threat extends Flaw {
                         if (fluent == -effect) { //NEVER have a 0 effect
                             Action source = plan.getEdgeSource(oposite);
                             Action target = plan.getEdgeTarget(oposite);
-                            if (!plan.reachable( troubleMaker, source) && !plan.reachable(target, troubleMaker)) {
+                            if (!plan.reachable(troubleMaker, source) && !plan.reachable(target, troubleMaker)) {
                                 count++;
                             }
                         }

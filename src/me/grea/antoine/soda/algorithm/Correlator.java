@@ -14,7 +14,7 @@ import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Goal;
 import me.grea.antoine.soda.type.Plan;
-import me.grea.antoine.soda.utils.Collections;
+import me.grea.antoine.utils.Collections;
 
 /**
  *
@@ -89,7 +89,7 @@ public class Correlator {
                 Collections.intersection(plan1.vertexSet(), plan2.vertexSet()).size());
         return total.correlation(common);
     }
-    
+
     public double ramirez(Plan base, Plan observed) {
         return base.vertexSet().size() - observed.vertexSet().size();
     }

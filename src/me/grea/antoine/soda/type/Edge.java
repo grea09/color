@@ -14,11 +14,12 @@ import org.jgrapht.graph.DefaultEdge;
  * @author antoine
  */
 public class Edge extends DefaultEdge {
+
     public Set<Integer> labels = new HashSet<>();
 
     @Override
     public String toString() {
-        return getSource()+ " =("+ (labels.isEmpty() ? "☠" : labels) +")> " + getTarget();
+        return getSource() + " -" + (labels.isEmpty() ? "☠" : labels) + "> " + getTarget();
     }
-    
+
 }

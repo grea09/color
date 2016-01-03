@@ -5,17 +5,17 @@
  */
 package me.grea.antoine.soda.test;
 
+import me.grea.antoine.utils.Dice;
 import me.grea.antoine.soda.test.*;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import me.grea.antoine.soda.algorithm.OldDefectResolver;
 import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Problem;
 import me.grea.antoine.soda.type.flaw.Flaw;
-import static me.grea.antoine.soda.utils.Collections.*;
+import static me.grea.antoine.utils.Collections.*;
 import static java.lang.Math.*;
-import me.grea.antoine.log.Log;
+import me.grea.antoine.utils.Log;
 
 /**
  *

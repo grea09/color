@@ -10,8 +10,15 @@ package me.grea.antoine.soda.exception;
  * @author antoine
  */
 public class Success extends Exception {
-    
+
     public Success() {
     }
+
+    @Override
+    public String toString() {
+        return "Success !";
+    }
     
+    
+
 }

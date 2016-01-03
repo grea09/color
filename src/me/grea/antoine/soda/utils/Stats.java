@@ -14,12 +14,11 @@ import java.util.List;
  * @author antoine
  */
 public class Stats {
-    
-    public static Double average(Collection<? extends Number> collection)
-    {
+
+    public static Double average(Collection<? extends Number> collection) {
         return (Double) sum(collection) / collection.size();
     }
-    
+
     public static <T extends Number> T sum(Collection<T> collection) {
         T sum = (T) (Number) (Integer) 0;
         for (T item : collection) {
@@ -27,5 +26,5 @@ public class Stats {
         }
         return sum;
     }
-    
+
 }

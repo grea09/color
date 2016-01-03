@@ -13,7 +13,7 @@ import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Edge;
 import me.grea.antoine.soda.type.Goal;
 import me.grea.antoine.soda.type.Plan;
-import static me.grea.antoine.soda.utils.Collections.*;
+import static me.grea.antoine.utils.Collections.*;
 
 /**
  *
@@ -50,7 +50,7 @@ public class ProperPlan {
         plan.addVertex((Action) goal);
         for (int precondition : goal.preconditions) {
             for (Action action : actions) {
-                if (action.effects.contains(precondition)) {
+                if (action.effects.contains(precondition) && action != goal) {
                     plan.addVertex(action);
                     Edge edge = plan.addEdge(action, (Action) goal);
                     if (edge != null) {

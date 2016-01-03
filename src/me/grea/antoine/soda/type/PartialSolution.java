@@ -5,6 +5,7 @@
  */
 package me.grea.antoine.soda.type;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
 import me.grea.antoine.soda.type.flaw.Flaw;
 
@@ -13,15 +14,15 @@ import me.grea.antoine.soda.type.flaw.Flaw;
  * @author antoine
  */
 public class PartialSolution {
+
     public Plan plan;
     public Flaw cause;
     public Deque<Flaw> remaining;
 
     public PartialSolution(Plan plan, Flaw cause, Deque<Flaw> remaining) {
-        this.plan = (Plan) plan.clone();
+        this.plan = new Plan(plan);
         this.cause = cause;
-        this.remaining = remaining;
+        this.remaining = new ArrayDeque<>(remaining);
     }
-    
-    
+
 }

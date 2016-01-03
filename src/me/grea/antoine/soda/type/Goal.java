@@ -15,6 +15,7 @@ import java.util.Set;
  * @author antoine
  */
 public class Goal {
+
     public Set<Integer> preconditions;
 
     public Goal() {
@@ -33,5 +34,5 @@ public class Goal {
     public String toString() {
         return "G[|=" + preconditions + ']';
     }
-    
+
 }

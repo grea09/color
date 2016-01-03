@@ -5,24 +5,19 @@
  */
 package me.grea.antoine.soda.type.flaw;
 
-import me.grea.antoine.soda.type.flaw.Resolver;
 import java.util.Deque;
 import java.util.Objects;
 import java.util.Set;
-import me.grea.antoine.log.Log;
-import me.grea.antoine.soda.algorithm.PartialOrderPlanning;
-import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Action;
 import me.grea.antoine.soda.type.Problem;
-import me.grea.antoine.soda.type.Problem;
-import static me.grea.antoine.soda.utils.Collections.set;
+import static me.grea.antoine.utils.Collections.set;
 
 /**
  *
  * @author antoine
  */
 public abstract class Flaw {
-    
+
     public int fluent;
     public Action needer;
     public Problem problem;
@@ -32,9 +27,9 @@ public abstract class Flaw {
         this.needer = needer;
         this.problem = problem;
     }
-    
+
     public abstract Deque<Resolver> resolvers();
-    
+
     public Set<Resolver> healers() {
         return set(new Resolver(new Action(null, set(fluent), true), needer, fluent));
     }
@@ -71,7 +66,5 @@ public abstract class Flaw {
         hash = 67 * hash + Objects.hashCode(this.problem);
         return hash;
     }
-    
-    
-    
+
 }

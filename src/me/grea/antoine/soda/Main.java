@@ -7,25 +7,25 @@ package me.grea.antoine.soda;
 
 import me.grea.antoine.soda.type.Action;
 import java.util.Set;
-import me.grea.antoine.log.Log;
+import me.grea.antoine.soda.algorithm.PartialOrderOptimizedPlanning;
+import me.grea.antoine.soda.algorithm.PartialOrderPlanning;
 import me.grea.antoine.soda.algorithm.ProperPlan;
-import me.grea.antoine.soda.algorithm.Soda;
+import me.grea.antoine.soda.exception.Failure;
+import me.grea.antoine.utils.Log;
 import me.grea.antoine.soda.type.Plan;
 import me.grea.antoine.soda.type.Problem;
-import me.grea.antoine.soda.type.defect.CompetingAction;
-import static me.grea.antoine.soda.utils.Collections.*;
+import static me.grea.antoine.utils.Collections.*;
 
 /**
  *
  * @author antoine
  */
 public class Main {
-    
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Failure {
         // TODO code application logic here
         Action initial = new Action(null, set(1, 2));
         Action goal = new Action(set(-2, 3, 4, -5, 6), null);
@@ -41,16 +41,15 @@ public class Main {
                 new Action(set(7, -8), set(8, -7))
         );
 
-        Problem problem = new Problem(initial, goal, actions, new Plan());
-        
+        Problem problem = new Problem(initial, goal, actions, ProperPlan.properPlan(goal, actions));
 
         System.out.println(problem);
         
-        Soda.solve(problem);
 
-        Log.i("Finih !");
+        PartialOrderOptimizedPlanning.solve(problem);
+
         Log.out.println("Solution {\n\t" + problem.planToString() + "}");
-        Log.out.println("Violation : " + problem.violation());
+        Log.out.println("Violation : " + problem.plan.violation());
     }
 
 }

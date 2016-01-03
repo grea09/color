@@ -5,6 +5,7 @@
  */
 package me.grea.antoine.soda.test;
 
+import me.grea.antoine.utils.Dice;
 import me.grea.antoine.soda.test.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,10 +19,9 @@ public class CrazyActionGenerator {
 
     public static Set<Action> generate(int enthropy, int number) {
         Set<Action> actions = new HashSet<>(number);
-        while(actions.size() < number)
-        {
-            actions.add(new Action(Dice.roll(-enthropy, enthropy, Dice.roll((int) (Math.log10(enthropy)+1))), 
-                                   Dice.roll(-enthropy, enthropy, Dice.roll((int) (Math.log10(enthropy)+1)))));
+        while (actions.size() < number) {
+            actions.add(new Action(Dice.roll(-enthropy, enthropy, Dice.roll((int) (Math.log10(enthropy) + 1))),
+                    Dice.roll(-enthropy, enthropy, Dice.roll((int) (Math.log10(enthropy) + 1)))));
         }
         return actions;
     }

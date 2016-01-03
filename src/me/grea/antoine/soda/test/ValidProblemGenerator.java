@@ -5,10 +5,11 @@
  */
 package me.grea.antoine.soda.test;
 
+import me.grea.antoine.utils.Dice;
 import me.grea.antoine.soda.test.*;
 import java.util.HashSet;
 import java.util.Set;
-import me.grea.antoine.log.Log;
+import me.grea.antoine.utils.Log;
 import me.grea.antoine.soda.algorithm.PartialOrderPlanning;
 import me.grea.antoine.soda.exception.Failure;
 import me.grea.antoine.soda.exception.Success;
@@ -63,9 +64,9 @@ public class ValidProblemGenerator {
 //                    }
 //                    DefectResolver.clean(problem);
                     problem.actions.addAll(problem.plan.vertexSet());
-                    problem.plan = new Plan();
-                    problem.plan.addVertex(problem.initial);
-                    problem.plan.addVertex(problem.goal);
+//                    problem.plan = new Plan();
+//                    problem.plan.addVertex(problem.initial);
+//                    problem.plan.addVertex(problem.goal);
                 }
             }
             if (problem.plan.vertexSet().size() == 2) {

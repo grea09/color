@@ -12,6 +12,7 @@ import me.grea.antoine.soda.type.flaw.Flaw;
  * @author antoine
  */
 public class Failure extends Exception {
+
     public Flaw cause;
 
     public Failure(Flaw cause) {
@@ -22,7 +23,5 @@ public class Failure extends Exception {
     public String getMessage() {
         return "Failure caused by " + cause;
     }
-    
-    
-    
+
 }
