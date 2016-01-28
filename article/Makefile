@@ -5,9 +5,10 @@ SVG= $(wildcard graphics/*.svg)
 GENERATED_PDF = $(SVG:.svg=.pdf)
 
 ARGS= --listings -H latex/prelude.tex
-FILTERS=--filter filters/pandoc-svg.py --filter pandoc-fignos --filter pandoc-citeproc --filter filters/code-minipage --filter filters/definition.py --filter filters/algorithm.py --filter filters/proof.py
+FILTERS=--filter pandoc-citeproc
+#--filter filters/pandoc-svg.py --filter pandoc-fignos --filter pandoc-citeproc --filter filters/code-minipage --filter filters/definition.py --filter filters/algorithm.py --filter filters/proof.py
 
-all:$(PDF)
+all:article.pdf
 
 .PHONY: clean
 
@@ -16,4 +17,5 @@ all:$(PDF)
 	pandoc $(FILTERS) $(ARGS) $< -o $@
 
 clean:
-	rm $(GENERATED_PDF)
+	-@rm $(GENERATED_PDF)
+	-@rm $(PDF)
