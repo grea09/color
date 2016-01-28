@@ -7,16 +7,11 @@ package yocto;
 
 import com.hp.hpl.jena.enhanced.BuiltinPersonalities;
 import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.ModelMaker;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import yocto.algorithms.Correlation;
 import yocto.algorithms.MinPlan;
-import yocto.algorithms.PspMinus;
+import yocto.algorithms.PSP;
 import yocto.plannification.Action;
 import yocto.plannification.ActionImpl;
 import yocto.plannification.Entity;
@@ -25,7 +20,6 @@ import yocto.plannification.Goal;
 import yocto.plannification.GoalImpl;
 import yocto.plannification.Statement;
 import yocto.plannification.StatementImpl;
-import yocto.utils.Log;
 import yocto.utils.ModelManager;
 
 /**
@@ -54,7 +48,7 @@ public class Main {
         MinPlan minPlan = new MinPlan(model);
         Correlation correlation = new Correlation(model, minPlan);
         //ONLINE
-        PspMinus pspMinus = new PspMinus(model, minPlan);
+        PSP pspMinus = new PSP(model, minPlan);
     }
 
 }

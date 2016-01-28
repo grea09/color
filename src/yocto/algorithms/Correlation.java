@@ -19,7 +19,7 @@ import yocto.plannification.Action;
 import yocto.plannification.Goal;
 import yocto.plannification.Statement;
 import yocto.rdf.NameSpace;
-import yocto.utils.Log;
+import me.grea.antoine.utils.Log;
 import yocto.utils.Query;
 
 /**

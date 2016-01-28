@@ -14,10 +14,10 @@ public interface Compatible<T extends Compatible> {
 
     static enum Compatibility {
 
-        COMPATIBLE,
-        SATISFIES,
+        INCOMPATIBLE,
         SATISFIED,
-        INCOMPATIBLE;
+        SATISFIES,
+        COMPATIBLE;
 
         public boolean satisfies() {
             return this.equals(SATISFIES) || compatible();
@@ -28,7 +28,11 @@ public interface Compatible<T extends Compatible> {
         }
 
         public Compatibility and(Compatibility other) {
-            return values()[Math.max(ordinal() ,other.ordinal()) ];
+            return values()[ordinal() & other.ordinal()];
+        }
+        
+        public Compatibility or(Compatibility other) {
+            return values()[ordinal() | other.ordinal()];
         }
     };
 

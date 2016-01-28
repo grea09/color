@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import yocto.plannification.Action;
 import yocto.plannification.Goal;
-import yocto.utils.Log;
+import me.grea.antoine.utils.Log;
 import yocto.utils.Query;
 
 /**

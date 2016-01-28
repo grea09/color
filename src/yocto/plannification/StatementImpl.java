@@ -24,6 +24,7 @@ import com.hp.hpl.jena.rdf.model.Seq;
 import com.hp.hpl.jena.rdf.model.StmtIterator;
 import com.hp.hpl.jena.rdf.model.impl.ReifiedStatementImpl;
 import yocto.rdf.NameSpace;
+import me.grea.antoine.utils.Log;
 
 public class StatementImpl extends ReifiedStatementImpl implements Statement {
 
@@ -255,6 +256,7 @@ public class StatementImpl extends ReifiedStatementImpl implements Statement {
 
     @Override
     public boolean isSatisfied(Model context) {
+//        Log.d(this + " isSatisfied ?");
         StmtIterator iterator = context.listStatements(null,
                 getPredicate(),
                 (String) null
@@ -262,7 +264,9 @@ public class StatementImpl extends ReifiedStatementImpl implements Statement {
 
         while (iterator.hasNext()) {
             Statement contextStatement = iterator.next().createReifiedStatement().as(Statement.class);
+//            Log.d(contextStatement);
             if (compatible(contextStatement).satisfies()) {
+//                Log.d("SATISFIES");
                 iterator.close();
                 return true;
             }
@@ -273,9 +277,9 @@ public class StatementImpl extends ReifiedStatementImpl implements Statement {
 
     @Override
     public String toString() {
-        return "" + statement.getSubject().as(Entity.class) + 
+        return "" + statement.getSubject().as(Entity.class)+ 
                 " "+ NameSpace.prefix(statement.getPredicate().getURI()) + 
-                " " + statement.getObject().as(Entity.class);
+                " " + (statement.getObject().canAs(Entity.class) ? statement.getObject().as(Entity.class) : statement.getObject().toString());
     }
     
     

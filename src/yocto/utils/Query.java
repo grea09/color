@@ -64,7 +64,8 @@ public class Query {
             );
             put("entities", new Query().
                     describe(Arrays.asList("e")).
-                    startWhere().append("?e a :Entity.\n")
+                    startWhere().append("?e a :Entity.\n"
+                                        + "MINUS { ?e :param ?a}\n")
             );
             put("preconditions", new Query().
                     select(Arrays.asList("pre")).

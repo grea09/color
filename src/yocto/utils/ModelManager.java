@@ -5,6 +5,7 @@
  */
 package yocto.utils;
 
+import me.grea.antoine.utils.Log;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.ModelMaker;

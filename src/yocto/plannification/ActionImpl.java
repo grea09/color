@@ -21,7 +21,7 @@ public class ActionImpl extends GoalImpl implements Action {
     private final static Node type = NameSpace.BASE.node("Action");
 
     private final Set<Statement> effects;
-
+    
     protected ActionImpl(Node n, EnhGraph m, Set<Statement> preconditions, Set<Statement> effects) {
         super(n, m, preconditions);
         this.effects = effects;

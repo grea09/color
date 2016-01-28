@@ -12,9 +12,8 @@ import com.hp.hpl.jena.graph.Graph;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.ontology.impl.IndividualImpl;
 import com.hp.hpl.jena.rdf.model.DoesNotReifyException;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.SimpleSelector;
+import com.hp.hpl.jena.rdf.model.StmtIterator;
+import com.hp.hpl.jena.vocabulary.RDF;
 import yocto.rdf.NameSpace;
 import yocto.rdf.Predicate;
 import yocto.utils.Compatible.Compatibility;
@@ -55,22 +54,41 @@ public class EntityImpl extends IndividualImpl implements Entity {
 
     @Override
     public Compatibility compatible(Entity o) {
-        Model e1Model = getModel().query(new SimpleSelector(this, (Property) null, (String) null));
-        Model e2Model = o.getModel().query(new SimpleSelector(o, (Property) null, (String) null));
-        e1Model.removeAll(null, Predicate.PARAM.in(e1Model), null);
-        e2Model.removeAll(null, Predicate.PARAM.in(e2Model), null);
-        Model intersection = e1Model.intersection(e2Model);
-
-        return e1Model.isIsomorphicWith(e2Model) ? Compatibility.COMPATIBLE
-                : (intersection.isIsomorphicWith(e2Model) ? Compatibility.SATISFIED
-                        : (intersection.isIsomorphicWith(e1Model) ? Compatibility.SATISFIES : Compatibility.INCOMPATIBLE));
+        if (hasURI(NameSpace.E + "nothing") || o.hasURI(NameSpace.E + "nothing")) {
+            return equals(o) ? Compatibility.COMPATIBLE : Compatibility.INCOMPATIBLE;
+        }
+        Compatibility compatibility = Compatibility.COMPATIBLE;
+        StmtIterator iterator = listProperties();
+        while (iterator.hasNext()) {
+            com.hp.hpl.jena.rdf.model.Statement statement = iterator.next();
+            if (!statement.getPredicate().hasURI(Predicate.PARAM.toString())
+                    && !o.hasProperty(statement.getPredicate(), statement.getResource())) {
+                //if o doesn't have a property this has then this.compatible(o) = SATISFIES (this > o)
+                compatibility = compatibility.and(Compatibility.SATISFIED);
+                break;
+            }
+        }
+        iterator = o.listProperties();
+        while (iterator.hasNext()) {
+            com.hp.hpl.jena.rdf.model.Statement statement = iterator.next();
+            if (!statement.getPredicate().hasURI(Predicate.PARAM.toString())
+                    && !hasProperty(statement.getPredicate(), statement.getResource())) {
+                //if this doesn't have a property o has then this.compatible(o) = SATISFIED (o > this)
+                compatibility = compatibility.and(Compatibility.SATISFIES);
+                break;
+            }
+        }
+        // if both then incompatible !
+        return compatibility;
     }
 
     @Override
     public String toString() {
-        return (isAnon() ? "param:" + NameSpace.prefix(getPropertyResourceValue(Predicate.PARAM.in(getModel())).getURI()) : NameSpace.prefix(getURI()));
+        return (isAnon()
+                ? (hasProperty(Predicate.PARAM.in(getModel()))
+                        ? "param:" + NameSpace.prefix(getPropertyResourceValue(Predicate.PARAM.in(getModel())).getURI())
+                        : "?")
+                : NameSpace.prefix(getURI()));
     }
-    
-    
 
 }
