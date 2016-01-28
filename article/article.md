@@ -1,5 +1,5 @@
 ---
-title: "SODA POP: SOft solving and Defect Aware Partial Ordering Planning"
+title: "LOLLIPOP : aLternative Optimization with causaL Link Injection Partial Ordered Planning"
 author: Paper ID\#42
 tags: [nothing, nothingness]
 abstract: [Abstract goes here !]
@@ -19,7 +19,9 @@ markdown_in_html_blocks: yes
 \bibliographystyle{ecai}
 
 # Introduction {-}
+
 In general artificial intelligence, planning has proven to be …
+
 * Citing existing works to situate the present paper
 * Explain the work and the motivations of it
 

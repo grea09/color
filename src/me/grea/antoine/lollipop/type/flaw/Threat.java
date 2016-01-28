@@ -1,0 +1,114 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package me.grea.antoine.lollipop.type.flaw;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
+import me.grea.antoine.lollipop.type.Action;
+import me.grea.antoine.lollipop.type.Edge;
+import me.grea.antoine.lollipop.type.Plan;
+import me.grea.antoine.lollipop.type.Problem;
+import static me.grea.antoine.utils.Collections.*;
+import me.grea.antoine.utils.Log;
+
+/**
+ *
+ * @author antoine
+ */
+public class Threat extends Flaw {
+
+    public Action breaker;
+    public Edge threatened;
+    private Edge demoter;
+    private Edge promoter;
+
+    public Threat(Action threat, Edge threatened, int fluent, Problem problem) {
+        super(fluent, problem.plan.getEdgeTarget(threatened), problem);
+        this.breaker = threat;
+        this.threatened = threatened;
+    }
+
+    @Override
+    public Deque<Resolver> resolvers() {
+        Deque<Resolver> resolvers = new ArrayDeque<>();
+        Action source = problem.plan.getEdgeSource(threatened);
+        Action target = problem.plan.getEdgeTarget(threatened);
+        if (target != problem.goal) {
+            Log.w("Can't demote after goal step !");
+            resolvers.add(new Resolver(target, breaker));
+        }
+        if (source != problem.initial) {
+            Log.w("Can't promote before initial step !");
+            resolvers.add(new Resolver(breaker, source));
+        }
+        return resolvers;
+    }
+
+    public static Set<Threat> find(Problem problem) {
+        Set<Threat> threats = new HashSet<>();
+        for (Action candidate : problem.plan.vertexSet()) {
+            threats.addAll(related(candidate, problem));
+        }
+        return threats;
+    }
+
+    @Override
+    public Set<Resolver> healers() {
+        Set<Resolver> healers = super.healers();
+
+        return union(healers, set(new Resolver(breaker, healers.iterator().next().source)));
+    }
+
+    public static int count(Problem problem) {
+        int count = 0;
+        for (Action troubleMaker : problem.plan.vertexSet()) {
+            if (troubleMaker != problem.goal && troubleMaker != problem.initial) {
+                for (int effect : troubleMaker.effects) {
+                    for (Edge oposite : problem.plan.edgeSet()) {
+                        for (int fluent : oposite.labels) {
+                            if (fluent == -effect) { //NEVER have a 0 effect
+                                Action source = problem.plan.getEdgeSource(oposite);
+                                Action target = problem.plan.getEdgeTarget(oposite);
+                                if (!problem.plan.reachable(troubleMaker, source) && !problem.plan.reachable(target, troubleMaker)) {
+                                    count++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    public static Set<Threat> related(Action troubleMaker, Problem problem) {
+        Set<Threat> related = new HashSet<>();
+        if (troubleMaker != problem.goal && troubleMaker != problem.initial) {
+            for (int effect : troubleMaker.effects) {
+                for (Edge oposite : problem.plan.edgeSet()) {
+                    for (int fluent : oposite.labels) {
+                        if (fluent == -effect) { //NEVER have a 0 effect
+                            Action source = problem.plan.getEdgeSource(oposite);
+                            Action target = problem.plan.getEdgeTarget(oposite);
+                            if (!problem.plan.reachable(troubleMaker, source) && !problem.plan.reachable(target, troubleMaker)) {
+                                related.add(new Threat(troubleMaker, oposite, fluent, problem));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return related;
+    }
+
+    @Override
+    public String toString() {
+        return breaker + " ☠ " + threatened;
+    }
+
+}
