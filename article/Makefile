@@ -10,7 +10,7 @@ FILTERS=--filter pandoc-citeproc
 
 all:article.pdf
 
-.PHONY: clean
+.PHONY: clean continious
 
 %.pdf: %.md
 	-@rm $@ 2> /dev/null
@@ -19,3 +19,6 @@ all:article.pdf
 clean:
 	-@rm $(GENERATED_PDF)
 	-@rm $(PDF)
+
+continious:
+	@bin/inotifyrun pandoc $(FILTERS) $(ARGS) article.md -o article.pdf
