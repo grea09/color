@@ -4,9 +4,13 @@ PDF= $(SRC:.md=.pdf)
 SVG= $(wildcard graphics/*.svg)
 GENERATED_PDF = $(SVG:.svg=.pdf)
 
-ARGS= --listings -H latex/prelude.tex
-FILTERS=--filter pandoc-citeproc
-#--filter filters/pandoc-svg.py --filter pandoc-fignos --filter pandoc-citeproc --filter filters/code-minipage --filter filters/definition.py --filter filters/algorithm.py --filter filters/proof.py
+
+ARGS= ---quiet
+#ARGS= --listings -H latex/prelude.tex
+#FILTERS=--filter filters/pandoc-crossref --filter pandoc-citeproc --filter filters/definition.py --filter filters/algorithm.py
+#--filter filters/pandoc-svg.py --filter pandoc-fignos --filter pandoc-citeproc --filter filters/code-minipage --filter filters/proof.py
+
+PANDOC= panzer
 
 all:article.pdf
 
@@ -14,11 +18,11 @@ all:article.pdf
 
 %.pdf: %.md
 	-@rm $@ 2> /dev/null
-	pandoc $(FILTERS) $(ARGS) $< -o $@
+	$(PANDOC) $(FILTERS) $(ARGS) $< -o $@
 
 clean:
 	-@rm $(GENERATED_PDF)
 	-@rm $(PDF)
 
 continious:
-	@bin/inotifyrun pandoc $(FILTERS) $(ARGS) article.md -o article.pdf
+	-@bin/inotifyrun $(PANDOC) $(FILTERS) $(ARGS) article.md -o article.pdf

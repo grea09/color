@@ -17,7 +17,7 @@ import static me.grea.antoine.utils.Collections.*;
  *
  * @author antoine
  */
-public class Resolver { // TODO : Put in interface and make that an additive resolver then make the alternative resolver and then the substracting resolver
+public class Resolver {
 
     public Action source;
     public Action target;
@@ -27,7 +27,7 @@ public class Resolver { // TODO : Put in interface and make that an additive res
     private boolean edgeCreated = false;
     private boolean sourceCreated = false;
     private boolean targetCreated = false;
-    private Set<Action> posibleOrphans = new HashSet<>();
+    private final Set<Action> posibleOrphans = new HashSet<>();
 
     public Resolver(Action source, Action target, int fluent, boolean negative) {
         this.source = source;

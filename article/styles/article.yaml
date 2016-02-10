@@ -1,0 +1,32 @@
+article:
+    all:
+        metadata:
+            smart: yes
+            standalone: yes
+            numbersections: no
+            secPrefix: 
+                - section
+                - sections
+            figPrefix:
+                - figure
+                - figures
+            markdown_in_html_blocks: yes
+    latex:
+        metadata:
+            numbersections: yes
+
+            csl: latex/ieee.csl
+            link-citations: true
+
+            latex-engine: pdflatex
+            documentclass: article
+            listings: yes
+            header-includes: 
+                - "\\input{latex/prelude.tex}"
+        filter:
+            - run: filters/pandoc-crossref
+            - run: pandoc-citeproc
+            - run: filters/pandoc-svg.py
+            - run: filters/definition.py
+            - run: filters/algorithm.py
+            - run: filters/proof.py

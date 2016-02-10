@@ -1,11 +1,13 @@
-\usepackage{xcolor, xcolor-solarized, listing, algorithm, amsthm}
+\usepackage{xcolor, xcolor-solarized, algorithm, amsthm}
 \usepackage[noend]{algpseudocode}
 
 \usepackage{times, graphicx}
 
 %%%%%% for algorithms
 \algrenewcommand\alglinenumber[1]{\tiny\color{solarized-base0} #1}
+\algrenewcommand{\algorithmiccomment}[1]{{\hfill\hfill\color{solarized-base01}// #1}}
 \input{latex/algorithicx.rule.patch.tex} %For rules on algorithmicx
+\renewcommand{\thealgruleextra}{\color{solarized-base0}}
 
 %%%% For links URL
 \hypersetup{colorlinks=true, linkcolor=solarized-blue, citecolor=solarized-base1, filecolor=solarized-magenta, urlcolor=solarized-cyan}

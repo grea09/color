@@ -1,0 +1,5 @@
+ecai:
+    parent: article
+    latex:
+        metadata:
+            documentclass: latex/ecai
