@@ -3,7 +3,7 @@ article:
         metadata:
             smart: yes
             standalone: yes
-            numbersections: no
+            numbersections: yed
             secPrefix: 
                 - section
                 - sections
@@ -11,6 +11,13 @@ article:
                 - figure
                 - figures
             markdown_in_html_blocks: yes
+
+        filter:
+            - run: filters/pandoc-crossref
+            - run: filters/pandoc-science.py
+            - run: pandoc-citeproc
+            - run: filters/pandoc-svg.py
+
     latex:
         metadata:
             numbersections: yes
@@ -23,10 +30,3 @@ article:
             listings: yes
             header-includes: 
                 - "\\input{latex/prelude.tex}"
-        filter:
-            - run: filters/pandoc-crossref
-            - run: pandoc-citeproc
-            - run: filters/pandoc-svg.py
-            - run: filters/definition.py
-            - run: filters/algorithm.py
-            - run: filters/proof.py
