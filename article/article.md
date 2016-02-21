@@ -127,7 +127,7 @@ This standard implementation has several limitations. First it can easily make p
 To illustrate these limitations, we use the example described in [@fig:example] where a robot must fetch a lollipop in a locked room. This problem is quite easily solved by regular POP algorithms. However, we can observe that if we inserted an operator that has a similar effect as $go$ but that has impossible precondition (e.g. $false$), then the algorithm might select it and will need backtracking to solve the plan. This problem is solved via using simple goal selection methods. However, to our knowledge, this was never applied in the context of POP.
 
 Another limitation is met when the input plan contains a loop or a contradiction. We consider the partial plan similar to $I \rightarrow go(robot, livingroom) \rightarrow grab(robot, keys) \rightarrow go(robot, corridor) \rightarrow go(robot, livingroom) …$.
-There is a loop in that plan (between the two $go$ actions) that standard POP algorithms won't fix. In the literature this is not considered since classical POP doesn't take a partial plan as input or hypothesise out directly such inconsistencies.
+There is a loop in that plan (between the two $go$ actions) that standard POP algorithms won't fix. In the literature this is not considered since classical POP doesn't take a partial plan as input or hypothesise out directly such inconsistencies. <!-- FIXME Not flagrant in current example, others could argue it is all artificial and that the problem doesn't really exists-->
 
 # Using domain proper plan as initial partial plan {#sec:properplan}
 
@@ -141,7 +141,7 @@ This proper plan is saved for usage related to the utility function (cf. [@sec:u
 
 The next step is to derive a viable partial plan from the proper plan. The main problem with this is the lack of initial or goal step in it. Since it is made during domain compilation time the algorithm doesn't have access to the problem's data. That is why during the problem processing phase, an algorithm will inject the initial and goal step into the plan. This uses the same algorithm used to build the proper plan in the first place. It will bind the initial step to the operators that can be used in the initial world state and the goal step to the operators that can fulfil its preconditions. We decide to leave the operators uninstantiated for our cycle breaking mechanism to work. This mechanism is based on the alternative negative flaw (cf. [@def:alternative])
 
-![Proper plan of example domain with dotted initial and goal step binding](graphics/properplan.svg){#fig:properplan}
+![Proper plan of example domain with dotted initial and goal step insertion.](graphics/properplan.svg){#fig:properplan}
 
 In [@fig:properplan] we illustrate the proper plan mechanics with our previous example. The most notable feature of this graph is its coverage. It contains cycles wich can be proven problematic for POP.
 
@@ -199,16 +199,69 @@ The **utility value** of an operator $o$ is defined using the following formula 
 $$h(o) = {P.d^+(o) \times \alpha^{-P.d^-(o)}
        \over
        {\Delta^P.d^+(o) \times \alpha^{-\Delta^P.d^-(o)}} 
-}$$
+}$$ <!-- FIXME There is no way to compare steps and operators-->
 with $d^-$ and $d^+$ being the incoming and outgoing degree of the node representing the given operator in the given graph and $\alpha$ being a numerical constant. Another property of this utility function is that it will return $+\infty$ is the parameter is the initial step.<!-- FIXME Make the infinity thing a part of the definition -->
+<!--TODO add a notion of operator degree o.d^+ and o.d^- -->
+
+**!Alt** Other heuristics :
+$$h(o) = {{P.d^+(o) + | eff(o) |}
+       \over
+       {\alpha^{P.d^-(o) + | pre(o) |} } 
+}$$
+
+$$h(o) ={{P.d^+(o) + \Delta^P.d^+(o) }
+       \over
+       { \alpha^{P.d^-(o) + \Delta^P.d^-(o)}} 
+}$$
+
+
 
 The goal behind that heuristic is that it was meant to encourage participating actions against needy ones. So this function will increase with outgoing degree of the opertor in both graphs (domain proper plan and current partial plan).
 
 ## Resolver selection
 
+Some flaws have a large amount of resolvers to try. Knowing that chosing the wrong one can cause extensive backtracking its selection if crutial to the performance of the application. From there the selection is the most important for subgoals. This kind of flaws have resolvers with the most impact on the plan since they add a causal link and a new action. A subgoal resolver represent the choice of a provider for the open condition. Since we have a heuristic to rank them we use it to order the set of resolvers during the search. In order to improve even more on the performance, we can keep an ordered list of all available steps and operators updated. <!-- FIXME is that an actual good idea -->
 
 ## Flaw selection
 
+Another problem lies in the selection of flaws. Indeed the order that they are fixed can cause big problems. For example if all the subgoals of an alternative are computed before it will cause a big amount of unecessary computation. That is why we chose to compute the flaws that reduce ther search space the most at first. Our order is the following :
+
+1. **!Alt** **Cycles** that comes from the original domain proper plan are an indication that some operators are co-dependant and that is often where problems arise. This step is also the most succeptible to cause an early failure wich is very beneficial for the speed of the algorithm.
+2. **Alternatives** will cut causal links that have a better provider. It is necessary to do that first since they will add at least another subgoal to be fixed as a related flaw.
+3. **Subgoals** are the flaws that causes the most branching factor for POP algorithms. This is why we need to make sure that all open conditions are fixed before proceding on finer refinements.
+4. **Threats** occurs quite often in the computation and requires lots of computation to check if they are applicable and are one of the most side effect heavy. That is why we prioritise all related subgoals before threats because they can actually add cuasal links that will fix the threat without needing to do anything.
+5. **Orhpans** are a fine optimisation of plans. They remove uneeded branches of the plan. However these branches can be found out to be necessary for the plan in order to meet a subgoal. Since a branch can contain numerous actions it is preferable to let the orphan in the plan until we are sure that they won't be needed.
+
+# Complete LOLLIPOP algorithms
+
+With all these mechanisms defined we can now present the complete algorithm of LOLLIPOP :
+
+<div id="alg:lollipop" class="algorithm" name="All the yummy sweet lollipop" >
+\footnotesize
+\Function{lollipop}{Queue of Flaws $agenda$, Problem $\Pi$}
+    \State \Call{solveallworldsproblems}{$agenda$, $\Pi$} \Comment{Only on first call}
+\EndFunction
+</div> <!--TODO LOL --> 
+
+## Domain compilation phase
+
+The domain compilation phase is the first to quick in. It needs to parse and interprate a domain description input and make it usable by POP algorithms. This phase includes a cleaning phase that rules out illegal defects present in the initial description in order to be resilient to basic logic errors. <!--FIXME explian that more -->Most of those compilation includes a translation from the expressive complexity of the input to a much simpler representation used in algorithms for performance. In this step we also add our proper plan creation algorithm along with cycle detection on the result. This is used to cache cycle flaws in order to make the agenda population easier durring runtime. We also keep a copy of the proper plan in memory and start ordering operators to allow fast goal selection.
+
+## Runtime initialization phase
+
+This phase comes as the problem is provided. It contains multiple steps.
+
+1. Initial and Goal insertion into the proper plan to construct the initial partial plan.
+2. Binding variables and inconsistencies detection.
+3. Add the cached cycle flaws to the top of the agenda.
+4. Search and add alternative flaws that aren't in cycles.
+5. Search and add all obvious subgoals left unfulfiled in the plan.
+6. Search for early threats in the partial plan and add them to the bottom of the agenda.
+7. Search for all orphans and add them last in the agenda.
+
+## Runtime main loop phase
+
+That part is similar to regular POP algorithms as it will almost only take flaws from the agenda and try to fix them one by one. On of the differences is that each time a flaw is fixed, it calls a special function that provides related flaws. In the case of cycles or alternative we can have potential orphans and new subgoals that needs to be fixed. In the case of subgoals it can lead to new subgoals or threats. Threats are a bit special in that regard. They can't cause other flaws but are treated differently. The algorithm will always delay them after all curent subgoals have been fixed. Then all orphans that are kept last may only cause other orphans <!-- what a sad world -->.
 
 # Found properties of LOLLIPOP
 
