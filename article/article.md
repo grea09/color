@@ -187,7 +187,7 @@ This is the reason why we need a new goal and flaw selection mechanism.
 
 # Driving resolver and flaw selection {#sec:selection}
 
-Resolver and flaws selection are the key to improvements in performances. Chosing a good resolver helps reducing the branching factor that account for most of the time spent on running POP algorithms. 
+Resolver and flaws selection are the key to improvements in performances. Chosing a good resolver helps reducing the branching factor that account for most of the time spent on running POP algorithms.
 
 ## Utility {#sec:utility}
 
@@ -196,25 +196,26 @@ An utility function is an heuristic that allows to rank operators. This is at th
 In our case we chose to have one main heuristic that aims to lower branching factor by trying to make the base operation more aware of the utility of the considered data. A good explanation of the machanics behind this can be found in [@kambhampati_design_1994].
 
 The **utility value** of an operator $o$ is defined using the following formula :
-$$h(o) = {P.d^+(o) \times \alpha^{-P.d^-(o)}
+$$h_1(o) = {P.d^+(o) \times \alpha^{-P.d^-(o)}
        \over
-       {\Delta^P.d^+(o) \times \alpha^{-\Delta^P.d^-(o)}} 
+       {\Delta^P.d^+(o) \times \alpha^{-\Delta^P.d^-(o)}}
 }$$ <!-- FIXME There is no way to compare steps and operators-->
 with $d^-$ and $d^+$ being the incoming and outgoing degree of the node representing the given operator in the given graph and $\alpha$ being a numerical constant. Another property of this utility function is that it will return $+\infty$ is the parameter is the initial step.<!-- FIXME Make the infinity thing a part of the definition -->
 <!--TODO add a notion of operator degree o.d^+ and o.d^- -->
 
 **!Alt** Other heuristics :
-$$h(o) = {{P.d^+(o) + | eff(o) |}
+$$h_2(o) = {{P.d^+(o) + | eff(o) |}
        \over
-       {\alpha^{P.d^-(o) + | pre(o) |} } 
+       {\alpha^{P.d^-(o) + | pre(o) |} }
 }$$
 
-$$h(o) ={{P.d^+(o) + \Delta^P.d^+(o) }
+$$h_3(o) ={{P.d^+(o) + \Delta^P.d^+(o) }
        \over
-       { \alpha^{P.d^-(o) + \Delta^P.d^-(o)}} 
+       { \alpha^{P.d^-(o) + \Delta^P.d^-(o)}}
 }$$
 
 
+![Repesentation of the application of the different heuristics on the example with $\alpha = 2$](graphics/utility.svg){#fig:utility}
 
 The goal behind that heuristic is that it was meant to encourage participating actions against needy ones. So this function will increase with outgoing degree of the opertor in both graphs (domain proper plan and current partial plan).
 
@@ -241,7 +242,7 @@ With all these mechanisms defined we can now present the complete algorithm of L
 \Function{lollipop}{Queue of Flaws $agenda$, Problem $\Pi$}
     \State \Call{solveallworldsproblems}{$agenda$, $\Pi$} \Comment{Only on first call}
 \EndFunction
-</div> <!--TODO LOL --> 
+</div> <!--TODO LOL -->
 
 ## Domain compilation phase
 
@@ -270,14 +271,3 @@ The proof
 </div>
 
 # Experiments
-
-# Conclusion {-}
-
-<!-- TODO
-* Discussion of results and properties
-* Summary of improvements
-* Introducing soft solving and online planning.
-* Online planning
-* plan recognition and constrained planning-->
-
-# References
