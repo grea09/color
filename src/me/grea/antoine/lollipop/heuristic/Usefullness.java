@@ -5,11 +5,11 @@
  */
 package me.grea.antoine.lollipop.heuristic;
 
+import static java.lang.Math.pow;
+import static java.lang.Math.round;
 import java.util.Comparator;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
-import static java.lang.Math.round;
-import static java.lang.Math.pow;
 
 /**
  *

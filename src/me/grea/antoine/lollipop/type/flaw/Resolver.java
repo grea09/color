@@ -12,6 +12,7 @@ import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Plan;
 import me.grea.antoine.lollipop.type.Problem;
 import static me.grea.antoine.utils.Collections.*;
+import me.grea.antoine.utils.Log;
 
 /**
  *
@@ -48,21 +49,24 @@ public class Resolver {
         if (negative) {
             edge = plan.getEdge(source, target);
             if (edge == null) {
-                for (Edge child : plan.incomingEdgesOf(source)) {
-                    posibleOrphans.add(plan.getEdgeSource(child));
-                }
+                Orphan.add(source, new HashSet<Action>() { // Ghooosssttt
+                    {
+                        for (Edge child : plan.incomingEdgesOf(source)) {
+                            add(plan.getEdgeSource(child));
+                        }
+                    }
+                });
                 plan.removeVertex(source);
                 return;
             }
             if (edge.labels.equals(set(fluent))) {
-                posibleOrphans.add(source);
                 plan.removeEdge(edge);
             } else {
                 edge.labels.remove(fluent);
             }
             return;
         }
-        if (fluent == 0 && plan.reachable(source, target)) {
+        if (fluent == 0 && plan.reachable(source, target)) { // No need to resolve the threat
             return;
         }
 
@@ -105,23 +109,24 @@ public class Resolver {
     public boolean appliable(Plan plan) {
         return negative
                 ? (plan.containsEdge(source, target) || plan.containsVertex(source))
-                : ((!plan.containsEdge(source, target)
-                || !plan.getEdge(source, target).labels.contains(fluent))
-                && !plan.reachable(target, source));
+                : //((!plan.containsEdge(source, target)
+//                || !plan.getEdge(source, target).labels.contains(fluent))
+//                && 
+                !plan.reachable(target, source);
     }
 
     public Set<Flaw> related(Problem problem) {
         Set<Flaw> related = new HashSet<>();
-        if (negative) {
-            if (target != null) {
-                related.addAll(SubGoal.related(target, problem));
-            }
-            related.addAll(Orphan.related(posibleOrphans, problem));
-        } else {
-            related.addAll(SubGoal.related(source, problem));
-            related.addAll(Threat.related(source, problem));
-        }
-//        Log.d("Related flaws " + related);
+//        if (negative) {
+//            if (target != null) { //FIXME redo that
+//                related.addAll(SubGoal.related(target, problem));
+//            }
+//            related.addAll(Orphan.related(source, problem));
+//        } else {
+        related.addAll(SubGoal.related(source, problem));
+        related.addAll(Threat.related(source, problem));
+//        }
+        Log.d("Related flaws " + related);
 
         return related;
     }

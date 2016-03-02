@@ -5,19 +5,15 @@
  */
 package me.grea.antoine.lollipop.algorithm;
 
-import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Set;
-import me.grea.antoine.utils.Log;
-import me.grea.antoine.lollipop.exception.Failure;
+import me.grea.antoine.lollipop.agenda.Agenda;
+import me.grea.antoine.lollipop.agenda.ClassicalAgenda;
 import me.grea.antoine.lollipop.exception.Success;
-import me.grea.antoine.lollipop.type.PartialSolution;
-import me.grea.antoine.lollipop.type.flaw.Flaw;
 import me.grea.antoine.lollipop.type.Problem;
+import me.grea.antoine.lollipop.type.flaw.Flaw;
 import me.grea.antoine.lollipop.type.flaw.Resolver;
-import me.grea.antoine.lollipop.type.flaw.SubGoal;
-import me.grea.antoine.lollipop.type.flaw.Threat;
-import org.jgrapht.alg.CycleDetector;
+import me.grea.antoine.utils.Log;
 
 /**
  *
@@ -26,61 +22,62 @@ import org.jgrapht.alg.CycleDetector;
 public class PartialOrderPlanning {
 
     private final Problem problem;
-    private final Deque<Flaw> agenda = new ArrayDeque<>();
+    private Agenda agenda;
 
     public PartialOrderPlanning(Problem problem) {
         this.problem = problem;
-        populate(agenda, problem);
+        agenda = new ClassicalAgenda(problem);
     }
 
-    private static void populate(Deque<Flaw> agenda, Problem problem) {
-        agenda.addAll(SubGoal.find(problem));
-        agenda.addAll(Threat.find(problem));
-    }
-
-    public static void solve(Problem problem) throws Failure {
+    public static void solve(Problem problem) {
         PartialOrderPlanning pop = new PartialOrderPlanning(problem);
-        try {
-            pop.refine();
-        } catch (Success ex) {
+        while (true) {
+            try {
+                pop.refine();
+            } catch (Success ex) {
+                Log.i("Success !");
+                return;
+            }
+            Log.w("Failure");
+//            pop.agenda = new ClassicalAgenda(problem);
+//            problem.plan = new Plan();
+//            problem.plan.addVertex(problem.initial);
+//            problem.plan.addVertex(problem.goal);
+            
+            return;
         }
-        //Logically shouldn't go there
     }
 
-    public void refine() throws Success, Failure {
-//        Log.d("Agenda " + agenda);
+    public void refine() throws Success {
         if (agenda.isEmpty()) {
             throw new Success();
         }
-        Flaw flaw = agenda.pop();
-//        Log.d("Resolving " + flaw);
+        Log.d("Agenda " + agenda);
+        
+        Flaw flaw = agenda.choose();
+        Log.d("Resolving " + flaw);
+        
         Deque<Resolver> resolvers = flaw.resolvers();
-//        Log.d("Resolver " + resolvers);
+        Log.d("Resolvers " + resolvers);
+        
         for (Resolver resolver : resolvers) {
-//            Log.d("Trying with " + resolver);
+            Log.d("Trying with " + resolver);
 
             if (resolver.appliable(problem.plan)) {
                 resolver.apply(problem.plan);
             } else {
+                Log.w(resolver + " isn't appliable !");
                 continue;
             }
-
-            if (!new CycleDetector<>(problem.plan).detectCyclesContainingVertex(resolver.target)) {
-                Set<Flaw> related = resolver.related(problem);
-                for (Flaw newFlaw : related) {
-                    if (!agenda.contains(newFlaw)) {
-                        agenda.addLast(newFlaw);
-                    }
-                }
-                refine();
-            } else {
-//                Log.w("REVERT !");
-                resolver.revert(problem.plan);
-            }
-//            problem.partialSolutions.push(new PartialSolution(problem.plan, flaw, agenda));
+            Set<Flaw> related = resolver.related(problem);
+            agenda.addAll(related);
+            refine();
+            resolver.revert(problem.plan); // Return means failure
+            agenda.removeAll(related);
         }
-        Log.w("Plan unsolvable !!!");
-//        problem.partialSolutions.push(new PartialSolution(problem.plan, flaw, agenda));
-        throw new Failure(flaw);
+        Log.w("No suitable resolver for " + flaw);
+        Log.v(agenda);
+        Log.v(problem.planToString());
     }
+
 }

@@ -10,17 +10,21 @@ import java.util.Objects;
 import java.util.Set;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
-import static me.grea.antoine.utils.Collections.set;
 
 /**
  *
  * @author antoine
+ * @param <T> Subtype
  */
-public abstract class Flaw {
+public abstract class Flaw<T extends Flaw> {
 
     public int fluent;
     public Action needer;
     public Problem problem;
+
+    protected Flaw(Problem problem) {
+        this.problem = problem;
+    }
 
     public Flaw(int fluent, Action needer, Problem problem) {
         this.fluent = fluent;
@@ -30,15 +34,13 @@ public abstract class Flaw {
 
     public abstract Deque<Resolver> resolvers();
 
-    public Set<Resolver> healers() {
-        return set(new Resolver(new Action(null, set(fluent), true), needer, fluent));
-    }
+    public abstract Set<T> related(Action troubleMaker);
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
-        }
+}
         if (obj == null) {
             return false;
         }

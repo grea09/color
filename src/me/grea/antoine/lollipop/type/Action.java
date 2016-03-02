@@ -7,7 +7,6 @@ package me.grea.antoine.lollipop.type;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 /**

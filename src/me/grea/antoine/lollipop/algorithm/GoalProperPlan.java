@@ -19,7 +19,7 @@ import static me.grea.antoine.utils.Collections.*;
  *
  * @author antoine
  */
-public class ProperPlan {
+public class GoalProperPlan {
 
     public static Plan properPlan(Goal goal, Set<Action> actions) {
         Plan plan = new Plan();

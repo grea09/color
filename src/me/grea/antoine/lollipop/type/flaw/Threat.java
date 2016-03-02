@@ -13,14 +13,13 @@ import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Plan;
 import me.grea.antoine.lollipop.type.Problem;
-import static me.grea.antoine.utils.Collections.*;
 import me.grea.antoine.utils.Log;
 
 /**
  *
  * @author antoine
  */
-public class Threat extends Flaw {
+public class Threat extends Flaw<Threat> {
 
     public Action breaker;
     public Edge threatened;
@@ -31,6 +30,10 @@ public class Threat extends Flaw {
         super(fluent, problem.plan.getEdgeTarget(threatened), problem);
         this.breaker = threat;
         this.threatened = threatened;
+    }
+
+    private Threat(Problem problem) {
+        super(problem);
     }
 
     @Override
@@ -49,61 +52,35 @@ public class Threat extends Flaw {
         return resolvers;
     }
 
-    public static Set<Threat> find(Problem problem) {
-        Set<Threat> threats = new HashSet<>();
-        for (Action candidate : problem.plan.vertexSet()) {
-            threats.addAll(related(candidate, problem));
-        }
-        return threats;
+    public static Set<Threat> related(Action troubleMaker, Problem problem) {
+        return new Threat(problem).related(troubleMaker);
     }
 
     @Override
-    public Set<Resolver> healers() {
-        Set<Resolver> healers = super.healers();
-
-        return union(healers, set(new Resolver(breaker, healers.iterator().next().source)));
-    }
-
-    public static int count(Problem problem) {
-        int count = 0;
-        for (Action troubleMaker : problem.plan.vertexSet()) {
-            if (troubleMaker != problem.goal && troubleMaker != problem.initial) {
-                for (int effect : troubleMaker.effects) {
-                    for (Edge oposite : problem.plan.edgeSet()) {
-                        for (int fluent : oposite.labels) {
-                            if (fluent == -effect) { //NEVER have a 0 effect
-                                Action source = problem.plan.getEdgeSource(oposite);
-                                Action target = problem.plan.getEdgeTarget(oposite);
-                                if (!problem.plan.reachable(troubleMaker, source) && !problem.plan.reachable(target, troubleMaker)) {
-                                    count++;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return count;
-    }
-
-    public static Set<Threat> related(Action troubleMaker, Problem problem) {
+    public Set<Threat> related(Action troubleMaker) {
         Set<Threat> related = new HashSet<>();
         if (troubleMaker != problem.goal && troubleMaker != problem.initial) {
-            for (int effect : troubleMaker.effects) {
-                for (Edge oposite : problem.plan.edgeSet()) {
-                    for (int fluent : oposite.labels) {
-                        if (fluent == -effect) { //NEVER have a 0 effect
-                            Action source = problem.plan.getEdgeSource(oposite);
-                            Action target = problem.plan.getEdgeTarget(oposite);
-                            if (!problem.plan.reachable(troubleMaker, source) && !problem.plan.reachable(target, troubleMaker)) {
-                                related.add(new Threat(troubleMaker, oposite, fluent, problem));
-                            }
-                        }
-                    }
+            for (Edge oposite : problem.plan.edgeSet()) {
+                for (int fluent : threatens(problem.plan, troubleMaker, oposite)) {
+                    related.add(new Threat(troubleMaker, oposite, fluent, problem));
                 }
             }
         }
         return related;
+    }
+
+    public static Set<Integer> threatens(Plan plan, Action breaker, Edge threatened) {
+        Set<Integer> fluents = new HashSet<>();
+        breaker.effects.stream().filter((fluent) -> (threatened.labels.contains(-fluent))). //NEVER have a 0 effect
+                forEach((fluent) -> {
+                    Action source = plan.getEdgeSource(threatened);
+                    Action target = plan.getEdgeTarget(threatened);
+                    if (!plan.reachable(breaker, source)
+                            && !plan.reachable(target, breaker)) {
+                        fluents.add(fluent);
+                    }
+                });
+        return fluents;
     }
 
     @Override

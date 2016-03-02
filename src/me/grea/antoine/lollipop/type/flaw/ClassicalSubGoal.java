@@ -6,56 +6,41 @@
 package me.grea.antoine.lollipop.type.flaw;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import me.grea.antoine.lollipop.heuristic.Usefullness;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
+import static me.grea.antoine.utils.Collections.union;
 
 /**
  *
  * @author antoine
  */
-public class SubGoal extends ClassicalSubGoal {
+public class ClassicalSubGoal extends Flaw<ClassicalSubGoal> {
 
-    public SubGoal(int fluent, Action needer, Problem problem) {
+    public ClassicalSubGoal(int fluent, Action needer, Problem problem) {
         super(fluent, needer, problem);
     }
-    
+
+    private ClassicalSubGoal(Problem problem) {
+        super(problem);
+    }
+
     @Override
     public Deque<Resolver> resolvers() {
         Deque<Resolver> resolvers = new ArrayDeque<>();
-        if (problem.initial.effects.contains(fluent)) {
-            resolvers.addLast(new Resolver(problem.initial, needer, fluent));
-        }
-        List<Action> steps = new ArrayList<>(problem.plan.vertexSet());
-        steps.remove(problem.initial);
-        steps.remove(problem.goal);
-        steps.remove(needer);
-        try {
-            Collections.sort(steps, Usefullness.compare(problem)); // Order the actions by utility
-        } catch (IllegalArgumentException ex) { // I DON'T CARE !!!!
-        }
-        for (Action step : steps) {
-            if (step.effects.contains(fluent)) {
-                resolvers.addLast(new Resolver(step, needer, fluent));
-            }
-        }
-        Set<Action> actions = new HashSet<>(problem.actions);
-        actions.remove(problem.initial);
-        actions.remove(problem.goal);
-        actions.remove(needer);
-        actions.removeAll(steps);
+        Set<Action> actions = union(problem.plan.vertexSet(), problem.actions);
         for (Action action : actions) {
             if (action.effects.contains(fluent)) {
                 resolvers.addLast(new Resolver(action, needer, fluent));
             }
         }
         return resolvers;
+    }
+
+    public static Set<ClassicalSubGoal> related(Action troubleMaker, Problem problem) {
+        return new ClassicalSubGoal(problem).related(troubleMaker);
     }
 
     @Override
@@ -69,7 +54,7 @@ public class SubGoal extends ClassicalSubGoal {
             }
         };
         troubleMaker.preconditions.stream().filter((precondition) -> (!provided.contains(precondition))).forEach((precondition) -> {
-            related.add(new SubGoal(precondition, troubleMaker, problem));
+            related.add(new ClassicalSubGoal(precondition, troubleMaker, problem));
         });
         return related;
     }

@@ -6,21 +6,28 @@
 package me.grea.antoine.lollipop.type.flaw;
 
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
-import static me.grea.antoine.utils.Collections.set;
 import static me.grea.antoine.utils.Collections.queue;
 
 /**
  *
  * @author antoine
  */
-public class Orphan extends Flaw {
+public class Orphan extends Flaw<Orphan> {
+
+    private static Map<Action, Set<Action>> ghosts = new HashMap<>();
 
     public Orphan(Action orphan, Problem problem) {
         super(0, orphan, problem);
+    }
+
+    private Orphan(Problem problem) {
+        super(problem);
     }
 
     @Override
@@ -28,36 +35,17 @@ public class Orphan extends Flaw {
         return queue(new Resolver(needer, null, 0, true));
     }
 
-    public static Set<Orphan> find(Problem problem) {
-        Set<Orphan> orphans = new HashSet<>();
-        for (Action candidate : problem.plan.vertexSet()) {
-            if (problem.plan.outDegreeOf(candidate) == 0
-                    && problem.goal != candidate
-                    && problem.initial != candidate) {
-                orphans.add(new Orphan(candidate, problem));
-            }
-        }
-        return orphans;
+    public static void add(Action deadParent, Set<Action> orphans) {
+        ghosts.put(deadParent, orphans); //2SPOOKY4U
     }
 
-    @Override
-    public Set<Resolver> healers() {
-        return set();
+    public static Set<Orphan> related(Action troubleMaker, Problem problem) {
+        return new Orphan(problem).related(troubleMaker);
     }
-
-    public static int count(Problem problem) {
-        return (int) problem.plan.vertexSet().stream().filter((candidate)
-                -> (problem.plan.outDegreeOf(candidate) == 0
-                && !problem.goal.equals(candidate)
-                && !problem.initial.equals(candidate))
-        ).count();
-    }
-
-    public static Set<Orphan> related(Set<Action> children, Problem problem) {
+    
+    public Set<Orphan> related(Action troubleMaker) {
         Set<Orphan> related = new HashSet<>();
-        children.stream().filter((child) -> (problem.plan.outDegreeOf(child) == 0)).forEach((child) -> {
-            related.add(new Orphan(child, problem));
-        });
+//        problem.plan.outDegreeOf(child) == 0
         return related;
     }
 
