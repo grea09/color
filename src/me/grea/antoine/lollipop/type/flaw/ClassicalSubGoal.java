@@ -12,6 +12,7 @@ import java.util.Set;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
 import static me.grea.antoine.utils.Collections.union;
+import static me.grea.antoine.utils.Collections.union;
 
 /**
  *
@@ -30,7 +31,7 @@ public class ClassicalSubGoal extends Flaw<ClassicalSubGoal> {
     @Override
     public Deque<Resolver> resolvers() {
         Deque<Resolver> resolvers = new ArrayDeque<>();
-        Set<Action> actions = union(problem.plan.vertexSet(), problem.actions);
+        Set<Action> actions = union(problem.plan.vertexSet(), problem.domain);
         for (Action action : actions) {
             if (action.effects.contains(fluent)) {
                 resolvers.addLast(new Resolver(action, needer, fluent));

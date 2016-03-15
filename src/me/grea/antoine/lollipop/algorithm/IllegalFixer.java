@@ -19,6 +19,7 @@ import static me.grea.antoine.utils.Collections.set;
 import static me.grea.antoine.utils.Collections.union;
 import me.grea.antoine.utils.Log;
 import org.jgrapht.alg.StrongConnectivityInspector;
+import static me.grea.antoine.utils.Collections.union;
 
 /**
  *
@@ -27,7 +28,7 @@ import org.jgrapht.alg.StrongConnectivityInspector;
 public class IllegalFixer {
 
     public static void clean(Problem problem) {
-        for (Action action : union(problem.actions, problem.plan.vertexSet())) {
+        for (Action action : union(problem.domain, problem.plan.vertexSet())) {
             fixAction(action, problem);
         }
 
@@ -81,7 +82,7 @@ public class IllegalFixer {
         if (action.effects.isEmpty()) {
             Log.d("◯\t" + action + " is useless ! Getting rid of it.");
             problem.plan.removeVertex(action);
-            problem.actions.remove(action);
+            problem.domain.remove(action);
             return;
         }
 
@@ -90,7 +91,7 @@ public class IllegalFixer {
             if (action.effects.containsAll(toxic)) {
                 Log.d("☣\t" + action + " is entirely toxic ! Getting rid of it.");
                 problem.plan.removeVertex(action);
-                problem.actions.remove(action);
+                problem.domain.remove(action);
                 return;
             }
             if (action.effects.removeAll(toxic)) {
@@ -118,7 +119,7 @@ public class IllegalFixer {
             if (action.effects.containsAll(inconsistents)) {
                 Log.d("⊭\t" + action + " is entirely incosistent ! Getting rid of it.");
                 problem.plan.removeVertex(action);
-                problem.actions.remove(action);
+                problem.domain.remove(action);
                 return;
             }
             if (action.effects.removeAll(inconsistents)) {

@@ -11,3 +11,5 @@
 * Ramirez II @baioletti_encoding_1998
 * Schema of choices and quality @mccluskey_engineering_1997
 * Causal graphs as heuristics @helmert_fast_2006
+* Types of threats and how to delay @peot_threatremoval_1993
+* Operator graph @peot_postponing_1994

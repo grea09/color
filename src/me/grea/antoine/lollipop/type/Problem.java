@@ -16,17 +16,18 @@ public class Problem {
 
     public Action initial;
     public Action goal;
-    public Set<Action> actions; // not including those above
+    public Domain domain; // not including those above
     public Plan plan;
+    private Heuri
 
     public Problem() {
-        this(new Action(), new Action(), new HashSet<>(), new Plan());
+        this(new Action(), new Action(), new Domain(), new Plan());
     }
 
-    public Problem(Action initial, Action goal, Set<Action> actions, Plan plan) {
+    public Problem(Action initial, Action goal, Domain domain, Plan plan) {
         this.initial = initial;
         this.goal = goal;
-        this.actions = actions;
+        this.domain = domain;
         this.plan = plan;
         plan.addVertex(initial);
         plan.addVertex(goal);
@@ -35,13 +36,17 @@ public class Problem {
     public Problem(Problem other) {
         this.initial = other.initial;
         this.goal = other.goal;
-        this.actions = other.actions;
+        this.domain = other.domain;
         this.plan = other.plan;
+    }
+    
+    public boolean isSpecial(Action action) {
+        return action == goal || action == initial;
     }
 
     @Override
     public String toString() {
-        return "Problem {" + "\n\tinitial:" + initial.effects + " => goal:" + goal.preconditions + "\n\tactions:" + actions + "\n\tplan:" + planToString() + "}";
+        return "Problem {" + "\n\tdomain:" + domain + "\n\tinitial:" + initial.effects + " => goal:" + goal.preconditions + "\n\tplan:" + planToString() + "}";
     }
 
     public String planToString() {

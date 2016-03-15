@@ -12,7 +12,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import me.grea.antoine.lollipop.heuristic.Usefullness;
+import me.grea.antoine.lollipop.heuristic.SimpleDegree;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
 
@@ -37,7 +37,7 @@ public class SubGoal extends ClassicalSubGoal {
         steps.remove(problem.goal);
         steps.remove(needer);
         try {
-            Collections.sort(steps, Usefullness.compare(problem)); // Order the actions by utility
+            Collections.sort(steps, SimpleDegree.comparator(problem)); // Order the domain by utility
         } catch (IllegalArgumentException ex) { // I DON'T CARE !!!!
         }
         for (Action step : steps) {
@@ -45,7 +45,7 @@ public class SubGoal extends ClassicalSubGoal {
                 resolvers.addLast(new Resolver(step, needer, fluent));
             }
         }
-        Set<Action> actions = new HashSet<>(problem.actions);
+        Set<Action> actions = new HashSet<>(problem.domain);
         actions.remove(problem.initial);
         actions.remove(problem.goal);
         actions.remove(needer);

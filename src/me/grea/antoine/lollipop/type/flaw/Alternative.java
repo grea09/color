@@ -7,11 +7,14 @@ package me.grea.antoine.lollipop.type.flaw;
 
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import me.grea.antoine.lollipop.type.Action;
+import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Problem;
 import static me.grea.antoine.utils.Collections.queue;
+import me.grea.antoine.utils.Log;
 
 /**
  *
@@ -71,12 +74,34 @@ public class Alternative extends Flaw<Alternative> {
 
     @Override
     public Set<Alternative> related(Action troubleMaker) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Set<Alternative> alternatives = new HashSet<>();
+        for (Edge edge : problem.plan.incomingEdgesOf(troubleMaker)) {
+            Action provider = problem.plan.getEdgeSource(edge);
+            for (Integer label : edge.labels) {
+                Deque<Resolver> resolvers;
+                if (competitors.containsKey(label)) {
+                    resolvers = competitors.get(label);
+                } else {
+                    resolvers = new SubGoal(label, needer, problem).resolvers();
+                    competitors.put(label, resolvers);
+                }
+                for (Resolver resolver : resolvers) {
+                    if (Usefullness.compare(problem).compare(provider, resolver.source) < 0) {
+                        Log.d("⎇ " + resolver.source + " is more usefull for " + edge);
+                        alternatives.add(new Alternative(resolver.fluent, provider, resolver.target, problem));
+                        break;
+                    }
+                }
+            }
+        }
+        return alternatives;
     }
 
-    @Override
-    public String toString() {
+        @Override
+        public String toString
+        
+            () {
         return provider + " ⎇ " + needer;
-    }
+        }
 
-}
+    }

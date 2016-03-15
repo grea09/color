@@ -9,6 +9,7 @@ import java.util.Set;
 import me.grea.antoine.lollipop.algorithm.PartialOrderPlanning;
 import me.grea.antoine.lollipop.exception.Failure;
 import me.grea.antoine.lollipop.type.Action;
+import me.grea.antoine.lollipop.type.Domain;
 import me.grea.antoine.lollipop.type.Plan;
 import me.grea.antoine.lollipop.type.Problem;
 import static me.grea.antoine.utils.Collections.*;
@@ -27,7 +28,8 @@ public class Main {
         // TODO code application logic here
         Action initial = new Action(null, set(1, 2));
         Action goal = new Action(set(3, 4, -5, 6), null);
-        Set<Action> actions = set(new Action(set(1), set(3, 5)),
+        Domain domain = new Domain(set(
+                new Action(set(1), set(3, 5)),
                 new Action(set(7), set(2)),
                 new Action(set(4), set()),
                 new Action(set(4), set(4)),
@@ -37,27 +39,15 @@ public class Main {
                 new Action(set(2), set(4)),
                 new Action(set(-7, 8), set(-8, 7)),
                 new Action(set(7, -8), set(8, -7))
-        );
+        ));
 
-        Problem problem = new Problem(initial, goal, actions, new Plan());//GoalProperPlan.properPlan(goal, actions));
+        Problem problem = new Problem(initial, goal, domain, new Plan());//GoalProperPlan.properPlan(goal, actions));
         
         Log.i(problem);
 
         PartialOrderPlanning.solve(problem);
 
         Log.out.println("Solution {\n\t" + problem.planToString() + "}");
-//        Log.out.println("Violation : " + problem.plan.violation());
-//
-//        initial.effects.add(6);
-//        PartialOrderPlanning.solve(problem);
-//        Log.out.println("Solution {\n\t" + problem.planToString() + "}");
-//        Log.out.println("Violation : " + problem.plan.violation());
-//
-//        initial.effects.add(-2);
-//        initial.effects.remove(2);
-//        PartialOrderPlanning.solve(problem);
-//        Log.out.println("Solution {\n\t" + problem.planToString() + "}");
-//        Log.out.println("Violation : " + problem.plan.violation());
 
     }
 
