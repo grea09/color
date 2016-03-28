@@ -25,10 +25,18 @@ public abstract class Heuristic {
     public abstract double h(Action action);
     
     public Comparator<Action> comparator() {
-        return (Action a1, Action a2) -> {
+        return (Action a1, Action a2) -> { 
             if (a1.equals(a2)) {
                 return 0;
             }
+            boolean a1Special = problem.isSpecial(a1);
+            boolean a2Special = problem.isSpecial(a2);
+            if(a1Special && a2Special)
+                return 0;
+            else if (a1Special)
+                return 1;
+            else if (a2Special)
+                return -1;
             return cast(h(a1)-h(a2));
         };
     }

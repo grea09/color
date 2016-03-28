@@ -5,14 +5,16 @@
 
 %%%%%% for algorithms
 \algrenewcommand\alglinenumber[1]{\tiny\color{solarized-base0} #1}
-\algrenewcommand{\algorithmiccomment}[1]{{\hfill\hfill\color{solarized-base01}// #1}}
+\algrenewcommand{\algorithmiccomment}[1]{{\hfill\hfill\it\color{solarized-base01} #1}}
 \input{latex/algorithicx.rule.patch.tex} %For rulers on algorithmicx
 \renewcommand{\thealgruleextra}{\color{solarized-base0}}
 
 %%%% For links URL
 \hypersetup{colorlinks=true, linkcolor=solarized-blue, citecolor=solarized-base1, filecolor=solarized-magenta, urlcolor=solarized-cyan}
 
-%\setlength{\belowcaptionskip}{-2pt}
-%\setlength{\abovecaptionskip}{-12pt} % In case of too long paper
+%\setlength{\abovecaptionskip}{-5mm} % space before figure
+%\setlength{\belowcaptionskip}{-1cm} % space after figure
+%\setlength{\abovedisplayskip}{-1cm} % space before maths
+%\setlength{\belowdisplayskip}{-5mm} % space after maths
 
 \newtheorem{definition}{Definition}

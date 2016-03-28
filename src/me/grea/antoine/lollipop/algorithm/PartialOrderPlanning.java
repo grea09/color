@@ -9,6 +9,7 @@ import java.util.Deque;
 import java.util.Set;
 import me.grea.antoine.lollipop.agenda.Agenda;
 import me.grea.antoine.lollipop.agenda.ClassicalAgenda;
+import me.grea.antoine.lollipop.agenda.RandomAgenda;
 import me.grea.antoine.lollipop.exception.Success;
 import me.grea.antoine.lollipop.type.Problem;
 import me.grea.antoine.lollipop.type.flaw.Flaw;
@@ -21,12 +22,12 @@ import me.grea.antoine.utils.Log;
  */
 public class PartialOrderPlanning {
 
-    private final Problem problem;
-    private Agenda agenda;
+    protected final Problem problem;
+    protected Agenda agenda;
 
     public PartialOrderPlanning(Problem problem) {
         this.problem = problem;
-        agenda = new ClassicalAgenda(problem);
+        agenda = new RandomAgenda(problem);
     }
 
     public static void solve(Problem problem) {
@@ -39,11 +40,6 @@ public class PartialOrderPlanning {
                 return;
             }
             Log.w("Failure");
-//            pop.agenda = new ClassicalAgenda(problem);
-//            problem.plan = new Plan();
-//            problem.plan.addVertex(problem.initial);
-//            problem.plan.addVertex(problem.goal);
-            
             return;
         }
     }
@@ -75,6 +71,7 @@ public class PartialOrderPlanning {
             resolver.revert(problem.plan); // Return means failure
             agenda.removeAll(related);
         }
+        agenda.add(flaw);
         Log.w("No suitable resolver for " + flaw);
         Log.v(agenda);
         Log.v(problem.planToString());

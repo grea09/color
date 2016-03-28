@@ -23,7 +23,6 @@ import me.grea.antoine.utils.Log;
 public class Alternative extends Flaw<Alternative> {
 
     public Action provider;
-    private static final Map<Problem, Map<Integer, Deque<Resolver>>> cache = new HashMap<>();
 
     private Alternative(Problem problem) {
         super(problem);
@@ -78,30 +77,18 @@ public class Alternative extends Flaw<Alternative> {
         for (Edge edge : problem.plan.incomingEdgesOf(troubleMaker)) {
             Action provider = problem.plan.getEdgeSource(edge);
             for (Integer label : edge.labels) {
-                Deque<Resolver> resolvers;
-                if (competitors.containsKey(label)) {
-                    resolvers = competitors.get(label);
-                } else {
-                    resolvers = new SubGoal(label, needer, problem).resolvers();
-                    competitors.put(label, resolvers);
-                }
-                for (Resolver resolver : resolvers) {
-                    if (Usefullness.compare(problem).compare(provider, resolver.source) < 0) {
-                        Log.d("⎇ " + resolver.source + " is more usefull for " + edge);
-                        alternatives.add(new Alternative(resolver.fluent, provider, resolver.target, problem));
-                        break;
-                    }
+                for (Action pretender : problem.providing.get(label)) {
+                    if(problem.heuristic.comparator().compare(provider, pretender) < 0)
+                        alternatives.add(new Alternative(label, pretender, troubleMaker, problem));
                 }
             }
         }
         return alternatives;
     }
 
-        @Override
-        public String toString
-        
-            () {
+    @Override
+    public String toString() {
         return provider + " ⎇ " + needer;
-        }
-
     }
+
+}

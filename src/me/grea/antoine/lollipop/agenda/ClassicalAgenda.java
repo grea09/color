@@ -9,6 +9,7 @@ import java.util.Collection;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
 import me.grea.antoine.lollipop.type.flaw.ClassicalSubGoal;
+import me.grea.antoine.lollipop.type.flaw.ClassicalThreat;
 import me.grea.antoine.lollipop.type.flaw.Flaw;
 import me.grea.antoine.lollipop.type.flaw.Threat;
 
@@ -28,7 +29,7 @@ public class ClassicalAgenda extends Agenda {
             addAll(ClassicalSubGoal.related(step, problem));
         }
         for (Action step : problem.plan.vertexSet()) {
-            addAll(Threat.related(step, problem));
+            addAll(ClassicalThreat.related(step, problem));
         }
     }
 

@@ -97,6 +97,8 @@ def pandoc_science(key, value, format, meta):
                 return(RawInline('latex', name + '~\\ref{' + citationid + '}'))
             else:
                 return Str(name + ' ' + str(refs[class_].get(citationid, '??' )))
+        elif prefix == 'line':
+            return(RawInline('latex', 'line \\ref{' + citationid + '}'))
 
 if __name__ == "__main__":
     toJSONFilter(pandoc_science)

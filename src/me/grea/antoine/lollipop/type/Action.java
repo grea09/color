@@ -7,6 +7,7 @@ package me.grea.antoine.lollipop.type;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -17,7 +18,7 @@ public class Action extends Goal {
 
     public Set<Integer> effects;
     public final boolean fake;
-    private final char symbol;
+    private char symbol;
 
     public Action() {
         this(new HashSet<>(), new HashSet<>());
@@ -52,4 +53,39 @@ public class Action extends Goal {
                 + (preconditions.isEmpty() ? "" : "⊧" + preconditions)
                 + (effects.isEmpty() ? "" : "+" + effects) + ")"));
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 37 * hash + Objects.hashCode(this.preconditions);
+        hash = 37 * hash + Objects.hashCode(this.effects);
+        hash = 37 * hash + (this.fake ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Action other = (Action) obj;
+        if (this.fake != other.fake) {
+            return false;
+        }
+        if (!Objects.equals(this.preconditions, other.preconditions)) {
+            return false;
+        }
+        if (!Objects.equals(this.effects, other.effects)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 }

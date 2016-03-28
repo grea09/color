@@ -42,10 +42,24 @@ public class Orphan extends Flaw<Orphan> {
     public static Set<Orphan> related(Action troubleMaker, Problem problem) {
         return new Orphan(problem).related(troubleMaker);
     }
-    
+
+    @Override
     public Set<Orphan> related(Action troubleMaker) {
         Set<Orphan> related = new HashSet<>();
-//        problem.plan.outDegreeOf(child) == 0
+        if (problem.isSpecial(troubleMaker)) {
+            return related;
+        }
+
+        if (problem.plan.containsVertex(troubleMaker) && problem.plan.outDegreeOf(troubleMaker) == 0) {
+            related.add(new Orphan(troubleMaker, problem));
+        }
+        if (ghosts.containsKey(troubleMaker)) {
+            for (Action action : ghosts.get(troubleMaker)) {
+                if (problem.plan.outDegreeOf(action) == 0) {
+                    related.add(new Orphan(action, problem));
+                }
+            }
+        }
         return related;
     }
 

@@ -26,7 +26,7 @@ public class Scalaire extends Heuristic {
     @Override
     public double h(Action action) { 
         return (action.effects.size() * -action.preconditions.size()) 
-                + (problem.domain.operatorGraph.outDegreeOf(action) * -problem.domain.operatorGraph.inDegreeOf(action)) 
+                + (problem.domain.properPlan.outDegreeOf(action) * -problem.domain.properPlan.inDegreeOf(action)) 
                 + (problem.plan.outDegreeOf(action) * -problem.plan.inDegreeOf(action));
     }
 

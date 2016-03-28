@@ -11,6 +11,8 @@ import me.grea.antoine.lollipop.type.Problem;
 import static java.lang.Math.sqrt;
 import static java.lang.Math.abs;
 import static java.lang.Math.pow;
+import static java.lang.Math.abs;
+import me.grea.antoine.utils.Log;
 
 /**
  *
@@ -29,12 +31,16 @@ public class Vectorial extends Heuristic {
     @Override
     public double h(Action action) {
         int x = action.effects.size();
-        int y = problem.domain.operatorGraph.outDegreeOf(action);
+        int y = problem.domain.properPlan.outDegreeOf(action);
         int z = problem.plan.outDegreeOf(action);
         
         int x_ = action.preconditions.size();
-        int y_ = problem.domain.operatorGraph.inDegreeOf(action);
+        int y_ = problem.domain.properPlan.inDegreeOf(action);
         int z_ = problem.plan.inDegreeOf(action);
+        
+        Log.v(action + "=>" + (sqrt(pow(abs(-(y * x_) + x * y_), 2)) 
+                + sqrt(pow(abs(z * x_ - x * z_), 2))
+                + sqrt(pow(abs(-(z * y_) + y * z_), 2))));
         
         return sqrt(pow(abs(-(y * x_) + x * y_), 2)) 
                 + sqrt(pow(abs(z * x_ - x * z_), 2))

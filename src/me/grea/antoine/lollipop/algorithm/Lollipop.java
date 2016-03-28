@@ -8,46 +8,51 @@ package me.grea.antoine.lollipop.algorithm;
 import java.util.Deque;
 import java.util.Set;
 import me.grea.antoine.lollipop.agenda.Agenda;
-import me.grea.antoine.lollipop.agenda.ClassicalAgenda;
+import me.grea.antoine.lollipop.agenda.LollipopAgenda;
 import me.grea.antoine.lollipop.exception.Success;
+import me.grea.antoine.lollipop.heuristic.Logarithmic;
+import me.grea.antoine.lollipop.heuristic.Pearson;
+import me.grea.antoine.lollipop.heuristic.SimpleDegree;
+import me.grea.antoine.lollipop.heuristic.Vectorial;
+import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
 import me.grea.antoine.lollipop.type.flaw.Flaw;
 import me.grea.antoine.lollipop.type.flaw.Resolver;
+import static me.grea.antoine.utils.Collections.set;
 import me.grea.antoine.utils.Log;
 
 /**
  *
  * @author antoine
  */
-public class Lollipop {
+public class Lollipop{
 
+    private final Agenda agenda;
     private final Problem problem;
-    private Agenda agenda;
 
     public Lollipop(Problem problem) {
         this.problem = problem;
-        agenda = new ClassicalAgenda(problem);
+        Set<Action> used = set(problem.initial, problem.goal);
+        problem.providing = DomainProperPlan.add(used, problem.domain.providing);
+        problem.heuristic = new Logarithmic(problem); 
+//        IllegalFixer.clean(problem);
+        agenda = new LollipopAgenda(problem);
     }
-
+    
     public static void solve(Problem problem) {
-        Lollipop pop = new Lollipop(problem);
+        Lollipop lollipop = new Lollipop(problem);
         while (true) {
             try {
-                pop.refine();
+                lollipop.refine();
             } catch (Success ex) {
                 Log.i("Success !");
                 return;
             }
             Log.w("Failure");
-//            pop.agenda = new ClassicalAgenda(problem);
-//            problem.plan = new Plan();
-//            problem.plan.addVertex(problem.initial);
-//            problem.plan.addVertex(problem.goal);
-            
             return;
         }
     }
-
+    
     public void refine() throws Success {
         if (agenda.isEmpty()) {
             throw new Success();

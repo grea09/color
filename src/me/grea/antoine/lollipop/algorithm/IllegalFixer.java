@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import me.grea.antoine.lollipop.heuristic.Usefullness;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Problem;
@@ -153,28 +152,28 @@ public class IllegalFixer {
         }
     }
 
-    private static void fixCycles(Problem problem) {
-        List<Set<Action>> components = new StrongConnectivityInspector<>(problem.plan).stronglyConnectedSets();
-
-        // A vertex participates in a cycle if either of the following is
-        // true:  (a) it is in a component whose size is greater than 1
-        // or (b) it is a self-loop
-        for (Set<Action> component : components) {
-            if (component.size() > 1) {
-                Action lessUsefull = Collections.min(component, Usefullness.compare(problem));
-                for (Edge edge : problem.plan.outgoingEdgesOf(lessUsefull)) {
-                    if (component.contains(problem.plan.getEdgeTarget(edge))) {
-                        Log.d("⟳\tGoing in circle in " + component + ". Breaking at " + edge);
-                        problem.plan.removeEdge(edge);
-                        break;
-                    }
-                }
-            } else {
-                Action action = component.iterator().next();
-                if (problem.plan.removeEdge(action, action) != null) {
-                    Log.d("⟳\t" + action + " loops on itself !");
-                }
-            }
-        }
-    }
+//    private static void fixCycles(Problem problem) {
+//        List<Set<Action>> components = new StrongConnectivityInspector<>(problem.plan).stronglyConnectedSets();
+//
+//        // A vertex participates in a cycle if either of the following is
+//        // true:  (a) it is in a component whose size is greater than 1
+//        // or (b) it is a self-loop
+//        for (Set<Action> component : components) {
+//            if (component.size() > 1) {
+//                Action lessUsefull = Collections.min(component, Usefullness.compare(problem));
+//                for (Edge edge : problem.plan.outgoingEdgesOf(lessUsefull)) {
+//                    if (component.contains(problem.plan.getEdgeTarget(edge))) {
+//                        Log.d("⟳\tGoing in circle in " + component + ". Breaking at " + edge);
+//                        problem.plan.removeEdge(edge);
+//                        break;
+//                    }
+//                }
+//            } else {
+//                Action action = component.iterator().next();
+//                if (problem.plan.removeEdge(action, action) != null) {
+//                    Log.d("⟳\t" + action + " loops on itself !");
+//                }
+//            }
+//        }
+//    }
 }

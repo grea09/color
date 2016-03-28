@@ -34,7 +34,7 @@ public class ClassicalSubGoal extends Flaw<ClassicalSubGoal> {
         Set<Action> actions = union(problem.plan.vertexSet(), problem.domain);
         for (Action action : actions) {
             if (action.effects.contains(fluent)) {
-                resolvers.addLast(new Resolver(action, needer, fluent));
+                resolvers.addLast(new ClassicalResolver(action, needer, fluent));
             }
         }
         return resolvers;

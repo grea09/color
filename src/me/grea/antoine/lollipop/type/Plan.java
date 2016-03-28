@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import me.grea.antoine.utils.Log;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.AbstractBaseGraph;
 import org.jgrapht.graph.ClassBasedEdgeFactory;
@@ -99,12 +100,18 @@ public class Plan extends AbstractBaseGraph<Action, Edge> implements DirectedGra
 
     @Override
     public int outDegreeOf(Action vertex) {
-        return outDegree.get(vertex);
+        if (outDegree.containsKey(vertex)) {
+            return outDegree.get(vertex);
+        }
+        return 0;
     }
 
     @Override
     public int inDegreeOf(Action vertex) {
-        return inDegree.get(vertex);
+        if (inDegree.containsKey(vertex)) {
+            return inDegree.get(vertex);
+        }
+        return 0;
     }
 
     @Override

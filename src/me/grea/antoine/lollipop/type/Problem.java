@@ -6,7 +6,9 @@
 package me.grea.antoine.lollipop.type;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import me.grea.antoine.lollipop.heuristic.Heuristic;
 
 /**
  *
@@ -18,7 +20,8 @@ public class Problem {
     public Action goal;
     public Domain domain; // not including those above
     public Plan plan;
-    private Heuri
+    public Map<Integer, Set<Action>> providing;
+    public Heuristic heuristic;
 
     public Problem() {
         this(new Action(), new Action(), new Domain(), new Plan());

@@ -6,7 +6,9 @@
 package me.grea.antoine.lollipop.type.flaw;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import me.grea.antoine.lollipop.agenda.Agenda;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Plan;
@@ -59,7 +61,7 @@ public class Resolver {
                 plan.removeVertex(source);
                 return;
             }
-            if (edge.labels.equals(set(fluent))) {
+            if (fluent == 0 || edge.labels.contains(fluent) && edge.labels.size() == 1) {
                 plan.removeEdge(edge);
             } else {
                 edge.labels.remove(fluent);
@@ -107,25 +109,58 @@ public class Resolver {
     }
 
     public boolean appliable(Plan plan) {
-        return negative
+        return negative  
                 ? (plan.containsEdge(source, target) || plan.containsVertex(source))
                 : //((!plan.containsEdge(source, target)
-//                || !plan.getEdge(source, target).labels.contains(fluent))
-//                && 
+                //                || !plan.getEdge(source, target).labels.contains(fluent))
+                //                && 
                 !plan.reachable(target, source);
+    }
+
+    public Set<Flaw> invalidated(Agenda agenda, Problem problem) {
+        Set<Flaw> invalidated = new HashSet<>();
+        if (negative) {
+            for (Flaw flaw : agenda) {
+                if (flaw.needer.equals(source)) {
+                    invalidated.add(flaw);
+                }
+            }
+        } else {
+            for (Flaw flaw : agenda) {
+                if (flaw instanceof Threat) {
+                    Action threatSource = problem.plan.getEdgeSource(((Threat) flaw).threatened);
+                    Action threatTarget = problem.plan.getEdgeTarget(((Threat) flaw).threatened);
+                    if ((source == threatTarget && target == ((Threat) flaw).breaker)
+                            || (source == ((Threat) flaw).breaker && target == threatSource)) {
+                        invalidated.add(flaw); // Removed solved threats
+                    }
+                }
+
+            }
+        }
+        return invalidated;
     }
 
     public Set<Flaw> related(Problem problem) {
         Set<Flaw> related = new HashSet<>();
-//        if (negative) {
-//            if (target != null) { //FIXME redo that
-//                related.addAll(SubGoal.related(target, problem));
-//            }
-//            related.addAll(Orphan.related(source, problem));
-//        } else {
-        related.addAll(SubGoal.related(source, problem));
-        related.addAll(Threat.related(source, problem));
-//        }
+        if (negative) {
+            if (edge == null) {
+                related.addAll(Orphan.related(source, problem));
+            } else
+            {
+                related.addAll(SubGoal.related(target, problem));
+                
+                related.addAll(Orphan.related(source, problem));
+                
+                related.addAll(Threat.related(target, problem));
+                related.addAll(Threat.related(source, problem));
+            }
+            
+        } else if (sourceCreated) {
+            related.addAll(SubGoal.related(source, problem));
+            related.addAll(Threat.related(source, problem));
+        }
+
         Log.d("Related flaws " + related);
 
         return related;
@@ -135,5 +170,44 @@ public class Resolver {
     public String toString() {
         return source + (negative ? " ×" : " -") + (fluent == 0 ? "☠" : fluent) + "> " + target;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.source);
+        hash = 29 * hash + Objects.hashCode(this.target);
+        hash = 29 * hash + this.fluent;
+        hash = 29 * hash + (this.negative ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Resolver other = (Resolver) obj;
+        if (this.fluent != other.fluent) {
+            return false;
+        }
+        if (this.negative != other.negative) {
+            return false;
+        }
+        if (!Objects.equals(this.source, other.source)) {
+            return false;
+        }
+        if (!Objects.equals(this.target, other.target)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
 
 }

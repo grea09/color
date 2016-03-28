@@ -20,10 +20,14 @@ import me.grea.antoine.lollipop.type.Problem;
  *
  * @author antoine
  */
-public class SubGoal extends ClassicalSubGoal {
+public class SubGoal extends Flaw<SubGoal> {
 
     public SubGoal(int fluent, Action needer, Problem problem) {
         super(fluent, needer, problem);
+    }
+
+    private SubGoal(Problem problem) {
+        super(problem);
     }
     
     @Override
@@ -37,7 +41,7 @@ public class SubGoal extends ClassicalSubGoal {
         steps.remove(problem.goal);
         steps.remove(needer);
         try {
-            Collections.sort(steps, SimpleDegree.comparator(problem)); // Order the domain by utility
+            Collections.sort(steps, problem.heuristic.comparator()); // Order the domain by utility
         } catch (IllegalArgumentException ex) { // I DON'T CARE !!!!
         }
         for (Action step : steps) {
@@ -57,10 +61,14 @@ public class SubGoal extends ClassicalSubGoal {
         }
         return resolvers;
     }
+    
+    public static Set<SubGoal> related(Action troubleMaker, Problem problem) {
+        return new SubGoal(problem).related(troubleMaker);
+    }
 
     @Override
-    public Set<ClassicalSubGoal> related(Action troubleMaker) {
-        Set<ClassicalSubGoal> related = new HashSet<>();
+    public Set<SubGoal> related(Action troubleMaker) {
+        Set<SubGoal> related = new HashSet<>();
         Set<Integer> provided = new HashSet<Integer>() {
             {
                 problem.plan.incomingEdgesOf(troubleMaker).stream().forEach((edge) -> {

@@ -5,6 +5,7 @@
  */
 package me.grea.antoine.lollipop.agenda;
 
+import java.util.Collection;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
 import me.grea.antoine.lollipop.type.flaw.ClassicalSubGoal;
@@ -34,7 +35,17 @@ public class RandomAgenda extends Agenda {
 
     @Override
     public boolean add(Flaw flaw) {
+        if(contains(flaw))
+            return false;
         return super.add(flaw);
+    }
+    
+    @Override
+    public boolean addAll(Collection<? extends Flaw> flaws) {
+        boolean modified = false;
+        modified = flaws.stream().map((flaw) -> add(flaw)).
+                reduce(modified, (accumulator, _item) -> accumulator | _item);
+        return modified;
     }
 
     @Override

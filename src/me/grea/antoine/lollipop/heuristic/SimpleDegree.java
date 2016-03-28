@@ -8,6 +8,7 @@ package me.grea.antoine.lollipop.heuristic;
 import java.util.Comparator;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
+import me.grea.antoine.utils.Log;
 
 /**
  *
@@ -25,8 +26,13 @@ public class SimpleDegree extends Heuristic{
 
     @Override
     public double h(Action action) {
+        Log.d(action + "=>" + (action.effects.size() - action.preconditions.size()) * 
+                (problem.domain.properPlan.outDegreeOf(action) - problem.domain.properPlan.inDegreeOf(action)) *
+                (problem.plan.outDegreeOf(action) - problem.plan.inDegreeOf(action)));
+        
+        
         return (action.effects.size() - action.preconditions.size()) * 
-                (problem.domain.operatorGraph.outDegreeOf(action) - problem.domain.operatorGraph.inDegreeOf(action)) *
+                (problem.domain.properPlan.outDegreeOf(action) - problem.domain.properPlan.inDegreeOf(action)) *
                 (problem.plan.outDegreeOf(action) - problem.plan.inDegreeOf(action));
     }
     

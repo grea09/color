@@ -5,8 +5,15 @@
  */
 package me.grea.antoine.lollipop.agenda;
 
+import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
+import me.grea.antoine.lollipop.type.flaw.Alternative;
+import me.grea.antoine.lollipop.type.flaw.ClassicalSubGoal;
+import me.grea.antoine.lollipop.type.flaw.Cycle;
 import me.grea.antoine.lollipop.type.flaw.Flaw;
+import me.grea.antoine.lollipop.type.flaw.Orphan;
+import me.grea.antoine.lollipop.type.flaw.SubGoal;
+import me.grea.antoine.lollipop.type.flaw.Threat;
 
 /**
  *
@@ -20,7 +27,18 @@ public class LollipopAgenda extends Agenda {
 
     @Override
     protected void populate() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        for (Action step : problem.plan.vertexSet()) { // Probably slow
+            addAll(Alternative.related(step, problem));
+        }
+        for (Action step : problem.plan.vertexSet()) {
+            addAll(SubGoal.related(step, problem));
+        }
+        for (Action step : problem.plan.vertexSet()) {
+            addAll(Threat.related(step, problem));
+        }
+        for (Action step : problem.plan.vertexSet()) {
+            addAll(Orphan.related(step, problem));
+        }
     }
     
 //    @Override
@@ -69,14 +87,16 @@ public class LollipopAgenda extends Agenda {
 //        return result;
 //    }
     
-    @Override
-    public boolean add(Flaw flaw) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    @Override
+//    public boolean add(Flaw flaw) {
+//        super.add(flaw);
+//    }
 
     @Override
     public Flaw choose() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Flaw result = get(0);
+        remove(0);
+        return result;
     }
 
 }

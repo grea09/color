@@ -12,6 +12,8 @@ import static java.lang.Math.sqrt;
 import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 import static java.lang.Math.abs;
+import static java.lang.Math.abs;
+import static java.lang.Math.abs;
 
 /**
  *
@@ -30,11 +32,11 @@ public class Pearson extends Heuristic {
     @Override
     public double h(Action action) {
         int x = action.effects.size();
-        int y = problem.domain.operatorGraph.outDegreeOf(action);
+        int y = problem.domain.properPlan.outDegreeOf(action);
         int z = problem.plan.outDegreeOf(action);
         
         int x_ = action.preconditions.size();
-        int y_ = problem.domain.operatorGraph.inDegreeOf(action);
+        int y_ = problem.domain.properPlan.inDegreeOf(action);
         int z_ = problem.plan.inDegreeOf(action);
         
         return ((x*x_ + y*y_ + z*z_) - (x+y+z)*(x_+y_+z_))

@@ -7,22 +7,40 @@ package me.grea.antoine.lollipop.type;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import me.grea.antoine.lollipop.algorithm.DomainProperPlan;
+import me.grea.antoine.lollipop.type.flaw.Cycle;
+import org.jgrapht.alg.StrongConnectivityInspector;
 
 /**
  *
  * @author antoine
  */
 public class Domain extends HashSet<Action>{
+
+    public static Set<Set<Action>> connectedSets(Plan plan) {
+        Set<Set<Action>> connectedSets = new HashSet<>(new StrongConnectivityInspector<>(plan).stronglyConnectedSets());
+        return connectedSets;
+    }
     
-    public final Plan operatorGraph;
+    public final Map<Integer, Set<Action>> providing;
+    public final Plan properPlan;
+    public final Set<Set<Action>> cycles;
+    
+    
 
     public Domain() {
-        this.operatorGraph = operatorGraph;
+        this.providing = DomainProperPlan.providing(this);
+        this.properPlan = DomainProperPlan.build(this);
+        this.cycles = connectedSets(properPlan);
     }
 
     public Domain(Collection<? extends Action> c) {
         super(c);
-        this.operatorGraph = operatorGraph;
+        this.providing = DomainProperPlan.providing(this);
+        this.properPlan = DomainProperPlan.build(this);
+        this.cycles = connectedSets(properPlan);
     }
     
     

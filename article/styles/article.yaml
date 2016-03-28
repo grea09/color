@@ -3,7 +3,7 @@ article:
         metadata:
             smart: yes
             standalone: yes
-            numbersections: yed
+            numbersections: yes
             secPrefix: 
                 - section
                 - sections
@@ -22,7 +22,6 @@ article:
         metadata:
             numbersections: yes
 
-            csl: latex/ieee.csl
             link-citations: true
 
             latex-engine: pdflatex
