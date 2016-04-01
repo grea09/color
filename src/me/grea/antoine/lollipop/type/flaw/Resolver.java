@@ -136,7 +136,7 @@ public class Resolver {
                         invalidated.add(flaw); // Removed solved threats
                     }
                 }
-                if (flaw instanceof Orphan && problem.plan.outDegreeOf(flaw.needer) != 0) {
+                if (flaw instanceof Orphan && problem.plan.outDegreeOf(flaw.needer) != 0 && !Orphan.hanging(flaw.needer, problem)) {
                     invalidated.add(flaw);
                 }
             }

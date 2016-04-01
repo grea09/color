@@ -36,12 +36,18 @@ public class ProperPlan extends Plan {
     private boolean binding = false;
 
     public ProperPlan(ProperPlan other) {
-        super(other);
+        super();
         this.cycles = new HashSet<>(other.cycles);
         this.providing.putAll(other.providing);
         this.needing.putAll(other.needing);
         this.domain = other.domain;
         this.problem = other.problem;
+        for (Action action : other.vertexSet()) {
+            addVertex(action);
+        }
+        for (Edge edge : other.edgeSet()) {
+            addEdge(other.getEdgeSource(edge), other.getEdgeTarget(edge), edge);
+        }
         binding = true;
     }
 

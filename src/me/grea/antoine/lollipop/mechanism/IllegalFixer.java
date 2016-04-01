@@ -126,6 +126,42 @@ public class IllegalFixer {
             }
         }
     }
+    
+    public static boolean fixAction(Action action) { //☣
+        
+        if (action.effects.isEmpty()) {
+            Log.d("◯\t" + action + " is useless ! Getting rid of it.");
+            return false;
+        }
+
+        Set<Integer> toxic = toxicEffects(action);
+        if (!toxic.isEmpty()) {
+            if (action.effects.containsAll(toxic)) {
+                Log.d("☣\t" + action + " is entirely toxic ! Getting rid of it.");
+                return false;
+            }
+            if (action.effects.removeAll(toxic)) {
+                Log.d("☣\t" + action + " had the toxic fluent(s)" + toxic);
+            }
+        }
+
+        Set<Integer> inconsistents = inconsistentPrecondition(action);
+        if (action.preconditions.removeAll(inconsistents)) {
+            Log.d("⊭\t" + action + " has inconsistent preconditions " + inconsistents);
+        }
+
+        inconsistents = inconsistentEffects(action);
+        if (!inconsistents.isEmpty()) {
+            if (action.effects.containsAll(inconsistents)) {
+                Log.d("⊭\t" + action + " is entirely incosistent ! Getting rid of it.");
+                return false;
+            }
+            if (action.effects.removeAll(inconsistents)) {
+                Log.d("⊭\t" + action + " has inconsistent effects)" + toxic);
+            }
+        }
+        return true;
+    }
 
     private static void fixEdge(Edge edge, Problem problem) {//☍
         if (edge.labels.isEmpty()) {

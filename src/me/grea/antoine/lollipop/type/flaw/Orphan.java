@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import me.grea.antoine.lollipop.type.Action;
+import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Problem;
 import static me.grea.antoine.utils.Collections.queue;
 
@@ -53,6 +54,11 @@ public class Orphan extends Flaw<Orphan> {
         if (problem.plan.containsVertex(troubleMaker) && problem.plan.outDegreeOf(troubleMaker) == 0) {
             related.add(new Orphan(troubleMaker, problem));
         }
+
+        if (hanging(troubleMaker, problem)) {
+            related.add(new Orphan(troubleMaker, problem));
+        }
+
         if (ghosts.containsKey(troubleMaker)) {
             for (Action action : ghosts.get(troubleMaker)) {
                 if (problem.plan.outDegreeOf(action) == 0) {
@@ -66,6 +72,18 @@ public class Orphan extends Flaw<Orphan> {
     @Override
     public String toString() {
         return "☹ " + needer;
+    }
+
+    public static boolean hanging(Action desperate, Problem problem) {
+        if (!problem.plan.containsVertex(desperate)) {
+            return false;
+        }
+        for (Edge edge : problem.plan.outgoingEdgesOf(desperate)) {
+            if (!edge.labels.isEmpty()) {
+                return false;
+            }
+        }
+        return problem.plan.outDegreeOf(desperate) != 0;
     }
 
 }
