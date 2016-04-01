@@ -8,13 +8,11 @@ package me.grea.antoine.lollipop.benchmark;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
-import me.grea.antoine.lollipop.algorithm.PartialOrderPlanning;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Domain;
 import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Plan;
 import me.grea.antoine.lollipop.type.Problem;
-import me.grea.antoine.lollipop.type.flaw.ClassicalResolver;
 import me.grea.antoine.lollipop.type.flaw.ClassicalSubGoal;
 import me.grea.antoine.lollipop.type.flaw.ClassicalThreat;
 import me.grea.antoine.lollipop.type.flaw.Flaw;
@@ -31,7 +29,7 @@ import me.grea.antoine.utils.Log;
  */
 public class ProblemGenerator {
 
-    public static Set<Problem> generate(int number, int enthropy) {
+    public static Set<Problem> generate(int number, int enthropy, int hardness) {
         assert (enthropy > 3);
         Set<Problem> problems = new HashSet<>(); // Why does it had to be PROBLEMS ?!?!
         problemgen:
@@ -41,20 +39,21 @@ public class ProblemGenerator {
             Domain domain = new Domain();
             Problem problem = new Problem(initial, goal, domain, new Plan());
 
-            generateUsefull(problem, enthropy);
+            generateUsefull(problem, enthropy, hardness);
 
-            for (Action action : Dice.pick(domain, enthropy / 2)) {
+            for (Action action : Dice.pick(domain, hardness)) {
                 domain.add(noise(action, enthropy));
             }
 
-            while (goal.preconditions.size() < enthropy / 3) {
-                Set<Integer> effects = Dice.pick(problem.plan.vertexSet()).effects;
+            for (int j = 0; j < enthropy /3; j++) {
+                 Set<Integer> effects = Dice.pick(problem.plan.vertexSet()).effects;
                 if (!effects.isEmpty()) {
                     goal.preconditions.addAll(Dice.pick(effects, Dice.roll(1, 1 + (enthropy / 6))));
                 }
             }
 
             insert(goal, problem);
+            problem.plan.addVertex(goal); // Whyyyyyy
             Set<Integer> satisfied = new HashSet<>();
             for (Edge edge : problem.plan.incomingEdgesOf(goal)) {
                 satisfied.addAll(edge.labels);
@@ -66,8 +65,14 @@ public class ProblemGenerator {
 
 //            Log.i(problem.planToString());
             assert (SolutionChecker.check(problem));
+            
+            problem.expectedLength = problem.plan.vertexSet().size();
 
             problem.plan = new Plan();
+            problem.plan.addVertex(initial);
+            problem.plan.addVertex(goal);
+            problem.domain = new Domain(domain);
+            
             problems.add(problem);
         }
         return problems;
@@ -82,14 +87,14 @@ public class ProblemGenerator {
         }
     }
 
-    private static void generateUsefull(Problem problem, int enthropy) {
+    private static void generateUsefull(Problem problem, int enthropy, int hardness) {
         Set<Integer> state = new HashSet<>(problem.initial.effects);
         for (int j = 0; j < enthropy; j++) {
             Action action;
-            if (Dice.chances(0.7)) {
-                action = positive(state, enthropy);
-            } else {
+            if (Dice.chances((float)hardness/enthropy)) {
                 action = negative(state, enthropy);
+            } else {
+                action = positive(state, enthropy);
             }
 
             if (!insert(action, problem)) {
@@ -119,6 +124,7 @@ public class ProblemGenerator {
                     }
                     resolver.apply(problem.plan);
                     resolved = true;
+                    break;
                 }
                 if (resolved) {
                     open.remove(flaw);

@@ -5,10 +5,9 @@
  */
 package me.grea.antoine.lollipop.type;
 
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import me.grea.antoine.lollipop.heuristic.Heuristic;
+import me.grea.antoine.lollipop.mechanism.Ranking;
 
 /**
  *
@@ -20,8 +19,9 @@ public class Problem {
     public Action goal;
     public Domain domain; // not including those above
     public Plan plan;
-    public Map<Integer, Set<Action>> providing;
-    public Heuristic heuristic;
+    public Map<Integer, List<Action>> providing;
+    public int expectedLength = 0;
+    public Ranking ranking;
 
     public Problem() {
         this(new Action(), new Action(), new Domain(), new Plan());
@@ -60,5 +60,4 @@ public class Problem {
         }
         return result;
     }
-
 }

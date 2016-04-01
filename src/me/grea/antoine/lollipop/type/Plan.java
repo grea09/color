@@ -6,6 +6,7 @@
 package me.grea.antoine.lollipop.type;
 
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import me.grea.antoine.utils.Log;
 import org.jgrapht.DirectedGraph;
+import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.AbstractBaseGraph;
 import org.jgrapht.graph.ClassBasedEdgeFactory;
 
@@ -21,6 +23,8 @@ import org.jgrapht.graph.ClassBasedEdgeFactory;
  * @author antoine
  */
 public class Plan extends AbstractBaseGraph<Action, Edge> implements DirectedGraph<Action, Edge> {
+
+    public final Map<Action, Action> updated = new HashMap<>();
 
     private final Map<Action, Integer> outDegree = new HashMap<Action, Integer>() {
         {
@@ -66,22 +70,26 @@ public class Plan extends AbstractBaseGraph<Action, Edge> implements DirectedGra
         Set<Action> visited = new HashSet<>();
         Deque<Action> stack = new ArrayDeque<>();
         stack.push(source);
-        while (!stack.isEmpty()) {
-            Action current = stack.pop();
-            for (Edge edge : outgoingEdgesOf(current)) {
-                if (forbiden.contains(edge)) {
-                    continue;
+        try {
+            while (!stack.isEmpty()) {
+                Action current = stack.pop();
+                for (Edge edge : outgoingEdgesOf(current)) {
+                    if (forbiden.contains(edge)) {
+                        continue;
+                    }
+                    Action frontier = getEdgeTarget(edge);
+                    if (frontier == target && --k <= 0) {
+                        return true;
+                    }
+                    if (visited.contains(frontier)) {
+                        continue;
+                    }
+                    visited.add(frontier);
+                    stack.add(frontier);
                 }
-                Action frontier = getEdgeTarget(edge);
-                if (frontier == target && --k <= 0) {
-                    return true;
-                }
-                if (visited.contains(frontier)) {
-                    continue;
-                }
-                visited.add(frontier);
-                stack.add(frontier);
             }
+        } catch (IllegalArgumentException e) {
+            return false; /// WHyyyyyyyyyyyyyYYYYYyyyYYYyyYYYYYyyyYYyYYyyYYYyyy
         }
         return false;
     }
@@ -128,6 +136,21 @@ public class Plan extends AbstractBaseGraph<Action, Edge> implements DirectedGra
             return true;
         }
         return false;
+    }
+    
+    public boolean addAllVertex(Collection<Action> v) {
+        boolean modified = false;
+        for (Action action : v) {
+            modified |= addVertex(action);
+        }
+        return modified;
+    }
+    
+    
+
+    @Override
+    protected boolean assertVertexExist(Action v) { // Screw the rules I got @Override (and money)
+        return containsVertex(v);
     }
 
     @Override
@@ -185,6 +208,46 @@ public class Plan extends AbstractBaseGraph<Action, Edge> implements DirectedGra
 
     public long violation() {
         return violation;
+    }
+
+    public void update(Action old, Action new_) {
+        Set<Edge> out = outgoingEdgesOf(old);
+        Set<Edge> in = incomingEdgesOf(old);
+        addVertex(new_);
+        for (Edge edge : in) {
+            Action source = getEdgeSource(edge);
+            Edge added = addEdge(source, new_);
+            added.labels = new HashSet<>(edge.labels);
+        }
+        for (Edge edge : out) {
+            Action target = getEdgeTarget(edge);
+            Edge added = addEdge(new_, target);
+            added.labels = new HashSet<>(edge.labels);
+        }
+        removeVertex(old);
+        addVertex(new_);
+        updated.put(old, new_);
+    }
+    
+    public Set<Set<Action>> cycles() {
+        Set<Set<Action>> connectedSets = new HashSet<Set<Action>>() {
+            {
+                for (Set<Action> connectedSet : new StrongConnectivityInspector<>(Plan.this).stronglyConnectedSets()) {
+                    if (connectedSet.size() == 1) {
+                        for (Action action : connectedSet) {
+                            if (containsEdge(action, action)) {
+                                add(connectedSet);
+                            }
+                        }
+                    } else {
+                        add(connectedSet);
+                    }
+                }
+
+            }
+        };
+
+        return connectedSets;
     }
 
 }

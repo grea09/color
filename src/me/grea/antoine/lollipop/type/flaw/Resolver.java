@@ -5,6 +5,7 @@
  */
 package me.grea.antoine.lollipop.type.flaw;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -109,7 +110,7 @@ public class Resolver {
     }
 
     public boolean appliable(Plan plan) {
-        return negative  
+        return negative
                 ? (plan.containsEdge(source, target) || plan.containsVertex(source))
                 : //((!plan.containsEdge(source, target)
                 //                || !plan.getEdge(source, target).labels.contains(fluent))
@@ -135,7 +136,9 @@ public class Resolver {
                         invalidated.add(flaw); // Removed solved threats
                     }
                 }
-
+                if (flaw instanceof Orphan && problem.plan.outDegreeOf(flaw.needer) != 0) {
+                    invalidated.add(flaw);
+                }
             }
         }
         return invalidated;
@@ -146,16 +149,15 @@ public class Resolver {
         if (negative) {
             if (edge == null) {
                 related.addAll(Orphan.related(source, problem));
-            } else
-            {
+            } else {
                 related.addAll(SubGoal.related(target, problem));
-                
+
                 related.addAll(Orphan.related(source, problem));
-                
+
                 related.addAll(Threat.related(target, problem));
                 related.addAll(Threat.related(source, problem));
             }
-            
+
         } else if (sourceCreated) {
             related.addAll(SubGoal.related(source, problem));
             related.addAll(Threat.related(source, problem));
@@ -207,7 +209,5 @@ public class Resolver {
         }
         return true;
     }
-    
-    
 
 }

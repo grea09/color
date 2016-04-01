@@ -7,42 +7,28 @@ package me.grea.antoine.lollipop.type;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import me.grea.antoine.lollipop.algorithm.DomainProperPlan;
-import me.grea.antoine.lollipop.type.flaw.Cycle;
-import org.jgrapht.alg.StrongConnectivityInspector;
+import me.grea.antoine.lollipop.mechanism.ProperPlan;
+import me.grea.antoine.lollipop.mechanism.Ranking;
 
 /**
  *
  * @author antoine
  */
-public class Domain extends HashSet<Action>{
+public class Domain extends HashSet<Action> {
 
-    public static Set<Set<Action>> connectedSets(Plan plan) {
-        Set<Set<Action>> connectedSets = new HashSet<>(new StrongConnectivityInspector<>(plan).stronglyConnectedSets());
-        return connectedSets;
-    }
-    
-    public final Map<Integer, Set<Action>> providing;
-    public final Plan properPlan;
-    public final Set<Set<Action>> cycles;
-    
-    
+    public final ProperPlan properPlan;
+    public final Ranking ranking;
 
     public Domain() {
-        this.providing = DomainProperPlan.providing(this);
-        this.properPlan = DomainProperPlan.build(this);
-        this.cycles = connectedSets(properPlan);
+        
+        this.properPlan = new ProperPlan(this);
+        this.ranking = new Ranking(this);
     }
 
     public Domain(Collection<? extends Action> c) {
         super(c);
-        this.providing = DomainProperPlan.providing(this);
-        this.properPlan = DomainProperPlan.build(this);
-        this.cycles = connectedSets(properPlan);
+        this.properPlan = new ProperPlan(this);
+        this.ranking = new Ranking(this);
     }
-    
-    
-    
+
 }

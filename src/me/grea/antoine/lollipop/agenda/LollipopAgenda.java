@@ -5,15 +5,19 @@
  */
 package me.grea.antoine.lollipop.agenda;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import me.grea.antoine.lollipop.type.Action;
+import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Problem;
 import me.grea.antoine.lollipop.type.flaw.Alternative;
-import me.grea.antoine.lollipop.type.flaw.ClassicalSubGoal;
-import me.grea.antoine.lollipop.type.flaw.Cycle;
 import me.grea.antoine.lollipop.type.flaw.Flaw;
 import me.grea.antoine.lollipop.type.flaw.Orphan;
 import me.grea.antoine.lollipop.type.flaw.SubGoal;
 import me.grea.antoine.lollipop.type.flaw.Threat;
+import me.grea.antoine.utils.Collections;
 
 /**
  *
@@ -27,22 +31,36 @@ public class LollipopAgenda extends Agenda {
 
     @Override
     protected void populate() {
+        for (Map.Entry<Action, Action> entry : problem.plan.updated.entrySet()) {
+            Set<Integer> preconditions = Collections.difference(entry.getKey().preconditions, entry.getValue().preconditions); //Removed preconditions
+            Set<Integer> effects = Collections.difference(entry.getValue().effects, entry.getKey().effects); // Added effects
+            for (Integer effect : effects) {
+                for (Action action : problem.providing.get(effect)) {
+                    if (action != entry.getValue()) {
+                        addAll(Alternative.related(action, problem));
+                    }
+                }
+            }
+            for (Edge edge : new HashSet<>(problem.plan.incomingEdgesOf(entry.getValue()))) {
+                if (!edge.labels.isEmpty() && edge.labels.removeAll(preconditions) && edge.labels.isEmpty()) {
+                     problem.plan.removeEdge(edge);
+                }
+            }
+        }
+
         for (Action step : problem.plan.vertexSet()) { // Probably slow
-            addAll(Alternative.related(step, problem));
-        }
-        for (Action step : problem.plan.vertexSet()) {
+//            addAll(Alternative.related(step, problem));
             addAll(SubGoal.related(step, problem));
-        }
-        for (Action step : problem.plan.vertexSet()) {
             addAll(Threat.related(step, problem));
-        }
-        for (Action step : problem.plan.vertexSet()) {
-            addAll(Orphan.related(step, problem));
+//            addAll(Orphan.related(step, problem));
         }
     }
-    
-//    @Override
-//    public boolean addAll(Collection<? extends Flaw> related) {
+
+    @Override
+    public boolean addAll(Collection<? extends Flaw> related) {
+        related.removeAll(this);
+        return super.addAll(0, related);
+    }
 //        if (flaw instanceof Threat) { //Fix associated subgoals before !
 //            Deque<Flaw> top = new ArrayDeque<>();
 //
@@ -64,8 +82,7 @@ public class LollipopAgenda extends Agenda {
 //                agenda.addFirst(top.removeLast());
 //            }
 //        }
-        
-        
+
 //        boolean result = false;
 //        for (Flaw newFlaw : related) {
 //            result = true;
@@ -86,11 +103,13 @@ public class LollipopAgenda extends Agenda {
 //        }
 //        return result;
 //    }
-    
-//    @Override
-//    public boolean add(Flaw flaw) {
-//        super.add(flaw);
-//    }
+    @Override
+    public boolean add(Flaw flaw) {
+        if (contains(flaw)) {
+            return false;
+        }
+        return super.add(flaw);
+    }
 
     @Override
     public Flaw choose() {

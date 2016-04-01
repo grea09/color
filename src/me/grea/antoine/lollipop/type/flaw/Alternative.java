@@ -6,15 +6,12 @@
 package me.grea.antoine.lollipop.type.flaw;
 
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Problem;
 import static me.grea.antoine.utils.Collections.queue;
-import me.grea.antoine.utils.Log;
 
 /**
  *
@@ -77,9 +74,9 @@ public class Alternative extends Flaw<Alternative> {
         for (Edge edge : problem.plan.incomingEdgesOf(troubleMaker)) {
             Action provider = problem.plan.getEdgeSource(edge);
             for (Integer label : edge.labels) {
-                for (Action pretender : problem.providing.get(label)) {
-                    if(problem.heuristic.comparator().compare(provider, pretender) < 0)
-                        alternatives.add(new Alternative(label, pretender, troubleMaker, problem));
+                Action pretender = problem.providing.get(label).get(0);
+                if (pretender != provider && pretender != troubleMaker) {
+                    alternatives.add(new Alternative(label, provider, troubleMaker, problem));
                 }
             }
         }

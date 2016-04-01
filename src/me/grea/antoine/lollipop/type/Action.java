@@ -5,6 +5,7 @@
  */
 package me.grea.antoine.lollipop.type;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -14,18 +15,15 @@ import java.util.Set;
  *
  * @author antoine
  */
-public class Action extends Goal {
+public class Action {
 
+    public Set<Integer> preconditions;
     public Set<Integer> effects;
     public final boolean fake;
-    private char symbol;
+    public char symbol;
 
     public Action() {
         this(new HashSet<>(), new HashSet<>());
-    }
-
-    public Action(Goal goal) {
-        this(goal.preconditions, new HashSet());
     }
 
     public Action(Action action) {
@@ -37,8 +35,12 @@ public class Action extends Goal {
     }
 
     public Action(Collection<Integer> preconditions, Collection<Integer> effects, boolean fake) {
-        super(preconditions);
         symbol = fake ? '₳' : (effects == null ? 'G' : (preconditions == null ? 'I' : 'A'));
+        if (preconditions == null) {
+            this.preconditions = new HashSet();
+        } else {
+            this.preconditions = new HashSet(preconditions);
+        }
         if (effects == null) {
             this.effects = new HashSet();
         } else {
@@ -46,7 +48,7 @@ public class Action extends Goal {
         }
         this.fake = fake;
     }
-
+    
     @Override
     public String toString() {
         return symbol + (symbol == 'G' || symbol == 'I' ? "" : ("("

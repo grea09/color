@@ -32,10 +32,15 @@ public class SolutionChecker {
         Set<Integer> state = new HashSet<>();
         Set<Action> open = set(problem.initial);
         for (Action action : problem.plan.vertexSet()) {
-            if(problem.plan.inDegreeOf(action) == 0 && problem.plan.outDegreeOf(action) > 0)
+            if (problem.plan.inDegreeOf(action) == 0 && problem.plan.outDegreeOf(action) > 0) {
+                if (!action.preconditions.isEmpty()) {
+                    Log.w(action + " isn't satisfied at all");
+                    return false;
+                }
                 open.add(action);
+            }
         }
-        
+
         Set<Action> closed = new HashSet<>();
         while (!open.isEmpty()) {
             Set<Integer> additive = new HashSet<>(state);

@@ -33,7 +33,7 @@ public class Cycle extends Flaw<Cycle> {
 
     @Override
     public Deque<Resolver> resolvers() {
-        Action lessUsefull = Collections.min(closedWalk, problem.heuristic.comparator());
+        Action lessUsefull = null;//FIXME !!!!!!!!!!!!!! //Collections.min(closedWalk, problem.heuristic.comparator());
         for (Action action : closedWalk) {
             if (problem.plan.containsEdge(lessUsefull, action)) {
                 return queue(new Resolver(lessUsefull, action, 0, true));
