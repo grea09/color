@@ -7,6 +7,7 @@ package me.grea.antoine.lollipop.type.flaw;
 
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Edge;
@@ -68,8 +69,25 @@ public class Alternative extends Flaw<Alternative> {
         return new Alternative(problem).related(troubleMaker);
     }
 
+//    @Override
+//    public Set<Alternative> related(Action troubleMaker) { // Forward
+//        Set<Alternative> alternatives = new HashSet<>();
+//        for (Integer effect : troubleMaker.effects) {
+//            List<Action> best = problem.providing.get(effect);
+//            for (Action provider : best) {
+//                if (problem.ranking.compare(provider, troubleMaker)<0) {
+//                    for (Edge edge : problem.plan.outgoingEdgesOf(provider)) {
+//                        if (edge.labels.contains(effect)) {
+//                            alternatives.add(new Alternative(effect, provider, problem.plan.getEdgeTarget(edge), problem));
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        return alternatives;
+//    }
     @Override
-    public Set<Alternative> related(Action troubleMaker) {
+    public Set<Alternative> related(Action troubleMaker) { // Backward
         Set<Alternative> alternatives = new HashSet<>();
         for (Edge edge : problem.plan.incomingEdgesOf(troubleMaker)) {
             Action provider = problem.plan.getEdgeSource(edge);

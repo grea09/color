@@ -88,6 +88,10 @@ public class Action {
         }
         return true;
     }
+
+    public boolean isSpecial() {
+        return !fake && (symbol != 'A');
+    }
     
     
 }

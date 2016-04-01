@@ -33,23 +33,20 @@ public class ProperPlan extends Plan {
     public final Map<Integer, List<Action>> providing = new HashMap<>();
     public final Map<Integer, List<Action>> needing = new HashMap<>();
     public final Set<Set<Action>> cycles;
+    private boolean binding = false;
 
     public ProperPlan(ProperPlan other) {
-        super();
+        super(other);
         this.cycles = new HashSet<>(other.cycles);
         this.providing.putAll(other.providing);
         this.needing.putAll(other.needing);
         this.domain = other.domain;
         this.problem = other.problem;
-        for (Action action : other.vertexSet()) {
-            addVertex(action);
-        }
-        for (Edge edge : other.edgeSet()) {
-            addEdge(other.getEdgeSource(edge), other.getEdgeTarget(edge), edge);
-        }
+        binding = true;
     }
 
     public ProperPlan(Domain domain) {
+        binding = true;
         this.domain = domain;
         addAllVertex(domain);
         this.cycles = cycles();
@@ -58,6 +55,7 @@ public class ProperPlan extends Plan {
     public ProperPlan(Problem problem) {
         this(problem.domain.properPlan);
         this.problem = problem;
+        binding = true;
         addVertex(problem.goal);
         addVertex(problem.initial);
     }
@@ -78,7 +76,9 @@ public class ProperPlan extends Plan {
         boolean modified = super.addVertex(action);
         if (modified) {
             cache(action);
-            bind(action);
+            if (binding) {
+                bind(action);
+            }
         }
         return modified;
     }
@@ -119,9 +119,8 @@ public class ProperPlan extends Plan {
 
         }
     }
-    
-    public void cache(Collection<Action> actions)
-    {
+
+    public void cache(Collection<Action> actions) {
         for (Action action : actions) {
             cache(action);
         }
@@ -130,14 +129,20 @@ public class ProperPlan extends Plan {
     public void cache(Action action) {
         for (int effect : action.effects) {
             if (providing.containsKey(effect)) {
-                providing.get(effect).add(action);
+                List<Action> providers = providing.get(effect);
+                if (!providers.contains(action)) {
+                    providers.add(action);
+                }
             } else {
                 providing.put(effect, list(action));
             }
         }
         for (int precondition : action.preconditions) {
             if (needing.containsKey(precondition)) {
-                needing.get(precondition).add(action);
+                List<Action> needers = needing.get(precondition);
+                if (!needers.contains(action)) {
+                    needers.add(action);
+                }
             } else {
                 needing.put(precondition, list(action));
             }

@@ -43,10 +43,6 @@ public class Problem {
         this.plan = other.plan;
     }
     
-    public boolean isSpecial(Action action) {
-        return action == goal || action == initial;
-    }
-
     @Override
     public String toString() {
         return "Problem {" + "\n\tdomain:" + domain + "\n\tinitial:" + initial.effects + " => goal:" + goal.preconditions + "\n\tplan:" + planToString() + "}";

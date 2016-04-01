@@ -62,6 +62,7 @@ public class Main {
         Log.w("Adding 6 to initial state !!!");
         Action newInitial = new Action(null, initial.effects);
         newInitial.effects.add(6);
+        problem.initial = newInitial;
         problem.plan.update(initial, newInitial);
         Lollipop.solve(problem);
         solution(problem);
@@ -69,6 +70,7 @@ public class Main {
         Log.w("Removing 3 to goal state !!!");
         Action newGoal = new Action(goal.preconditions, null);
         newGoal.preconditions.remove(3);
+        problem.goal = newGoal;
         problem.plan.update(goal, newGoal);
         Lollipop.solve(problem);
         solution(problem);

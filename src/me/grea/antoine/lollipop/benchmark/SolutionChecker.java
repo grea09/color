@@ -6,18 +6,13 @@
 package me.grea.antoine.lollipop.benchmark;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Plan;
 import me.grea.antoine.lollipop.type.Problem;
-import me.grea.antoine.utils.Collections;
-import static me.grea.antoine.utils.Collections.list;
 import static me.grea.antoine.utils.Collections.permute;
 import static me.grea.antoine.utils.Collections.set;
 import me.grea.antoine.utils.Log;

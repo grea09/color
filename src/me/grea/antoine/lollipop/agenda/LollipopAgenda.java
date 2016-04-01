@@ -32,18 +32,32 @@ public class LollipopAgenda extends Agenda {
     @Override
     protected void populate() {
         for (Map.Entry<Action, Action> entry : problem.plan.updated.entrySet()) {
-            Set<Integer> preconditions = Collections.difference(entry.getKey().preconditions, entry.getValue().preconditions); //Removed preconditions
             Set<Integer> effects = Collections.difference(entry.getValue().effects, entry.getKey().effects); // Added effects
             for (Integer effect : effects) {
                 for (Action action : problem.providing.get(effect)) {
                     if (action != entry.getValue()) {
-                        addAll(Alternative.related(action, problem));
+                        for (Edge edge : problem.plan.outgoingEdgesOf(action)) {
+                            if (edge.labels.contains(effect)) {
+                                add(new Alternative(effect, action, problem.plan.getEdgeTarget(edge), problem));
+                            }
+                        }
                     }
                 }
             }
+
+            effects = Collections.difference(entry.getKey().effects, entry.getValue().effects); //Removed effects
+            for (Edge edge : new HashSet<>(problem.plan.outgoingEdgesOf(entry.getValue()))) {
+                if (!edge.labels.isEmpty() && edge.labels.removeAll(effects) && edge.labels.isEmpty()) {
+                    problem.plan.removeEdge(edge);
+                    addAll(Orphan.related(entry.getValue(), problem));
+                }
+            }
+
+            Set<Integer> preconditions = Collections.difference(entry.getKey().preconditions, entry.getValue().preconditions); //Removed preconditions
             for (Edge edge : new HashSet<>(problem.plan.incomingEdgesOf(entry.getValue()))) {
                 if (!edge.labels.isEmpty() && edge.labels.removeAll(preconditions) && edge.labels.isEmpty()) {
-                     problem.plan.removeEdge(edge);
+                    addAll(Orphan.related(problem.plan.getEdgeSource(edge), problem));
+                    problem.plan.removeEdge(edge);
                 }
             }
         }

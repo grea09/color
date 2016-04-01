@@ -46,7 +46,7 @@ public class Orphan extends Flaw<Orphan> {
     @Override
     public Set<Orphan> related(Action troubleMaker) {
         Set<Orphan> related = new HashSet<>();
-        if (problem.isSpecial(troubleMaker)) {
+        if (troubleMaker.isSpecial()) {
             return related;
         }
 
