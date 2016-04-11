@@ -75,7 +75,7 @@ public class ClassicalThreat extends Flaw<ClassicalThreat> {
                 forEach((fluent) -> {
                     Action source = plan.getEdgeSource(threatened);
                     Action target = plan.getEdgeTarget(threatened);
-                    if (!plan.reachable(breaker, source)
+                    if (breaker != source && breaker != target && !plan.reachable(breaker, source)
                             && !plan.reachable(target, breaker)) {
                         fluents.add(fluent);
                     }

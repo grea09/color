@@ -9,16 +9,23 @@ import me.grea.antoine.lollipop.mechanism.ProperPlan;
 import me.grea.antoine.lollipop.mechanism.Ranking;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import me.grea.antoine.lollipop.agenda.Agenda;
 import me.grea.antoine.lollipop.agenda.LollipopAgenda;
+import me.grea.antoine.lollipop.agenda.RandomAgenda;
 import me.grea.antoine.lollipop.exception.Success;
 import me.grea.antoine.lollipop.type.Action;
+import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Problem;
+import me.grea.antoine.lollipop.type.flaw.Alternative;
 import me.grea.antoine.lollipop.type.flaw.Flaw;
+import me.grea.antoine.lollipop.type.flaw.Orphan;
 import me.grea.antoine.lollipop.type.flaw.Resolver;
+import me.grea.antoine.lollipop.type.flaw.SubGoal;
 import static me.grea.antoine.utils.Collections.set;
 import me.grea.antoine.utils.Log;
 
@@ -30,49 +37,81 @@ public class Lollipop {
 
     private Agenda agenda;
     private Problem problem;
+    private Set<Action> input;
 
     public Lollipop(Problem problem) {
         this.problem = problem;
         ProperPlan properPlan = new ProperPlan(problem.domain.properPlan);
         properPlan.cache(set(problem.initial, problem.goal));
-        
+
         for (Map.Entry<Action, Action> entry : problem.plan.updated.entrySet()) {
             properPlan.update(entry.getKey(), entry.getValue());
         }
-        
+
         problem.providing = properPlan.providing;
-        
+
         problem.ranking = new Ranking(problem.domain.ranking);
         problem.ranking.realize(problem);
-        
-        
+
         for (List<Action> value : problem.providing.values()) {
             Collections.sort(value, problem.ranking);
         }
-        
+
         if (problem.plan.edgeSet().isEmpty()) {
             ProperPlan.sanic(problem);
+            Log.v(problem);
         }
+
+        input = new HashSet<>(problem.plan.vertexSet());
+        input.remove(problem.initial);
+        input.remove(problem.goal);
+
 //        IllegalFixer.clean(problem);
         agenda = new LollipopAgenda(problem);
     }
 
-    public static void solve(Problem problem) {
-        Lollipop lollipop = new Lollipop(problem);
-        while (true) {
-            try {
-                lollipop.refine();
-            } catch (Success ex) {
-                Log.i("Success !");
-                problem.plan.updated.clear();
-                return;
-            }
-            Log.w("Failure");
-            return;
+    public static boolean solve(Problem problem) {
+        if (problem.goal.preconditions.isEmpty()) {
+            problem.plan.addEdge(problem.initial, problem.goal);
+            Log.i("Goal is empty !");
+            return true;
         }
+        Lollipop lollipop = new Lollipop(problem);
+        try {
+            Flaw flaw = null;
+            boolean failed = true;
+            do {
+                flaw = lollipop.refine();
+                if (lollipop.input.contains(flaw.needer)) {
+                    failed = false;
+                    Log.w("Reverting the choice of including " + flaw.needer + " in the input plan.");
+                    Log.v(problem);
+                    Log.v(lollipop.agenda);
+//                    problem.clear();
+//                    lollipop.agenda = new LollipopAgenda(problem);
+                    for (Edge edge : problem.plan.outgoingEdgesOf(flaw.needer)) {
+                        lollipop.agenda.addAll(SubGoal.related(problem.plan.getEdgeTarget(edge), problem));
+                    }
+                    Deque<Resolver> resolvers = new Orphan(flaw.needer, problem).resolvers();
+                    for (Resolver resolver : resolvers) {
+                        resolver.apply(problem.plan);
+                        lollipop.agenda.addAll(resolver.related(problem));
+                        lollipop.agenda.removeAll(resolver.invalidated(lollipop.agenda, problem));
+                    }
+                    lollipop.input.remove(flaw.needer);
+                    Log.d("agenda :" + lollipop.agenda);
+                }
+            } while (!failed);
+        } catch (Success ex) {
+            Log.i("Success !");
+            problem.plan.updated.clear();
+            return true;
+        }
+        Log.w("Failure");
+        return false;
     }
 
-    public void refine() throws Success {
+    public Flaw refine() throws Success {
         if (agenda.isEmpty()) {
             throw new Success();
         }
@@ -93,19 +132,22 @@ public class Lollipop {
                 Log.w(resolver + " isn't appliable !");
                 continue;
             }
+            Agenda oldAgenda = new LollipopAgenda(agenda);
             Set<Flaw> related = resolver.related(problem);
             Set<Flaw> invalidated = resolver.invalidated(agenda, problem);
             agenda.addAll(related);
             agenda.removeAll(invalidated);
             refine();
             resolver.revert(problem.plan); // Return means failure
-            agenda.removeAll(related);
-            agenda.addAll(invalidated);
+//            agenda.removeAll(related);
+//            agenda.addAll(invalidated);
+            agenda = oldAgenda;
         }
         agenda.add(flaw);
         Log.w("No suitable resolver for " + flaw);
         Log.v(agenda);
         Log.v(problem.planToString());
+        return flaw;
     }
 
 }

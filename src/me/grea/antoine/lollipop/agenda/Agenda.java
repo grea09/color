@@ -17,6 +17,12 @@ public abstract class Agenda extends ArrayList<Flaw> {
 
     protected final Problem problem;
     
+    public Agenda(Agenda other)
+    {
+        super(other);
+        problem = other.problem;
+    }
+    
     public Agenda(Problem problem)
     {
         this.problem = problem;

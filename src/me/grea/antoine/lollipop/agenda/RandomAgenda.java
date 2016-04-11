@@ -19,6 +19,10 @@ import me.grea.antoine.utils.Dice;
  */
 public class RandomAgenda extends Agenda {
 
+    public RandomAgenda(Agenda other) {
+        super(other);
+    }
+    
     public RandomAgenda(Problem problem) {
         super(problem);
     }

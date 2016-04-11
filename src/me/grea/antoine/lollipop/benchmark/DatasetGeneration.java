@@ -45,7 +45,7 @@ public class DatasetGeneration {
             for (int hardness = 0; hardness < enthropy * 0.7; hardness++) {
                 Log.i("enthropy = " + enthropy + " , hardness = " + hardness);
                 File file = new File("data/problems_[" + enthropy +  "," + hardness +"].json");
-                new PrintStream(file).print(gson.toJson(ProblemGenerator.generate(10, enthropy, hardness)));
+                new PrintStream(file).print(gson.toJson(ProblemGenerator.generate(100, enthropy, hardness)));
             }
         }
 

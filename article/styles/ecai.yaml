@@ -2,5 +2,5 @@ ecai:
     parent: article
     latex:
         metadata:
-            csl: latex/ieee.csl
-            documentclass: latex/ecai
+            csl: bibliography/ieee.csl
+            documentclass: styles/latex/ecai

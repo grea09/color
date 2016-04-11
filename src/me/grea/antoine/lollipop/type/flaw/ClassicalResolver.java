@@ -15,8 +15,8 @@ import me.grea.antoine.utils.Log;
  *
  * @author antoine
  */
-public class ClassicalResolver extends Resolver{
-    
+public class ClassicalResolver extends Resolver {
+
     public ClassicalResolver(Action source, Action target, int fluent) {
         super(source, target, fluent);
     }
@@ -24,15 +24,17 @@ public class ClassicalResolver extends Resolver{
     public ClassicalResolver(Action source, Action target) {
         super(source, target);
     }
-    
+
     @Override
     public Set<Flaw> related(Problem problem) {
         Set<Flaw> related = new HashSet<>();
         related.addAll(ClassicalSubGoal.related(source, problem));
-        related.addAll(Threat.related(source, problem));
+        for (Action action : problem.plan.vertexSet()) {
+            related.addAll(ClassicalThreat.related(action, problem));
+        }
         Log.d("Related flaws " + related);
 
         return related;
     }
-    
+
 }

@@ -51,17 +51,13 @@ public class Orphan extends Flaw<Orphan> {
             return related;
         }
 
-        if (problem.plan.containsVertex(troubleMaker) && problem.plan.outDegreeOf(troubleMaker) == 0) {
-            related.add(new Orphan(troubleMaker, problem));
-        }
-
-        if (hanging(troubleMaker, problem)) {
+        if (isOrphan(troubleMaker, problem)) {
             related.add(new Orphan(troubleMaker, problem));
         }
 
         if (ghosts.containsKey(troubleMaker)) {
             for (Action action : ghosts.get(troubleMaker)) {
-                if (problem.plan.outDegreeOf(action) == 0) {
+                if (isOrphan(action, problem)) {
                     related.add(new Orphan(action, problem));
                 }
             }
@@ -72,6 +68,11 @@ public class Orphan extends Flaw<Orphan> {
     @Override
     public String toString() {
         return "☹ " + needer;
+    }
+    
+    public static boolean isOrphan(Action action, Problem problem)
+    {
+        return !action.isSpecial() && problem.plan.containsVertex(action) && (problem.plan.outDegreeOf(action) == 0 || Orphan.hanging(action, problem));
     }
 
     public static boolean hanging(Action desperate, Problem problem) {

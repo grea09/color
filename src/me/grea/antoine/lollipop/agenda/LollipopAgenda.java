@@ -15,6 +15,7 @@ import me.grea.antoine.lollipop.type.Problem;
 import me.grea.antoine.lollipop.type.flaw.Alternative;
 import me.grea.antoine.lollipop.type.flaw.Flaw;
 import me.grea.antoine.lollipop.type.flaw.Orphan;
+import static me.grea.antoine.lollipop.type.flaw.Orphan.isOrphan;
 import me.grea.antoine.lollipop.type.flaw.SubGoal;
 import me.grea.antoine.lollipop.type.flaw.Threat;
 import me.grea.antoine.utils.Collections;
@@ -29,6 +30,10 @@ public class LollipopAgenda extends Agenda {
         super(problem);
     }
 
+    public LollipopAgenda(Agenda agenda) {
+        super(agenda);
+    }
+
     @Override
     protected void populate() {
         for (Map.Entry<Action, Action> entry : problem.plan.updated.entrySet()) {
@@ -41,7 +46,7 @@ public class LollipopAgenda extends Agenda {
                                 add(new Alternative(effect, action, problem.plan.getEdgeTarget(edge), problem));
                             }
                         }
-                    }
+                    } //FIXME Check if it really only add better alternatives
                 }
             }
 
@@ -64,9 +69,12 @@ public class LollipopAgenda extends Agenda {
 
         for (Action step : problem.plan.vertexSet()) { // Probably slow
 //            addAll(Alternative.related(step, problem));
-            addAll(SubGoal.related(step, problem));
-            addAll(Threat.related(step, problem));
-//            addAll(Orphan.related(step, problem));
+            if (Orphan.isOrphan(step, problem)) {
+                addAll(Orphan.related(step, problem));
+            } else {
+                addAll(SubGoal.related(step, problem));
+                addAll(Threat.related(step, problem));
+            }
         }
     }
 

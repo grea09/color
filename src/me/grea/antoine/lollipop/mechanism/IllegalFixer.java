@@ -66,7 +66,7 @@ public class IllegalFixer {
 
     private static Set<Integer> inconsistentPrecondition(Action action) {
         Set<Integer> preconditions = new HashSet<>();
-        for (int fluent : action.effects) {
+        for (int fluent : action.preconditions) {
             if (action.preconditions.contains(-fluent)) {
                 preconditions.add(fluent);
             }
@@ -128,15 +128,14 @@ public class IllegalFixer {
     }
     
     public static boolean fixAction(Action action) { //☣
-        
-        if (action.effects.isEmpty()) {
+        if (action.effects.isEmpty() && !action.isSpecial()) {
             Log.d("◯\t" + action + " is useless ! Getting rid of it.");
             return false;
         }
 
         Set<Integer> toxic = toxicEffects(action);
         if (!toxic.isEmpty()) {
-            if (action.effects.containsAll(toxic)) {
+            if (toxic.containsAll(action.effects)) {
                 Log.d("☣\t" + action + " is entirely toxic ! Getting rid of it.");
                 return false;
             }

@@ -13,6 +13,7 @@ import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Plan;
 import me.grea.antoine.lollipop.type.Problem;
+import me.grea.antoine.lollipop.type.flaw.ClassicalThreat;
 import static me.grea.antoine.utils.Collections.permute;
 import static me.grea.antoine.utils.Collections.set;
 import me.grea.antoine.utils.Log;
@@ -23,10 +24,31 @@ import me.grea.antoine.utils.Log;
  */
 public class SolutionChecker {
 
+    public static void display(Problem problem) {
+        if (!SolutionChecker.check(problem)) {
+            Log.f("Solution invalid :{\n\t" + problem + "}");
+        }
+    }
+
     public static boolean check(Problem problem) {
+        if (problem.plan.edgeSet().isEmpty()) {
+            Log.w("Empty plan !");
+            return false;
+        }
+        
+        if (!problem.plan.cycles().isEmpty()) {
+            Log.w("Cycles " + problem.plan.cycles());
+            return false;
+        }
+
         Set<Integer> state = new HashSet<>();
         Set<Action> open = set(problem.initial);
         for (Action action : problem.plan.vertexSet()) {
+            Set<ClassicalThreat> threats = ClassicalThreat.related(action, problem);
+            if (!threats.isEmpty()) {
+                Log.w(action + " is threatening : " + threats);
+                return false;
+            }
             if (problem.plan.inDegreeOf(action) == 0 && problem.plan.outDegreeOf(action) > 0) {
                 if (!action.preconditions.isEmpty()) {
                     Log.w(action + " isn't satisfied at all");
@@ -55,10 +77,13 @@ public class SolutionChecker {
                         Log.w(action + " can't be applied on state " + state);
                         return false;
                     }
-                    additive.addAll(action.effects);
+                    for (int effect : action.effects) {
+                        additive.add(effect);
+                        additive.remove(-effect);
+                    }
                 }
             }
-            state.addAll(additive);
+            state = additive;
             HashSet<Action> next = new HashSet<>();
             closed.addAll(open);
             for (Action action : open) {

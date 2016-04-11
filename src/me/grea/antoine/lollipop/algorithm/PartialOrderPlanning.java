@@ -6,6 +6,7 @@
 package me.grea.antoine.lollipop.algorithm;
 
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Set;
 import me.grea.antoine.lollipop.agenda.Agenda;
 import me.grea.antoine.lollipop.agenda.ClassicalAgenda;
@@ -30,18 +31,22 @@ public class PartialOrderPlanning {
         agenda = new RandomAgenda(problem);
     }
 
-    public static void solve(Problem problem) {
-        PartialOrderPlanning pop = new PartialOrderPlanning(problem);
-        while (true) {
-            try {
-                pop.refine();
-            } catch (Success ex) {
-                Log.i("Success !");
-                return;
-            }
-            Log.w("Failure");
-            return;
+    public static boolean solve(Problem problem) {
+        if (problem.goal.preconditions.isEmpty()) {
+            problem.plan.addEdge(problem.initial, problem.goal);
+            Log.i("Goal is empty !");
+            return true;
         }
+
+        PartialOrderPlanning pop = new PartialOrderPlanning(problem);
+        try {
+            pop.refine();
+        } catch (Success ex) {
+            Log.i("Success !");
+            return true;
+        }
+        Log.w("Failure");
+        return false;
     }
 
     public void refine() throws Success {
@@ -49,13 +54,13 @@ public class PartialOrderPlanning {
             throw new Success();
         }
         Log.d("Agenda " + agenda);
-        
+
         Flaw flaw = agenda.choose();
         Log.d("Resolving " + flaw);
-        
+
         Deque<Resolver> resolvers = flaw.resolvers();
         Log.d("Resolvers " + resolvers);
-        
+
         for (Resolver resolver : resolvers) {
             Log.d("Trying with " + resolver);
 
@@ -65,15 +70,18 @@ public class PartialOrderPlanning {
                 Log.w(resolver + " isn't appliable !");
                 continue;
             }
+            Agenda oldAgenda = new RandomAgenda(agenda);
             Set<Flaw> related = resolver.related(problem);
             agenda.addAll(related);
             refine();
+            Log.w("Failure reverting the application of " + resolver);
             resolver.revert(problem.plan); // Return means failure
-            agenda.removeAll(related);
+            Log.w("Restoring agenda to " + oldAgenda);
+            agenda = oldAgenda;
         }
         agenda.add(flaw);
         Log.w("No suitable resolver for " + flaw);
-        Log.v(agenda);
+        Log.d(agenda);
         Log.v(problem.planToString());
     }
 

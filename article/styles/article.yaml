@@ -4,12 +4,18 @@ article:
             smart: yes
             standalone: yes
             numbersections: yes
-            secPrefix: 
+            secPrefix:
                 - section
                 - sections
             figPrefix:
                 - figure
                 - figures
+            eqnPrefix:
+                - equation
+                - equations
+            tblPrefix:
+                - table
+                - tables
             markdown_in_html_blocks: yes
 
         filter:
@@ -17,6 +23,7 @@ article:
             - run: filters/pandoc-science.py
             - run: pandoc-citeproc
             - run: filters/pandoc-svg.py
+            - run: filters/pandoc-table.py
 
     latex:
         metadata:
@@ -27,5 +34,7 @@ article:
             latex-engine: pdflatex
             documentclass: article
             listings: yes
-            header-includes: 
+            cref: true
+            header-includes:
                 - "\\input{latex/prelude.tex}"
+                - "\\usepackage{booktabs}"

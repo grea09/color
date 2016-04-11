@@ -17,6 +17,7 @@ import java.io.Reader;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import me.grea.antoine.lollipop.algorithm.Lollipop;
 import me.grea.antoine.lollipop.algorithm.PartialOrderPlanning;
 import me.grea.antoine.lollipop.persistence.ActionSerializer;
 import me.grea.antoine.lollipop.persistence.ProblemSerializer;
@@ -43,7 +44,7 @@ public class Benchmark {
         Gson gson = bob.create(); //Damn son
 
         Chrono chrono = new Chrono();
-        File output = new File("results/" + LocalDateTime.now() + "_" + PartialOrderPlanning.class + ".csv");
+        File output = new File("results/" + LocalDateTime.now() + "_" + Lollipop.class + ".csv");
         System.out.println(output.getAbsolutePath());
         try (PrintStream result = new PrintStream(output)) {
             for (File data : new File("data").listFiles()) {
@@ -58,7 +59,7 @@ public class Benchmark {
 
                 for (Problem problem : problems) {
                     chrono.start();
-                    PartialOrderPlanning.solve(problem);
+                    Lollipop.solve(problem);
                     chrono.stop();
                     quality += problem.plan.vertexSet().size() - problem.expectedLength;
                 }

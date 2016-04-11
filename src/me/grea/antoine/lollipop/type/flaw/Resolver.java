@@ -120,23 +120,19 @@ public class Resolver {
 
     public Set<Flaw> invalidated(Agenda agenda, Problem problem) {
         Set<Flaw> invalidated = new HashSet<>();
-        if (negative) {
-            for (Flaw flaw : agenda) {
+        for (Flaw flaw : agenda) {
+            if (negative) {
                 if (flaw.needer.equals(source)) {
                     invalidated.add(flaw);
                 }
-            }
-        } else {
-            for (Flaw flaw : agenda) {
-                if (flaw instanceof Threat) {
-                    Action threatSource = problem.plan.getEdgeSource(((Threat) flaw).threatened);
-                    Action threatTarget = problem.plan.getEdgeTarget(((Threat) flaw).threatened);
-                    if ((source == threatTarget && target == ((Threat) flaw).breaker)
-                            || (source == ((Threat) flaw).breaker && target == threatSource)) {
-                        invalidated.add(flaw); // Removed solved threats
-                    }
+            } else if (flaw instanceof Threat) {
+                Action threatSource = problem.plan.getEdgeSource(((Threat) flaw).threatened);
+                Action threatTarget = problem.plan.getEdgeTarget(((Threat) flaw).threatened);
+                if ((source == threatTarget && target == ((Threat) flaw).breaker)
+                        || (source == ((Threat) flaw).breaker && target == threatSource)) {
+                    invalidated.add(flaw); // Removed solved threats
                 }
-                if (flaw instanceof Orphan && problem.plan.outDegreeOf(flaw.needer) != 0 && !Orphan.hanging(flaw.needer, problem)) {
+                if (flaw instanceof Orphan && !Orphan.isOrphan(((Threat) flaw).needer, problem)) {
                     invalidated.add(flaw);
                 }
             }
@@ -158,9 +154,13 @@ public class Resolver {
                 related.addAll(Threat.related(source, problem));
             }
 
-        } else if (sourceCreated) {
-            related.addAll(SubGoal.related(source, problem));
-            related.addAll(Threat.related(source, problem));
+        } else {
+            for (Action action : problem.plan.vertexSet()) {
+                related.addAll(Threat.related(action, problem));
+            }
+            if (sourceCreated) {
+                related.addAll(SubGoal.related(source, problem));
+            }
         }
 
         Log.d("Related flaws " + related);

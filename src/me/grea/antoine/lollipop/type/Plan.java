@@ -137,7 +137,7 @@ public class Plan extends AbstractBaseGraph<Action, Edge> implements DirectedGra
         }
         return false;
     }
-    
+
     public boolean addAllVertex(Collection<Action> v) {
         boolean modified = false;
         for (Action action : v) {
@@ -145,8 +145,6 @@ public class Plan extends AbstractBaseGraph<Action, Edge> implements DirectedGra
         }
         return modified;
     }
-    
-    
 
     @Override
     protected boolean assertVertexExist(Action v) { // Screw the rules I got @Override (and money)
@@ -217,18 +215,22 @@ public class Plan extends AbstractBaseGraph<Action, Edge> implements DirectedGra
         for (Edge edge : in) {
             Action source = getEdgeSource(edge);
             Edge added = addEdge(source, new_);
-            added.labels = new HashSet<>(edge.labels);
+            if (added != null) {
+                added.labels = new HashSet<>(edge.labels);
+            }
         }
         for (Edge edge : out) {
             Action target = getEdgeTarget(edge);
             Edge added = addEdge(new_, target);
-            added.labels = new HashSet<>(edge.labels);
+            if (added != null) {
+                added.labels = new HashSet<>(edge.labels);
+            }
         }
         removeVertex(old);
         addVertex(new_);
         updated.put(old, new_);
     }
-    
+
     public Set<Set<Action>> cycles() {
         Set<Set<Action>> connectedSets = new HashSet<Set<Action>>() {
             {

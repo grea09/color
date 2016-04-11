@@ -1,0 +1,13 @@
+%http://tex.stackexchange.com/questions/228801/is-it-possible-to-get-the-package-listofsymbols-to-recognize-the-cdots-command
+
+\makeatletter
+% get a copy of \protected@write
+\let\protected@iwrite\protected@write
+% patch the copy to add \immediate
+\xpatchcmd{\protected@iwrite}{\write}{\immediate\write}{}{}
+% patch \addsymline to use \protected@iwrite instead of \immediate\write
+\xpatchcmd{\addsymline}
+{\immediate\write#5}
+{\protected@iwrite{#5}{}}
+{}{}
+\makeatother

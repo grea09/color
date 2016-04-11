@@ -110,6 +110,10 @@ public class ProperPlan extends Plan {
                     open.push(next);
                 }
                 Edge edge = problem.plan.addEdge(next, current);
+                if(edge == null)
+                {
+                    edge = problem.plan.getEdge(next, current);
+                }
                 edge.labels.add(precondition);
             }
         }

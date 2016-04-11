@@ -4,6 +4,7 @@
 \usepackage{times, graphicx}
 
 %%%%%% for algorithms
+\algnewcommand\Continue{\State \textbf{continue}}
 \algrenewcommand\alglinenumber[1]{\tiny\color{solarized-base0} #1}
 \algrenewcommand{\algorithmiccomment}[1]{{\hfill\hfill\it\color{solarized-base01} #1}}
 \input{latex/algorithicx.rule.patch.tex} %For rulers on algorithmicx
@@ -12,9 +13,12 @@
 %%%% For links URL
 \hypersetup{colorlinks=true, linkcolor=solarized-blue, citecolor=solarized-base1, filecolor=solarized-magenta, urlcolor=solarized-cyan}
 
-%\setlength{\abovecaptionskip}{-5mm} % space before figure
-%\setlength{\belowcaptionskip}{-1cm} % space after figure
-%\setlength{\abovedisplayskip}{-1cm} % space before maths
-%\setlength{\belowdisplayskip}{-5mm} % space after maths
+\setlength{\abovecaptionskip}{-5mm} % space before figure
+\setlength{\belowcaptionskip}{0mm} % space after figure
+%\setlength{\abovedisplayskip}{-2cm} % space before maths
+%\setlength{\belowdisplayskip}{-1cm} % space after maths
+\setlength{\abovedisplayshortskip}{-2cm} % space before short maths
+\setlength{\belowdisplayshortskip}{-1cm} % space after short maths
 
 \newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}

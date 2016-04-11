@@ -85,7 +85,12 @@ public class Ranking implements Comparator<Action> {
                 ranks.put(action, 0.0);
             } else {
                 Integer[] score = scores.get(action);
-                ranks.put(action, score[0] * pow(ALPHA, -score[1])); // POWOWW
+                Integer[] bonus = bonuses.get(action);
+                if (bonus == null) {
+                    bonus = new Integer[2];
+                    Arrays.fill(bonus, 0);
+                }
+                ranks.put(action, score[0] + bonus[0] * pow(ALPHA, -(score[1] + bonus[1]))); // POWOWW
             }
         }
 
@@ -113,7 +118,7 @@ public class Ranking implements Comparator<Action> {
             }
             Edge selfEdge = domain.properPlan.getEdge(action, action);
             if (selfEdge != null) {
-                bad += 2*selfEdge.labels.size();
+                bad += 2 * selfEdge.labels.size();
             }
             scores.put(action, new Integer[]{good, bad});
         }

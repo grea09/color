@@ -56,4 +56,11 @@ public class Problem {
         }
         return result;
     }
+    
+    public void clear(){
+        plan = new Plan();
+        plan.addVertex(initial);
+        plan.addVertex(goal);
+        domain = new Domain(domain);
+    }
 }

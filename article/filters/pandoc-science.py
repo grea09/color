@@ -10,8 +10,8 @@ import sys
 
 from pandocfilters import toJSONFilter, RawBlock, Div, RawInline, Str
 
-counts = {'algorithm': 0, 'proof' : 0, 'definition' : 0}
-refs = {'algorithm': {}, 'proof' : {}, 'definition' : {}}
+counts = {'algorithm': 0, 'proof' : 0, 'definition' : 0, 'lemma' : 0}
+refs = {'algorithm': {}, 'proof' : {}, 'definition' : {}, 'lemma' : {}}
 
 def warning(*objs):
     print("WARNING: ", *objs, file=sys.stderr)
@@ -58,12 +58,15 @@ def proof(name, label, content):
 def definition(name, label, content):
     return([latex('\\begin{definition}' + brakets(name) + label)] + content + [latex('\\end{definition}')])
 
+def lemma(name, label, content):
+    return([latex('\\begin{lemma}' + brakets(name) + label)] + content + [latex('\\end{lemma}')])
+
 
 def pandoc_science(key, value, format, meta):
     global refs, counts
-    names = {'algorithm': 'Algorithm', 'proof' : 'Proof', 'definition' : 'Definition'}
-    prefixes = {'alg': 'algorithm', 'prf' : 'proof', 'def' : 'definition'}
-    formats = {'algorithm': algorithm, 'proof' : proof, 'definition' : definition}
+    names = {'algorithm': 'Algorithm', 'proof' : 'Proof', 'definition' : 'Definition', 'lemma' : 'Lemma'}
+    prefixes = {'alg': 'algorithm', 'prf' : 'proof', 'def' : 'definition', 'lem' : 'lemma'}
+    formats = {'algorithm': algorithm, 'proof' : proof, 'definition' : definition, 'lemma' : lemma}
     if key == 'Div':
         [[ident, classes, kvs], contents] = value
         for class_ in classes:
@@ -89,16 +92,23 @@ def pandoc_science(key, value, format, meta):
     elif key == 'Cite':
         [stuff, contents] = value
         citationid = stuff[0]['citationId']
+        title = citationid[0].isupper()
+        citationid = citationid.lower()
         prefix = citationid.split(":", 1)[0]
         if prefix in prefixes:
             class_ = prefixes[prefix]
             name = names[class_].lower()
+            if title:
+                name = name.title()
             if format == "latex":
                 return(RawInline('latex', name + '~\\ref{' + citationid + '}'))
             else:
                 return Str(name + ' ' + str(refs[class_].get(citationid, '??' )))
         elif prefix == 'line':
-            return(RawInline('latex', 'line \\ref{' + citationid + '}'))
+            name = 'line'
+            if title:
+                name = name.title()
+            return(RawInline('latex', name + '~\\ref{' + citationid + '}'))
 
 if __name__ == "__main__":
     toJSONFilter(pandoc_science)

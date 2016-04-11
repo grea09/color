@@ -80,6 +80,9 @@ public class Action {
         if (this.fake != other.fake) {
             return false;
         }
+        if (!Objects.equals(this.symbol, other.symbol)) {
+            return false;
+        }
         if (!Objects.equals(this.preconditions, other.preconditions)) {
             return false;
         }

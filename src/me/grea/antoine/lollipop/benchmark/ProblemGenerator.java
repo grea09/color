@@ -5,9 +5,13 @@
  */
 package me.grea.antoine.lollipop.benchmark;
 
+import static java.lang.Integer.max;
+import static java.lang.Integer.min;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
+import me.grea.antoine.lollipop.mechanism.IllegalFixer;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Domain;
 import me.grea.antoine.lollipop.type.Edge;
@@ -30,149 +34,225 @@ import me.grea.antoine.utils.Log;
 public class ProblemGenerator {
 
     public static Set<Problem> generate(int number, int enthropy, int hardness) {
-        assert (enthropy > 3);
+        if (enthropy < 5) {
+            Log.f("Enthropy is too low to generate problems !");
+        }
         Set<Problem> problems = new HashSet<>(); // Why does it had to be PROBLEMS ?!?!
         problemgen:
         for (int i = 0; i < number; i++) {
-            Action initial = new Action(null, Dice.roll(1, enthropy, enthropy / 5)); // 2 outta 10
-            Action goal = new Action(set(), null);
+            Log.d("i=>" + i);
+            Action initial = new Action(null, new HashSet<>()); // 2 outta 10
+            Action goal = new Action(Dice.roll(1, enthropy, hardness), null);
             Domain domain = new Domain();
             Problem problem = new Problem(initial, goal, domain, new Plan());
 
-            generateUsefull(problem, enthropy, hardness);
+            thunder(problem, enthropy, hardness);
+            magInit(problem, enthropy, hardness);
+            while (unThreaten(problem, enthropy, hardness) || cycleDestroyer(problem) || magisfy(problem, enthropy, hardness)); //TODO make sure unThreaten and magisfy doesn't generate cycles
 
-            for (Action action : Dice.pick(domain, hardness)) {
-                domain.add(noise(action, enthropy));
+            for (Action action : Dice.pick(domain, min(domain.size(), hardness))) {
+                domain.add(noise(action, enthropy, hardness));
             }
 
-            for (int j = 0; j < enthropy /3; j++) {
-                 Set<Integer> effects = Dice.pick(problem.plan.vertexSet()).effects;
-                if (!effects.isEmpty()) {
-                    goal.preconditions.addAll(Dice.pick(effects, Dice.roll(1, 1 + (enthropy / 6))));
-                }
-            }
+//            Log.i(problem);
+//            if (!SolutionChecker.check(problem)) {
+//                Log.f("Generated solution is INVALID !!! \n" + problem);
+//            }
 
-            insert(goal, problem);
-            problem.plan.addVertex(goal); // Whyyyyyy
-            Set<Integer> satisfied = new HashSet<>();
-            for (Edge edge : problem.plan.incomingEdgesOf(goal)) {
-                satisfied.addAll(edge.labels);
-            }
-
-            for (Integer fluent : Collections.difference(goal.preconditions, satisfied)) {
-                generateProvider(problem, enthropy, fluent);
-            }
-
-//            Log.i(problem.planToString());
-            assert (SolutionChecker.check(problem));
-            
             problem.expectedLength = problem.plan.vertexSet().size();
-
-            problem.plan = new Plan();
-            problem.plan.addVertex(initial);
-            problem.plan.addVertex(goal);
-            problem.domain = new Domain(domain);
-            
+            problem.clear();
             problems.add(problem);
         }
         return problems;
     }
-
-    private static void generateProvider(Problem problem, int enthropy, int fluent) {
-        Action action = positive(problem.initial.effects, enthropy);
-        action.effects.add(fluent);
-
-        if (!insert(action, problem)) {
-            generateProvider(problem, enthropy, fluent);
-        }
-    }
-
-    private static void generateUsefull(Problem problem, int enthropy, int hardness) {
-        Set<Integer> state = new HashSet<>(problem.initial.effects);
-        for (int j = 0; j < enthropy; j++) {
-            Action action;
-            if (Dice.chances((float)hardness/enthropy)) {
-                action = negative(state, enthropy);
-            } else {
-                action = positive(state, enthropy);
-            }
-
-            if (!insert(action, problem)) {
-                j--;
-                continue;
-            }
-
-            state.addAll(action.effects);
-        }
+    
+    private static boolean magisfy(Problem problem, int enthropy, int hardness)
+    {
         Set<Flaw> open = new HashSet<>();
+        boolean acted = false;
         do {
-            for (Action action : new HashSet<>(problem.plan.vertexSet())) {
-                try {
-                    open.addAll(ClassicalSubGoal.related(action, problem));
-                    open.addAll(ClassicalThreat.related(action, problem));
-                } catch (IllegalArgumentException e) {
-                    problem.plan.addVertex(action); // Bug of jgrapht
-                    open.addAll(ClassicalSubGoal.related(action, problem));
-                    open.addAll(ClassicalThreat.related(action, problem));
-                }
+            for (Action action : problem.plan.vertexSet()) {
+                open.addAll(ClassicalSubGoal.related(action, problem));
             }
-            for (Flaw flaw : new HashSet<>(open)) {
-                boolean resolved = false;
-                for (Resolver resolver : (Deque<? extends Resolver>) flaw.resolvers()) {
-                    if (!resolver.appliable(problem.plan)) {
-                        continue;
-                    }
-                    resolver.apply(problem.plan);
-                    resolved = true;
-                    break;
-                }
-                if (resolved) {
-                    open.remove(flaw);
-                }
+            for (Flaw flaw : open) {
+                acted = true;
+                magiFix(flaw, enthropy, hardness);
             }
-
+            open.clear();
+            for (Action action : problem.plan.vertexSet()) {
+                open.addAll(ClassicalSubGoal.related(action, problem));
+            }
         } while (!open.isEmpty());
-
+        return acted;
     }
-
-    private static boolean insert(Action action, Problem problem) {
-        problem.domain.add(action);
-        problem.plan.addVertex(action);
-        for (ClassicalSubGoal subgoal : ClassicalSubGoal.related(action, problem)) {
-            Resolver resolver = subgoal.resolvers().pop();
-            if (resolver.appliable(problem.plan)) {
-                resolver.apply(problem.plan);
-            } else {
-                action.preconditions.remove(resolver.fluent);
-            }
-        }
-        for (ClassicalThreat threat : ClassicalThreat.related(action, problem)) {
-            Resolver resolver = threat.resolvers().pop();
-            if (resolver.appliable(problem.plan)) {
-                resolver.apply(problem.plan);
-            } else {
-                problem.domain.remove(action);
+    
+    private static boolean cycleDestroyer(Problem problem)
+    {
+        Set<Set<Action>> cycles = new HashSet<>(problem.plan.cycles());
+        for (Set<Action> cycle : cycles) {
+            for (Action action : new HashSet<>(cycle)) {
                 problem.plan.removeVertex(action);
-                return false;
+                break;
             }
         }
-        return true;
+        return !cycles.isEmpty();
     }
 
-    private static Action negative(Set<Integer> state, int enthropy) {
-        return new Action(Dice.pick(state, Dice.roll(enthropy / 5)), union(Dice.roll(1, enthropy, Dice.roll(enthropy / 10)), Dice.roll(enthropy, -1, Dice.roll(enthropy / 5))));
+    private static boolean unThreaten(Problem problem, int enthropy, int hardness) {
+        Set<Flaw> open = new HashSet<>();
+        boolean threatened = false;
+        do {
+            for (Action action : problem.plan.vertexSet()) {
+                open.addAll(ClassicalThreat.related(action, problem));
+            }
+            for (Flaw flaw : open) {
+//                magiFix(flaw, enthropy, hardness);
+                threatened = true;
+                problem.plan.removeVertex(((ClassicalThreat) flaw).breaker);
+                problem.domain.remove(((ClassicalThreat) flaw).breaker);
+            }
+            open.clear();
+            for (Action action : problem.plan.vertexSet()) {
+                open.addAll(ClassicalThreat.related(action, problem));
+            }
+        } while (!open.isEmpty());
+        return threatened;
     }
 
-    private static Action positive(Set<Integer> state, int enthropy) {
-        return new Action(Dice.pick(state, Dice.roll(enthropy / 5)), Dice.roll(1, enthropy, Dice.roll(enthropy / 4)));
+    private static void thunder(Problem problem, int enthropy, int hardness) {
+        int size = Dice.roll(1, max(2, problem.goal.preconditions.size() / 2));
+        Set<Flaw> open = new HashSet<>();
+        for (int i = 0; i < size; i++) {
+            for (Action action : problem.plan.vertexSet()) {
+                open.addAll(ClassicalSubGoal.related(action, problem));
+                open.addAll(ClassicalThreat.related(action, problem));
+            }
+            for (Flaw flaw : open) {
+                magiFix(flaw, enthropy, hardness);
+            }
+            open.clear();
+        }
     }
 
-    private static Action noise(Action origin, int enthropy) {
+    private static void magInit(Problem problem, int enthropy, int hardness) {
+        Set<Flaw> open = new HashSet<>();
+        Set<Integer> initials = new HashSet<>();
+        for (Action action : new HashSet<>(problem.plan.vertexSet())) {
+            open.addAll(ClassicalSubGoal.related(action, problem));
+        }
+        for (Flaw flaw : new HashSet<>(open)) {
+            if (initials.contains(-flaw.fluent)) {
+                Action toAdd = new Action(Dice.pick(initials, Dice.roll(initials.size())), set(flaw.fluent));
+                while (problem.plan.reachable(flaw.needer, toAdd)) {
+                    toAdd = new Action(Dice.pick(initials, Dice.roll(initials.size())), set(flaw.fluent));
+                }
+                problem.domain.add(toAdd);
+                problem.plan.addVertex(toAdd);
+                Edge edge = problem.plan.addEdge(toAdd, flaw.needer);
+                edge.labels.add(flaw.fluent);
+                open.remove(flaw);
+                open.addAll(ClassicalSubGoal.related(toAdd, problem));
+            } else {
+                initials.add(flaw.fluent);
+            }
+        }
+        problem.initial.effects.addAll(initials);
+        problem.plan.addVertex(problem.initial);
+        for (Flaw flaw : open) {
+            Edge edge = problem.plan.addEdge(problem.initial, flaw.needer);
+            if (edge == null) {
+                edge = problem.plan.getEdge(problem.initial, flaw.needer);
+            }
+            edge.labels.add(flaw.fluent);
+        }
+    }
+
+    private static Action magiFix(Flaw flaw, int enthropy, int hardness) {
+        Action added = null;
+        for (Resolver resolver : (Collection<Resolver>) flaw.resolvers()) {
+            if (resolver.appliable(flaw.problem.plan)) {
+                resolver.apply(flaw.problem.plan);
+                return null;
+            }
+        }
+        if (flaw instanceof ClassicalSubGoal) {
+            added = provider(flaw.problem, enthropy, hardness, flaw.fluent);
+            if (flaw.problem.plan.reachable(flaw.needer, added)) {
+                magiFix(flaw, enthropy, hardness);
+            }
+            flaw.problem.domain.add(added);
+            flaw.problem.plan.addVertex(added);
+            Edge edge = flaw.problem.plan.addEdge(added, flaw.needer);
+            edge.labels.add(flaw.fluent);
+        } else if (flaw instanceof ClassicalThreat) {
+            added = provider(((ClassicalThreat) flaw).problem, enthropy, hardness, -((ClassicalThreat) flaw).fluent);
+            added.preconditions.clear();
+            if (flaw.problem.plan.reachable(((ClassicalThreat) flaw).needer, added) || flaw.problem.plan.reachable(((ClassicalThreat) flaw).breaker, added)) {
+                return magiFix(flaw, enthropy, hardness);
+            }
+            ((ClassicalThreat) flaw).problem.domain.add(added);
+            ((ClassicalThreat) flaw).problem.plan.addVertex(added);
+            Edge edge = ((ClassicalThreat) flaw).problem.plan.addEdge(added, ((ClassicalThreat) flaw).needer);
+            if (edge == null) {
+                edge = flaw.problem.plan.getEdge(added, ((ClassicalThreat) flaw).needer);
+            }
+            edge.labels.add(-((ClassicalThreat) flaw).fluent);
+            ((ClassicalThreat) flaw).threatened.labels.remove(-((ClassicalThreat) flaw).fluent);
+            if (((ClassicalThreat) flaw).threatened.labels.isEmpty()) {
+                ((ClassicalThreat) flaw).problem.plan.removeEdge(((ClassicalThreat) flaw).threatened);
+            }
+            ((ClassicalThreat) flaw).problem.plan.addEdge(((ClassicalThreat) flaw).breaker, added);
+        }
+
+        return added;
+    }
+
+    public static Action provider(Problem problem, int enthropy, int hardness, int fluent) {
+        Action provider = new Action();
+        provider.effects = roll(enthropy, hardness);
+        if (!provider.effects.contains(fluent)) {
+            if (!provider.effects.remove(-fluent)) {
+                provider.effects.remove(Dice.pick(provider.effects));
+            }
+            provider.effects.add(fluent);
+        }
+        provider.preconditions = roll(provider.effects, enthropy, hardness);
+        return provider;
+    }
+
+    private static Action legal(int enthropy, int hardness) {
+        Action legal = new Action();
+        legal.effects = roll(enthropy, hardness);
+        legal.preconditions = roll(legal.effects, enthropy, hardness);
+        return legal;
+    }
+
+    private static Set<Integer> roll(int enthropy, int hardness) {
+        return roll(new HashSet<>(), enthropy, hardness);
+    }
+
+    private static Set<Integer> roll(Set<Integer> forbiden, int enthropy, int hardness) {
+        Set<Integer> fluents = new HashSet<>();
+        int size = Dice.roll(1, min((enthropy / 2) + hardness, (enthropy * 2) - 1 - forbiden.size()));
+        while (fluents.size() != size) {
+            boolean negative = hardness == 0 ? false : Dice.chances(enthropy / (double) hardness);
+            Set<Integer> rolled = Dice.rollNonZero(negative ? -enthropy : 1, enthropy, size - fluents.size());
+            for (Integer fluent : rolled) {
+                if (!fluents.contains(-fluent) && !forbiden.contains(fluent)) {
+                    fluents.add(fluent);
+                }
+            }
+        }
+        return fluents;
+    }
+
+    private static Action noise(Action origin, int enthropy, int hardness) {
         Action noisy = new Action(origin);
-        noisy.preconditions.removeAll(Dice.rollNonZero(-enthropy, enthropy, Dice.roll(enthropy / 10)));
-        noisy.preconditions.addAll(Dice.rollNonZero(-enthropy, enthropy, Dice.roll(enthropy / 10)));
-        noisy.effects.removeAll(Dice.rollNonZero(-enthropy, enthropy, Dice.roll(enthropy / 8)));
-        noisy.effects.addAll(Dice.rollNonZero(-enthropy, enthropy, Dice.roll(enthropy / 8)));
+        int boosted = Dice.roll(1); // 2 choices
+        noisy.preconditions.removeAll(Dice.rollNonZero(-enthropy, enthropy, boosted == 0 ? 1 : 0 + Dice.roll(hardness)));
+        noisy.preconditions.addAll(Dice.rollNonZero(-enthropy, enthropy, boosted == 0 ? 1 : 0 + Dice.roll(hardness)));
+        noisy.effects.removeAll(Dice.rollNonZero(-enthropy, enthropy, boosted == 1 ? 1 : 0 + Dice.roll(hardness)));
+        noisy.effects.addAll(Dice.rollNonZero(-enthropy, enthropy, boosted == 1 ? 1 : 0 + Dice.roll(hardness)));
         return noisy;
     }
 
