@@ -41,7 +41,7 @@ public class DatasetGeneration {
         bob.registerTypeAdapter(Problem.class, new ProblemSerializer());
         Gson gson = bob.create(); //Damn son
 
-        for (int enthropy = 5; enthropy < 100; enthropy++) {
+        for (int enthropy = 6; enthropy < 100; enthropy++) {
             for (int hardness = 0; hardness < enthropy * 0.7; hardness++) {
                 Log.i("enthropy = " + enthropy + " , hardness = " + hardness);
                 File file = new File("data/problems_[" + enthropy +  "," + hardness +"].json");

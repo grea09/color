@@ -89,12 +89,13 @@ public class Lollipop {
                     Log.v(lollipop.agenda);
 //                    problem.clear();
 //                    lollipop.agenda = new LollipopAgenda(problem);
-                    for (Edge edge : problem.plan.outgoingEdgesOf(flaw.needer)) {
-                        lollipop.agenda.addAll(SubGoal.related(problem.plan.getEdgeTarget(edge), problem));
-                    }
+//                    for (Edge edge : problem.plan.outgoingEdgesOf(flaw.needer)) {
+//                        lollipop.agenda.addAll(SubGoal.related(problem.plan.getEdgeTarget(edge), problem));
+//                    }
                     Deque<Resolver> resolvers = new Orphan(flaw.needer, problem).resolvers();
                     for (Resolver resolver : resolvers) {
                         resolver.apply(problem.plan);
+                        lollipop.agenda = new LollipopAgenda(problem);
                         lollipop.agenda.addAll(resolver.related(problem));
                         lollipop.agenda.removeAll(resolver.invalidated(lollipop.agenda, problem));
                     }

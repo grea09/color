@@ -19,6 +19,9 @@ def warning(*objs):
 def latex(x):
     return RawBlock('latex', x)
 
+def ilatex(x):
+     return RawInline('latex', x)
+
 
 def html(x):
     return RawBlock('html', x)
@@ -89,6 +92,12 @@ def pandoc_science(key, value, format, meta):
                     return Div([ident, classes, kvs], newcontents)
                 else:
                     return [ RawInline('markdown', '**' + names[class_] + ' ' + str(counts[class_]) + '** ' + parentesis(name)) ] + contents
+    elif key == 'Span':
+        [[ident, classes, kvs], contents] = value
+        for class_ in classes:
+            if class_ == 'proc':
+                if format == "latex":
+                    return([ilatex('\\textproc{')] + contents + [ilatex('}')])
     elif key == 'Cite':
         [stuff, contents] = value
         citationid = stuff[0]['citationId']

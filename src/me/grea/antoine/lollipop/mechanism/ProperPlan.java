@@ -118,18 +118,7 @@ public class ProperPlan extends Plan {
             }
         }
     }
-
-    private void thunderPrunning() {
-        Set<Action> used = set(problem.initial, problem.goal);
-        Deque<Action> forward = queue(problem.initial);
-        Deque<Action> backward = queue(problem.goal);
-        while (!forward.isEmpty() && !backward.isEmpty()) {
-            Set<Edge> forwardEdges = outgoingEdgesOf(forward.pop());
-            Set<Edge> backwardEdges = incomingEdgesOf(backward.pop());
-
-        }
-    }
-
+    
     public void cache(Collection<Action> actions) {
         for (Action action : actions) {
             cache(action);
