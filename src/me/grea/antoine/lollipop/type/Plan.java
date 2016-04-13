@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import me.grea.antoine.utils.Log;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.AbstractBaseGraph;
@@ -63,6 +62,10 @@ public class Plan extends AbstractBaseGraph<Action, Edge> implements DirectedGra
         }
         if (!containsVertex(source) || !containsVertex(target)) {
             return false;
+        }
+        if(containsEdge(source, target))
+        {
+            return true;
         }
         if (forbiden == null) {
             forbiden = new HashSet<>();

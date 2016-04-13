@@ -3,7 +3,7 @@ title: "LOLLIPOP: Generating and using proper plan and negative refinements for 
 author: Paper ID\#42
 tags: [POP, Partial Order Planning, PSP Plan-Space Planning, POCL, Partial Order Causal Link, automated planning, planning, negative refinements, proper plan, partial plan]
 abstract: |
-    The abstract! Infinite source of drama, confusion and *shameless* paper promotion. Stay tuned for more!
+    DRAFT : We prove that the use of these new mechanisms keeps POP sound and complete while giving better experimental results in terms of speed and quality.
 
 style: ecai
 
@@ -30,21 +30,23 @@ bibliography: bibliography/zotero.bib
 
 # Introduction {-}
 
-Until the end of the 90s, Plan-Space Planning (PSP) was generally preferred by the automated planning community. Its early commitment, expressivity, and flexibility were clear advantages over State-Space Planning (SSP). However, more recently, drastic improvements in state search planning was made possible by advanced and efficient heuristics. This allowed those planners to scale up more efficiently than plan-space search ones, notably thanks to approaches like GraphPlan [@blum_fast_1997], fast-forward [@hoffmann_ff_2001], LAMA [@richter_lama_2011] and Fast Downward Stone Soup [@roger_fast_2014].
-This evolution led to a preference for performances upon other aspects of the problem of automated planning. However, some of these aspects can be more easily addressed in Partial Order Planning (POP), also known as Partial Order Causal Link (POCL) planning. For example POP, can take advantage of least commitment [@mccluskey_engineering_1997] that offers more flexibility with a final plan that describes only the necessary order of the actions considered without forcing a particular sequence. POP has been proven to be well suited for multi-agent planning [@kvarnstrom_planning_2011] and temporal planning [@benton_temporal_2012] <!-- Refs from [@shekhar_learning_2016] -->. These advantages made UCPOP [@penberthy_ucpop_1992] one of the preferred POP planner of its time with works made to port some of its characteristics into state-based planning [@gazen_combining_1997].
-Related works already tried to explore new ideas to make POP into an attractive alternative to regular state-based planners like the appropriately named "Reviving partial order planning" [@nguyen_reviving_2001] and VHPOP [@younes_vhpop_2003]. More recent efforts [@coles_forwardchaining_2010; @sapena_combining_2014] are trying to adapt the powerful heuristics from state-based planning to POP's approach. An interesting approach of these last efforts is found in [@shekhar_learning_2016] with meta-heuristics based on offline training on the domain. However, we clearly note that only a few papers lay the emphasis upon plan quality using POP [@ambite_planning_1997; @estlin_learning_1997].
-The present paper lays the base for our project for an intelligent robotic system that aims to use inverted planning for plan inference in order to help dependent persons to accomplish tasks. This project is based on the works of Ramirez et al. [@ramirez_plan_2009] on inverted planning for plan inference. This context led us to seek ways to improve POP with better refining techniques and resolver selection. Since we need to handle data derived from limited robotic sensors, we need a way for the planner to be able to be resilient to basic corruption on its input. Another aspect of this work lies in the fact that the final system will need to compute online planning with a feed of observational data. In order to achieve this we need a planner that can:
+Until the end of the 90s, Plan-Space Planning (PSP) was generally preferred by the automated planning community. Its early commitment, expressivity, and flexibility were clear advantages over State-Space Planning (SSP). However, more recently, drastic improvements in state search planning were made possible by advanced and efficient heuristics. This allowed those planners to scale up more efficiently than plan-space search ones, notably thanks to approaches like GraphPlan [@blum_fast_1997], fast-forward [@hoffmann_ff_2001], LAMA [@richter_lama_2011] and Fast Downward Stone Soup [@roger_fast_2014].
+This evolution led to a preference for performances upon other aspects of the problem of automated planning. However, some of these aspects can be more easily addressed in Partial Order Planning (POP), also known as Partial Order Causal Link (POCL) planning. For example POP, can take advantage of least commitment [@mccluskey_engineering_1997] that offers more flexibility with a partial plan that describes only the necessary order of the actions and not a fixed sequence of steps. POP has been proven to be well suited for multi-agent planning [@kvarnstrom_planning_2011] and temporal planning [@benton_temporal_2012] <!-- Refs from [@shekhar_learning_2016] -->. These advantages made UCPOP [@penberthy_ucpop_1992] one of the preferred POP planners of its time with works made to port some of its characteristics into state-based planning [@gazen_combining_1997].
+
+Related works already tried to explore new ideas to make POP an attractive alternative to regular state-based planners like the appropriately named "Reviving partial order planning" [@nguyen_reviving_2001] and VHPOP [@younes_vhpop_2003]. More recent efforts [@coles_forwardchaining_2010; @sapena_combining_2014] are trying to adapt the powerful heuristics from state-based planning to POP's approach. An interesting approach of these last efforts is found in [@shekhar_learning_2016] with meta-heuristics based on offline training on the domain. However, we clearly note that only a few papers lay the emphasis upon plan quality using POP [@ambite_planning_1997; @estlin_learning_1997].
+
+The present paper lays the base for our project for an intelligent robotic system that aims to use inverted planning for plan inference in order to help dependent persons to accomplish tasks. This project is based on the works of Ramirez et al. [@ramirez_plan_2009] on inverted planning for plan inference. This context led us to seek ways to improve POP with better refining techniques and resolver selection. Since we need to handle data derived from limited robotic sensors, we need a way for the planner to be able to be resilient to misleading input plans. Another aspect of this work lies in the fact that the final system will need to compute online planning with a feed of observational data. In order to achieve this we need a planner that can:
 
 * repair and optimize existing plans,
 * perform online planning efficiently
 * retain performances on complex but medium sized problems.
 
-Classical POP algorithms don't meet most of these criteria but can be enhanced to fit the first one. Usually, POP algorithms take a problem as an input and use a loop or a recursive function to refine the plan into a solution. We can simply expose the recursive function in order to be able to use our existing partial plan. This, however, causes multiples side effects if the input plan is suboptimal.
+Classical POP algorithms don't meet most of these criteria but can be enhanced to fit the first one. Usually, POP algorithms take a problem as an input and use a loop or a recursive function to refine the plan into a solution. We can't simply use the refining recursive function in order to be able to use our existing partial plan. This causes multiples side effects if the input plan is suboptimal.
 *Our view* on the problem diverges from other works: PSP is a very different approach compared to SSP. It is usually more computationally expensive than modern state space planners but brings several advantages. We want to make the most of them instead of trying to change POP's fundamental nature.
-That view is at the core of our model: we use the refining and least commitment abilities of POP in order to improve online performances and quality. In order to achieve this, we start by computing a *proper plan* that is computed offline with the input of the domain. The explanation of the way this notion is defined and used can be found in @sec:properplan of the present paper.
+That view is at the core of our model: we use the refining and least commitment abilities of POP in order to improve online performances and quality. In order to achieve this, we start by computing a *proper plan* that is computed offline with the input of the domain. The explanation of the way this notion is defined and used is given in @sec:properplan of the present paper.
 Using existing partial plans as input leads to several issues, mainly with new flaw types that aren't treated in classical POP. This is why we focus the @sec:negative of our paper on plan quality and negative refinements. We, therefore, introduce new negative flaws and resolvers that aim to fix and optimize the plan: the *alternative* and the *orphan* flaws.
-Side effects of negative flaws and resolvers can lead to conflicts. In order to avoid them and enhance performances and quality, the algorithm needs resolver and flaw selection mechanisms that are explained in the @sec:selection of our work.
-All these mechanisms are part of our aLternative Optimization with partiaL pLan Injection Partial Ordered Planning (LOLLIPOP) algorithm presented in details in @sec:algorithm. We prove that the use of these new mechanisms leads to fewer iterations, a reduced branching factor and better quality than standard POP in @sec:analysis. Experimental results and benchmarks are presented and explained in the @sec:results of this paper.
+Side effects of negative flaws and resolvers can lead to conflicts. In order to avoid them and enhance performances and quality, the algorithm needs resolver and flaw selection mechanisms that are explained in the @sec:selection.
+All these mechanisms are part of our aLternative Optimization with partiaL pLan Injection Partial Ordered Planning (LOLLIPOP) algorithm presented in details in @sec:algorithm. We prove that the use of these new mechanisms keeps LOLLIPOP sound and complete in @sec:analysis. Experimental results and benchmarks are presented and explained in the @sec:results of this paper.
 
 # Partial Order Planning Preliminaries
 
@@ -81,7 +83,7 @@ $p \models \Pi$                     The partial plan $p$ is a valid solution of 
 
 <!--With the aim to respect the constraints of our application field, we need to define our own planning framework. Indeed, classical planning framework is usually compiled away in order to quicken a single benchmark run and are not thought for dynamical online planning in complex environments.--> <!--While needing expressivity and simplicity in our domain definition we also need speed and flexibility for online planning on robots. <!--This led to a new framework named WORLD, as it is intended for more generalist world description purpose.--> <!--Our framework is inspired by existing multi-purpose semantic tools such as RDF Turtle [@w3c_rdf_2014] and has an expressivity similar to PDDL 3.1 with object-fluents support [@kovacs_bnf_2011]. This particular type of domain description was chosen because we intend to extend works on soft solving in order to handle corrupted data better in future papers.-->
 
-Every planning paradigm needs a way to represent its fluents and operators. Our planner is based on a rather classical domain definition with lifted operators and representing the fluents as propositional statements. The next definitions are based on the ones exposed in [@gobelbecker_coming_2010].
+Planning systems need a representation of its fluents and operators. Our framework is based on a classical domain definition. This is defined in the following definition from [@gobelbecker_coming_2010].
 
 <div id="def:domain" class="definition" name="Domain">
 We define our planning domain as a tuple $\Delta = \langle T, C, P, F, O \rangle$ where
@@ -99,13 +101,13 @@ We define our planning domain as a tuple $\Delta = \langle T, C, P, F, O \rangle
 The symbol system is completed with a notion of **term** (either a constant, a variable parameter or a property) and a few relations. We provide types with a relation of **subsumption** noted $t_1 \prec t_2$ with $t_1, t_2 \in T$ meaning that all instances of $t_1$ are also instances of $t_2$.
 On terms, we add two relations: the **assignation** (noted $\leftarrow$) and the **potential equality** (noted $\doteq$).-->
 
-Along with a domain, every planner needs a problem description in order to work. For this, we use the classical problem representation with some special additions.
+Along with a domain, every planner needs a problem representation. For this, we use the classical problem representation with some special additions.
 
 <div id="def:problem" class="definition" name="Problem">
 The planning problem is defined as a tuple $\Pi = \langle \Delta, C_\Pi, I, G, p\rangle$ where
 
 * $\Delta$ is a planning domain,
-* $C_\Pi$ is the set of **problem constant** disjoint from $C$,
+* $C_\Pi$ is the set of **problem constants** disjoint from the domain constraints $C$,
 * $I$ is the **initial state**,
 * $G$ is the **goal**,
 * $p$ is a given **partial plan**.
@@ -113,29 +115,29 @@ The planning problem is defined as a tuple $\Pi = \langle \Delta, C_\Pi, I, G, p
 
 The framework uses the *closed world assumption* in which all predicates and properties that aren't defined in the initial step are assumed false or don't have a value. <!--FIXME : Implementation non conform-->
 
-@Fig:example shows an example of a planning domain and problem that we will use as a guideline throughout the article.
+@Fig:example shows an example of a planning domain and problem that we use as a guideline throughout the article.
 
-![Example domain and problem featuring a robot that aims to fetch a lollipop in a locked kitchen. The operator `go` is used for movable objects (such as the robot) to move to another room, the `grab` operator is used by grabbers to hold objects and the `unlock` operator is used to open a door when the robot holds the key.](graphics/example.svg){#fig:example}
+![Example domain and problem featuring a robot that aims to fetch a lollipop in a locked kitchen. The operator `go` is used for movable objects (such as the robot) to move to another room. The `grab` operator is used by grabbers to hold objects and the `unlock` operator is used to open a door when the robot holds the key.](graphics/example.svg){#fig:example}
 
-In order to simplify this framework we need to introduce some differences from the classical representation. First, the partial plan is a part of the problem tuple as it is a needed input of the LOLLIPOP algorithm.
+In order to simplify this framework, we need to introduce some differences from the classical partial plan representation. First, the partial plan is a part of the problem tuple as it is a needed input of the LOLLIPOP algorithm.
 
 <div class="definition" name="Partial Plan">
 We define a partial plan as a tuple $\langle S, L, B\rangle$ with $S$ the set of **steps** (semi or fully instantiated operators also called *actions*), $L$ the set of **causal links**, and $B$ the set of **binding constraints**.
 </div>
 
-Second we factorize the set of *ordering constraints*, used in classical representations, as being part of the causal links. Indeed, causal links are always supported by an ordering constraint. The only case where bare ordering constraints are needed is in threats. We decided to represent them with **bare causal links**. These are stored as causal links without bearing any fluents. Causal links can be represented by their beared fluents called *causes*. We note $f \in l$ the fact that a causal link $l$ bears the fluent $f$. Bare causal links can be noted $l = \emptyset$.
-That allows us to introduce the **precedence operator** noted $a_i \succ a_j$ with $a_i, a_j \in S$ iff there is a path of causal links that connects $a_i$ with $a_j$ with $a_i$ being *anterior* to $a_j$.
+Second we factorize the set of *ordering constraints*, used in classical representations, as being part of the causal links. Indeed, causal links are always supported by an ordering constraint. The only case where bare ordering constraints are needed is in threats. We represent them with **bare causal links**. These are stored as causal links without bearing any fluents. Causal links can be represented by their beared fluents called *causes*. We note $f \in l$ the fact that a causal link $l$ bears the fluent $f$ (bare causal links are be noted $l = \emptyset$).
+That allows us to introduce the **precedence operator** noted $a_i \succ a_j$ with $a_i, a_j \in S$ iff there is a path of causal links that connects $a_i$ to $a_j$. We call $a_i$ *anterior* to $a_j$.
 
-A specificity of Partial Order Planning is that it fixes flaws in a partial plan in order to refine it into a valid plan that is a solution to the given problem. In this section, we define the classical flaws in our framework.
+A specificity of Partial Order Planning is that it fixes flaws in a partial plan in order to refine it into a valid plan that is a solution to the given problem. Next, we define the classical flaws in our framework.
 
 <div class="definition" name="Subgoal">
-A flaw in a partial plan, called subgoal is a missing causal link required to satisfy a precondition of a step. We can note a subgoal as:
+A flaw in a partial plan, called subgoal, is a missing causal link required to satisfy a precondition of a step. We can note a subgoal as:
 $a_p \xrightarrow{s} a_n \notin L \mid \{ a_p, a_n \} \subseteq S$
 with $a_n$ called the **needer** and $a_p$ an eventual **provider** of the fluent $s$. This fluent is called *open condition* or **proper fluent** of the subgoal.
 </div>
 
 <div class="definition" name="Threat">
-A flaw in a partial plan called threat consists of having an effect of a step that can be inserted between two actions with a causal link that is intolerant to said effect.
+A flaw in a partial plan called threat consists of having an effect of a step that can be inserted between two actions with a causal link that is threatened by the said effect.
 We say that a step $a_b$ is threatening a causal link $a_p \xrightarrow{t} a_n$ iff
 $a_b \neq a_p \neq a_n \land \neg t \in eff(a_b) \land a_p \succ a_b \succ a_n$
 with $a_b$ being the **breaker**, $a_n$ the *needer* and $a_p$ a *provider* of the *proper fluent* $t$.
@@ -146,11 +148,11 @@ Flaws are fixed via the application of a resolver to the plan. A flaw can have s
 <div id="def:resolver" class="definition" name="Resolvers">
 A resolver is a potential causal link defined as a tuple $r = \langle a_s, a_t, f\rangle$ with :
 
-* $a_s, a_t \in S$ being the source and target of the resolver,
+* $a_s, a_t \in S$ being the source and the target of the resolver,
 * $f$ being the considered fluent.
 </div>
 
-For standard flaws, the resolvers are simple to find. For a *subgoal* the resolvers are a set of the potential causal links between a possible provider of the proper fluent and the needer. To solve a *threat* there is mainly two resolvers: a causal link between the needer and the breaker called **demotion** or a causal link between the breaker and the provider called **promotion**.
+For classical flaws, the resolvers are simple to find. For a *subgoal* the resolvers are sets of the potential causal links between a possible provider of the proper fluent and the needer. To solve a *threat* there are mainly two resolvers: a causal link between the needer and the breaker called **demotion** or a causal link between the breaker and the provider called **promotion**.
 
 Once the resolver is applied, another important step is needed in order to be able to keep refining. The algorithm needs to take into account the **side effects** the application of the resolver had on the partial plan. Side effects are searched by type.
 
@@ -477,7 +479,7 @@ As proven in [@penberthy_ucpop_1992], the classical POP algorithm is *sound* and
 First, we define some additional properties of partial plans.
 
 <div id="def:fullsupport" class="definition" name="Full Support">
-A partial plan $p$ is fully supported if each of its steps $o \in p.S$ is. A step is fully supported if each of its preconditions $f \in pre(o)$ is supported. A precondition is fully supported if it exists a causal link $l$ that provides it. We can note :
+A partial plan $p$ is fully supported if each of its steps $o \in p.S$ is fully supported. A step is fully supported if each of its preconditions $f \in pre(o)$ is supported. A precondition is fully supported if it exists a causal link $l$ that provides it. We note :
 $$fs(p) \equiv
 \begin{array}{l}
     \forall o \in p.S \thickspace \forall f \in pre(o) \thickspace \exists l \in p.L^-(o) : \\
@@ -486,7 +488,7 @@ $$fs(p) \equiv
 with $p.L^-(o)$ being the incoming causal links of $o$ in $p$ and $l_{\rightarrow}$ being the source of the link.
 </div>
 
-This property is taken from the original proof. We present it again for convenience.
+The following property is taken from the original proof. We present it again for convenience.
 
 <div id="def:partialplanvalidity" class="definition" name="Partial Plan Validity">
 A partial plan is a **valid solution** of a problem $\Pi$ iff it is *fully supported* and *contains no cycles*. The validity of a partial plan $p$ regarding a problem $\Pi$ is noted $p \models \Pi \equiv fs(p) \land \left(C(p) = \emptyset \right)$ with $C(p)$ being the set of cycles in $p$.
@@ -506,9 +508,9 @@ $$
     \end{array}
 \end{array}
 \right) \implies p \models \Pi$$ {#eq:recursivevalidity}
-where $\Pi.L^-_{\rightarrow}(\Pi.G)$ is the set of direct antecedant of $\Pi.G$ and $C_p(o)$ is the set of fluents containing $o$ in $p$
+where $\Pi.L^-_{\rightarrow}(\Pi.G)$ is the set of direct antecedants of $\Pi.G$ and $C_p(o)$ is the set of fluents containing $o$ in $p$.
 
-This means that $p$ is a solution if all preconditions of $G$ are satisfied. We can satisfy these precondition using operators iff their precondition are all satisfied and if there is no other operator that threatens their supporting links.
+This means that $p$ is a solution if all preconditions of $G$ are satisfied. We can satisfy these preconditions using operators iff their precondition are all satisfied and if there is no other operator that threatens their supporting links.
 
 First, we need to show that @eq:recursivevalidity holds on LOLLIPOP initialization. We use our hypothesis to rule out the case when the input plan is invalid. The @alg:safeproperplan will only solve open conditions in the same way subgoals do it. Therefore, safe proper plans are valid input plans.
 

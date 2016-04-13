@@ -12,7 +12,6 @@ import java.util.Set;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Problem;
 import static me.grea.antoine.utils.Collections.union;
-import static me.grea.antoine.utils.Collections.union;
 
 /**
  *

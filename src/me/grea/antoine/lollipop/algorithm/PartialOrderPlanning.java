@@ -6,10 +6,8 @@
 package me.grea.antoine.lollipop.algorithm;
 
 import java.util.Deque;
-import java.util.HashSet;
 import java.util.Set;
 import me.grea.antoine.lollipop.agenda.Agenda;
-import me.grea.antoine.lollipop.agenda.ClassicalAgenda;
 import me.grea.antoine.lollipop.agenda.RandomAgenda;
 import me.grea.antoine.lollipop.exception.Success;
 import me.grea.antoine.lollipop.type.Problem;
@@ -49,7 +47,7 @@ public class PartialOrderPlanning {
         return false;
     }
 
-    public void refine() throws Success {
+    public Flaw refine() throws Success {
         if (agenda.isEmpty()) {
             throw new Success();
         }
@@ -83,6 +81,7 @@ public class PartialOrderPlanning {
         Log.w("No suitable resolver for " + flaw);
         Log.d(agenda);
         Log.v(problem.planToString());
+        return flaw;
     }
 
 }
