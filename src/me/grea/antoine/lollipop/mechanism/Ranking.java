@@ -29,13 +29,15 @@ import static java.lang.Math.round;
  */
 public class Ranking implements Comparator<Action> {
 
-    public static final double ALPHA = 2.0;
+    public static final double ALPHA = 4;
+    public static final double[] PARAM_PLUS = {1.0};
+    public static final double[] PARAM_MINUS = {1.0, 2.0, 4.0, 3.0};
 
     private Domain domain;
     private Problem problem;
     public Map<Action, Double> ranks;
-    private Map<Action, Integer[]> scores;
-    private Map<Action, Integer[]> bonuses;
+    private Map<Action, Double[]> scores;
+    private Map<Action, Double[]> bonuses;
     private Map<Integer, Set<Action>> unappliables;
     private Map<Integer, Set<Action>> eagers;
 
@@ -84,11 +86,11 @@ public class Ranking implements Comparator<Action> {
             if (action.fake) {
                 ranks.put(action, 0.0);
             } else {
-                Integer[] score = scores.get(action);
-                Integer[] bonus = bonuses.get(action);
+                Double[] score = scores.get(action);
+                Double[] bonus = bonuses.get(action);
                 if (bonus == null) {
-                    bonus = new Integer[2];
-                    Arrays.fill(bonus, 0);
+                    bonus = new Double[2];
+                    Arrays.fill(bonus, 0.0);
                 }
                 ranks.put(action, score[0] + bonus[0] * pow(ALPHA, -(score[1] + bonus[1]))); // POWOWW
             }
@@ -97,35 +99,34 @@ public class Ranking implements Comparator<Action> {
     }
 
     private void boost(Action action, int boost) {
-        Integer[] bonus = bonuses.get(action);
+        Double[] bonus = bonuses.get(action);
         if (bonus == null) {
-            bonus = new Integer[2];
-            Arrays.fill(bonus, 0);
+            bonus = new Double[2];
+            Arrays.fill(bonus, 0.0);
             bonuses.put(action, bonus);
         }
-        bonus[boost > 0 ? 0 : 1] += abs(boost);
+        bonus[boost > 0 ? 0 : 1] += boost > 0 ? PARAM_PLUS[0] : PARAM_MINUS[3];
     }
 
-    private Map<Action, Integer[]> scores() {
-        Map<Action, Integer[]> scores = new HashMap<>();
+    private Map<Action, Double[]> scores() {
+        Map<Action, Double[]> scores = new HashMap<>();
         for (Action action : domain) {
-            int good = domain.properPlan.outDegreeOf(action);
-            int bad = action.preconditions.size();
+            double good = PARAM_PLUS[0] * domain.properPlan.outDegreeOf(action);
+            double bad = PARAM_MINUS[0] * action.preconditions.size();
             for (Set<Action> cycle : domain.properPlan.cycles) {
                 if (cycle.contains(action)) {
-                    bad += cycle.size();
+                    bad += PARAM_MINUS[1] * cycle.size();
                 }
             }
             Edge selfEdge = domain.properPlan.getEdge(action, action);
             if (selfEdge != null) {
-                bad += 2 * selfEdge.labels.size();
+                bad += PARAM_MINUS[2] * selfEdge.labels.size();
             }
-            scores.put(action, new Integer[]{good, bad});
+            scores.put(action, new Double[]{good, bad});
         }
         for (Set<Action> value : unappliables.values()) {
             for (Action action : value) {
-                Integer[] score = scores.get(action);
-                score[1] += 1;
+                scores.get(action)[1] += PARAM_MINUS[3];
             }
         }
         return scores;

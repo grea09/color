@@ -10,6 +10,14 @@ import static java.lang.Integer.min;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import me.grea.antoine.lollipop.algorithm.Lollipop;
+import me.grea.antoine.lollipop.algorithm.PartialOrderPlanning;
 import me.grea.antoine.lollipop.type.Action;
 import me.grea.antoine.lollipop.type.Domain;
 import me.grea.antoine.lollipop.type.Edge;
@@ -41,9 +49,8 @@ public class ProblemGenerator {
         problemgen:
         for (int i = 0; i < number; i++) {
             Log.i("i=>" + i);
-            Log.level = Log.Level.FATAL;
             Action initial = new Action(null, new HashSet<>()); // 2 outta 10
-            Action goal = new Action(Dice.roll(1, enthropy, max(Dice.roll(1, enthropy), hardness)), null);
+            Action goal = new Action(Dice.roll(1, enthropy, max(1, min(Dice.roll(1, enthropy / 2), hardness))), null);
             Domain domain = new Domain();
             Problem problem = new Problem(initial, goal, domain, new Plan());
 
@@ -61,13 +68,31 @@ public class ProblemGenerator {
             }
 
 //            Log.i(problem);
+            yanamar = YANAMAR;
             if (!SolutionChecker.check(problem)) {
-                Log.f("Generated solution is INVALID !!! \n" + problem);
+                Log.e("Generated solution is INVALID !!! \n" + problem);
+                i--;
+
+                continue;
             }
             problem.expectedLength = problem.plan.vertexSet().size();
             problem.clear();
+            try {
+                if (!Executors.newSingleThreadExecutor().submit(() -> {
+                    return Lollipop.solve(problem);
+                }).get(1200, TimeUnit.MILLISECONDS)) {
+                    Log.e("POP didn't make it !!! \n" + problem);
+                    i--;
+                    continue;
+                }
+            } catch (ExecutionException | InterruptedException | TimeoutException ex) {
+                Log.e("POP took too long !!! \n");
+                i--;
+                continue;
+            }
+            problem.clear();
+
             problems.add(problem);
-            Log.level = Log.Level.VERBOSE;
         }
         return problems;
     }
@@ -114,7 +139,7 @@ public class ProblemGenerator {
             }
             for (Flaw flaw : open) {
                 threatening.add(-flaw.fluent);
-                Action action = magiFix(flaw, threatening, enthropy, hardness, false);
+                Action action = magiFix(flaw, threatening, enthropy, hardness);
                 if (action != null) {
                     for (Integer effect : action.effects) {
                         threatening.add(-effect);
@@ -190,6 +215,16 @@ public class ProblemGenerator {
 
                 Edge edge = ((ClassicalThreat) flaw).problem.plan.addEdge(((ClassicalThreat) flaw).breaker, added);
                 Log.d("Adding the anti threat link : " + edge);
+
+                Action relaxed = new Action(((ClassicalThreat) flaw).breaker);
+                relaxed.effects.remove(((ClassicalThreat) flaw).fluent);
+                ((ClassicalThreat) flaw).problem.plan.update(flaw.needer, relaxed);
+                for (Edge liar : new HashSet<>(((ClassicalThreat) flaw).problem.plan.outgoingEdgesOf(relaxed))) {
+                    if (liar.labels.remove(((ClassicalThreat) flaw).fluent) && liar.labels.isEmpty()) {
+                        ((ClassicalThreat) flaw).problem.plan.removeEdge(liar);
+                    }
+                }
+
             } else {
                 Action relaxed = new Action(((ClassicalThreat) flaw).needer);
                 relaxed.preconditions.remove(-((ClassicalThreat) flaw).fluent);
@@ -200,16 +235,14 @@ public class ProblemGenerator {
         return added;
     }
 
-    private static Action magiFix(Flaw flaw, Set<Integer> threatening, int enthropy, int hardness, boolean realFix) {
+    private static Action magiFix(Flaw flaw, Set<Integer> threatening, int enthropy, int hardness) {
         Action added = null;
         Log.d("Flaw :" + flaw);
-        if (!realFix) {
-            for (Resolver resolver : (Collection<Resolver>) flaw.resolvers()) {
-                if (resolver.appliable(flaw.problem.plan)) {
-                    Log.d("Flaw is resolvable with " + resolver);
-                    resolver.apply(flaw.problem.plan);
-                    return null;
-                }
+        for (Resolver resolver : (Collection<Resolver>) flaw.resolvers()) {
+            if (resolver.appliable(flaw.problem.plan)) {
+                Log.d("Flaw is resolvable with " + resolver);
+                resolver.apply(flaw.problem.plan);
+                return null;
             }
         }
         if (flaw instanceof ClassicalSubGoal) {

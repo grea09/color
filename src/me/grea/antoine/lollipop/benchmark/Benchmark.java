@@ -22,6 +22,7 @@ import me.grea.antoine.lollipop.algorithm.PartialOrderPlanning;
 import me.grea.antoine.lollipop.persistence.ActionSerializer;
 import me.grea.antoine.lollipop.persistence.ProblemSerializer;
 import me.grea.antoine.lollipop.type.Action;
+import me.grea.antoine.lollipop.type.Domain;
 import me.grea.antoine.lollipop.type.Problem;
 import me.grea.antoine.utils.Chrono;
 import me.grea.antoine.utils.Log;
@@ -34,7 +35,7 @@ import me.grea.antoine.utils.Strings;
 public class Benchmark {
 
     static {
-        Log.level = Log.Level.FATAL;
+//        Log.level = Log.Level.FATAL;
     }
 
     public static void main(String[] args) throws FileNotFoundException {
@@ -44,32 +45,37 @@ public class Benchmark {
         Gson gson = bob.create(); //Damn son
 
         Chrono chrono = new Chrono();
-        File output = new File("results/" + LocalDateTime.now() + "_" + Lollipop.class + ".csv");
-        System.out.println(output.getAbsolutePath());
-        try (PrintStream result = new PrintStream(output)) {
-            for (File data : new File("data").listFiles()) {
-                Set<Problem> problems = gson.fromJson(new FileReader(data), new TypeToken<Set<Problem>>() {
+        File data = new File("results/" + LocalDateTime.now() + "_" + Lollipop.class + ".csv");
+        System.out.println(data.getAbsolutePath());
+        try (PrintStream result = new PrintStream(data)) {
+            for (File json : new File("data").listFiles()) {
+                Set<Problem> problems = gson.fromJson(new FileReader(json), new TypeToken<Set<Problem>>() {
                 }.getType());
-                
-                String[] extract = Strings.extract(data.getName(), "\\[(\\d+),(\\d+)\\]").get(0);
+
+                String[] extract = Strings.extract(json.getName(), "\\[(\\d+),(\\d+)\\]").get(0);
                 int enthropy = Integer.parseInt(extract[0]);
                 int hardness = Integer.parseInt(extract[1]);
-                
+                System.out.println(enthropy + "," + hardness);
+
                 double quality = 0;
 
                 for (Problem problem : problems) {
+                    problem.domain = new Domain(problem.domain);
                     chrono.start();
-                    Lollipop.solve(problem);
+                    if (!Lollipop.solve(problem)) {
+                        Log.f("FAILLURE !!! Problem :" + problem);
+                    }
                     chrono.stop();
+                    System.out.print(".");
+                    SolutionChecker.display(problem);
                     quality += problem.plan.vertexSet().size() - problem.expectedLength;
                 }
                 quality /= problems.size();
-                System.out.println(enthropy + "," + hardness + "[" + quality + "] => " + chrono);
+                System.out.println(enthropy + "," + hardness + "[" + quality + "] => " + (chrono.total/problems.size()));
                 result.println(enthropy + "," + hardness + "," + quality + "," + chrono.total / problems.size());
                 chrono.reset();
-                result.close();
-
             }
+            result.close();
         } catch (FileNotFoundException ex) {
             Log.e(ex);
         }

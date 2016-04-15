@@ -1,9 +1,9 @@
 article:
     all:
         metadata:
-            smart: yes
-            standalone: yes
-            numbersections: yes
+            smart: true
+            standalone: true
+            numbersections: true
             secPrefix:
                 - section
                 - sections
@@ -16,7 +16,7 @@ article:
             tblPrefix:
                 - table
                 - tables
-            markdown_in_html_blocks: yes
+            markdown_in_html_blocks: true
 
         filter:
             - run: filters/pandoc-crossref
@@ -24,17 +24,21 @@ article:
             - run: pandoc-citeproc
             - run: filters/pandoc-svg.py
             - run: filters/pandoc-table.py
+            - run: filters/code-minipage
 
     latex:
         metadata:
-            numbersections: yes
+            numbersections: true
 
             link-citations: true
 
-            latex-engine: pdflatex
+            latex-engine: xelatex
             documentclass: article
-            listings: yes
+            listings: true
             cref: true
             header-includes:
                 - "\\input{latex/prelude.tex}"
                 - "\\usepackage{booktabs}"
+
+        commandline:
+            listings: true

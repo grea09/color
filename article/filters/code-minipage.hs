@@ -18,3 +18,5 @@ addMinipages [] = []
 
 beginsWithEndMinipage (RawBlock (Format "latex") "\\end{minipage}":_) = True
 beginsWithEndMinipage _ = False
+
+--https://github.com/jgm/pandoc/issues/703

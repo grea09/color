@@ -26,7 +26,8 @@ def tbl_headers(s):
     result = s[0][0]['c'][:]
     for i in range(1, len(s)):
         result.append(inlatex(' & '))
-        result.extend(s[i][0]['c'])
+        if len(s[i]) > 0 :
+            result.extend(s[i][0]['c'])
     result.append(inlatex(r' \\\midrule'))
     return pf.Para(result)
 

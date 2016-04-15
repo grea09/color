@@ -163,7 +163,7 @@ public class Resolver {
             }
         }
 
-        Log.d("Related flaws " + related);
+//        Log.d("Related flaws " + related);
 
         return related;
     }

@@ -42,11 +42,11 @@ public class Threat extends Flaw<Threat> {
         Action source = problem.plan.getEdgeSource(threatened);
         Action target = problem.plan.getEdgeTarget(threatened);
         if (target != problem.goal) {
-            Log.w("Can't demote after goal step !");
+//            Log.w("Can't demote after goal step !");
             resolvers.add(new Resolver(target, breaker));
         }
         if (source != problem.initial) {
-            Log.w("Can't promote before initial step !");
+//            Log.w("Can't promote before initial step !");
             resolvers.add(new Resolver(breaker, source));
         }
         return resolvers;

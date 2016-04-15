@@ -32,7 +32,7 @@ public class ClassicalResolver extends Resolver {
         for (Action action : problem.plan.vertexSet()) {
             related.addAll(ClassicalThreat.related(action, problem));
         }
-        Log.d("Related flaws " + related);
+//        Log.d("Related flaws " + related);
 
         return related;
     }

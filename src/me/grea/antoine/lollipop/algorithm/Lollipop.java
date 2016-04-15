@@ -9,23 +9,19 @@ import me.grea.antoine.lollipop.mechanism.ProperPlan;
 import me.grea.antoine.lollipop.mechanism.Ranking;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import me.grea.antoine.lollipop.agenda.Agenda;
 import me.grea.antoine.lollipop.agenda.LollipopAgenda;
-import me.grea.antoine.lollipop.agenda.RandomAgenda;
 import me.grea.antoine.lollipop.exception.Success;
 import me.grea.antoine.lollipop.type.Action;
-import me.grea.antoine.lollipop.type.Edge;
 import me.grea.antoine.lollipop.type.Problem;
-import me.grea.antoine.lollipop.type.flaw.Alternative;
 import me.grea.antoine.lollipop.type.flaw.Flaw;
 import me.grea.antoine.lollipop.type.flaw.Orphan;
 import me.grea.antoine.lollipop.type.flaw.Resolver;
-import me.grea.antoine.lollipop.type.flaw.SubGoal;
+import me.grea.antoine.lollipop.type.flaw.Threat;
 import static me.grea.antoine.utils.Collections.set;
 import me.grea.antoine.utils.Log;
 
@@ -82,24 +78,20 @@ public class Lollipop {
             boolean failed = true;
             do {
                 flaw = lollipop.refine();
-                if (lollipop.input.contains(flaw.needer)) {
+                Action annoyer = flaw.needer.isSpecial() && flaw instanceof Threat ? ((Threat)flaw).breaker : flaw.needer;
+                if (lollipop.input.contains(annoyer)) {
                     failed = false;
                     Log.w("Reverting the choice of including " + flaw.needer + " in the input plan.");
                     Log.v(problem);
                     Log.v(lollipop.agenda);
-//                    problem.clear();
-//                    lollipop.agenda = new LollipopAgenda(problem);
-//                    for (Edge edge : problem.plan.outgoingEdgesOf(flaw.needer)) {
-//                        lollipop.agenda.addAll(SubGoal.related(problem.plan.getEdgeTarget(edge), problem));
-//                    }
-                    Deque<Resolver> resolvers = new Orphan(flaw.needer, problem).resolvers();
+                    Deque<Resolver> resolvers = new Orphan(annoyer, problem).resolvers();
                     for (Resolver resolver : resolvers) {
                         resolver.apply(problem.plan);
                         lollipop.agenda = new LollipopAgenda(problem);
                         lollipop.agenda.addAll(resolver.related(problem));
                         lollipop.agenda.removeAll(resolver.invalidated(lollipop.agenda, problem));
                     }
-                    lollipop.input.remove(flaw.needer);
+                    lollipop.input.remove(annoyer);
                     Log.d("agenda :" + lollipop.agenda);
                 }
             } while (!failed);

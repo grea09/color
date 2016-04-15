@@ -50,67 +50,67 @@ public class SolutionChecker {
                 Log.w(action + " is threatening : " + threats);
                 return false;
             }
-            Set<ClassicalSubGoal> subgoals = ClassicalSubGoal.related(action, problem);
-            if (!subgoals.isEmpty()) {
-                Log.w(action + " is not satisfied : " + subgoals);
-                return false;
+//            Set<ClassicalSubGoal> subgoals = ClassicalSubGoal.related(action, problem);
+//            if (!subgoals.isEmpty()) {
+//                Log.w(action + " is not satisfied : " + subgoals);
+//                return false;
+//            }
+            if (problem.plan.inDegreeOf(action) == 0 && problem.plan.outDegreeOf(action) > 0) {
+                if (!action.preconditions.isEmpty()) {
+                    Log.w(action + " isn't satisfied at all");
+                    return false;
+                }
+                open.add(action);
             }
-//            if (problem.plan.inDegreeOf(action) == 0 && problem.plan.outDegreeOf(action) > 0) {
-//                if (!action.preconditions.isEmpty()) {
-//                    Log.w(action + " isn't satisfied at all");
-//                    return false;
-//                }
-//                open.add(action);
-//            }
         }
-        return true;
+//        return true;
 
-//        Set<Action> closed = new HashSet<>();
-//        while (!open.isEmpty()) {
-//            Set<Integer> additive = new HashSet<>(state);
-//            for (List<Action> permutation : possiblePermutation(open, problem.plan)) {
-//                additive = new HashSet<>(state);
-//                permutee:
-//                for (Action action : permutation) {
-//                    if (!state.containsAll(action.preconditions)) {
-//                        for (Edge edge : problem.plan.incomingEdgesOf(action)) {
-//                            if (!state.containsAll(edge.labels)) {
-////                                open.remove(action);
-////                                open.add(problem.plan.getEdgeSource(edge));
-//                                continue permutee;
-//                            }
-//                        }
-//
-//                        Log.w(action + " can't be applied on state " + state);
-//                        return false;
-//                    }
-//                    for (int effect : action.effects) {
-//                        additive.add(effect);
-//                        additive.remove(-effect);
-//                    }
-//                }
-//            }
-//            state = additive;
-//            HashSet<Action> next = new HashSet<>();
-//            closed.addAll(open);
-//            for (Action action : open) {
-//                choice:
-//                for (Edge edge : problem.plan.outgoingEdgesOf(action)) {
-//                    for (Edge other : problem.plan.incomingEdgesOf(problem.plan.getEdgeTarget(edge))) {
-//                        if (!closed.contains(problem.plan.getEdgeSource(other))) {
+        Set<Action> closed = new HashSet<>();
+        while (!open.isEmpty()) {
+            Set<Integer> additive = new HashSet<>(state);
+            for (List<Action> permutation : possiblePermutation(open, problem.plan)) {
+                additive = new HashSet<>(state);
+                permutee:
+                for (Action action : permutation) {
+                    if (!state.containsAll(action.preconditions)) {
+                        for (Edge edge : problem.plan.incomingEdgesOf(action)) {
+                            if (!state.containsAll(edge.labels)) {
+//                                open.remove(action);
+//                                open.add(problem.plan.getEdgeSource(edge));
+                                continue permutee;
+                            }
+                        }
+
+                        Log.w(action + " can't be applied on state " + state);
+                        return false;
+                    }
+                    for (int effect : action.effects) {
+                        additive.add(effect);
+                        additive.remove(-effect);
+                    }
+                }
+            }
+            state = additive;
+            HashSet<Action> next = new HashSet<>();
+            closed.addAll(open);
+            for (Action action : open) {
+                choice:
+                for (Edge edge : problem.plan.outgoingEdgesOf(action)) {
+                    for (Edge other : problem.plan.incomingEdgesOf(problem.plan.getEdgeTarget(edge))) {
+                        if (!closed.contains(problem.plan.getEdgeSource(other))) {
 //                            Log.d("Can't select " + edge + " because the action " + problem.plan.getEdgeSource(other) + " haven't been selected.");
-////                            closed.remove(action);
-//                            next.add(problem.plan.getEdgeSource(other));
-//                            continue choice;
-//                        }
-//                    }
-//                    next.add(problem.plan.getEdgeTarget(edge));
-//                }
-//            }
-//            open = next;
-//        }
+//                            closed.remove(action);
+                            next.add(problem.plan.getEdgeSource(other));
+                            continue choice;
+                        }
+                    }
+                    next.add(problem.plan.getEdgeTarget(edge));
+                }
+            }
+            open = next;
+        }
 //        Log.d("Explored for solution validity : " + closed);
-//        return closed.contains(problem.goal);
+        return closed.contains(problem.goal);
     }
 
     private static Set<List<Action>> possiblePermutation(Set<Action> set, Plan plan) {

@@ -22,53 +22,76 @@ import me.grea.antoine.utils.Log;
  */
 public class Scalability {
 
-    public static void main(String[] args) {
-//        Log.level = Log.Level.WARNING;
+    public static void main(String[] args) throws FileNotFoundException {
+        Log.level = Log.Level.WARNING;
         Chrono chrono = new Chrono();
-        int number = 1000;
-//        File file = new File(LocalDateTime.now() + "_" + Scalability.class + ".csv");
-//        System.out.println(file.getAbsolutePath());
-//        try (PrintStream result = new PrintStream(file)) {
-        for (int i = 5; i < 20; i++) {
-            Log.level = Log.Level.FATAL;
-            Set<Problem> problems = ProblemGenerator.generate(number, i, (int) (i * 0.3));
-            Log.level = Log.Level.VERBOSE;
-            int count = 0;
-            for (Problem problem : problems) {
-                Log.i("LOL : problem #" + count++);
-                chrono.start();
-                if (!Lollipop.solve(problem)) {
-                    Log.f("FAILLURE !!! Problem :" + problem);
-                }
-                chrono.stop();
-                SolutionChecker.display(problem);
-            }
-            long pop = chrono.total / number;
-//                System.out.println(i + " => POP " + chrono.total / number);
-            chrono.reset();
+        int number = 100;
+        File file = new File("data/" + LocalDateTime.now() + "_" + Scalability.class + ".csv");
+        System.out.println(file.getAbsolutePath());
+        try (PrintStream result = new PrintStream(file)) {
+            for (int enthropy = 5; enthropy < 20; enthropy++) {
+                for (int hardness = 0; hardness < enthropy / 2; hardness++) {
+                    Log.level = Log.Level.FATAL;
+                    Set<Problem> problems = ProblemGenerator.generate(number, enthropy, hardness);
+                    Log.level = Log.Level.VERBOSE;
+                    int popCount = 0;
+                    long popQ = 0;
+                    long popExp = 0;
+                    for (Problem problem : problems) {
+                        Log.i("POP : problem " + enthropy + "|" + hardness + "#" + popCount++);
+                        problem.clear();
+                        chrono.start();
+                        if (!PartialOrderPlanning.solve(problem)) {
+                            Log.f("FAILLURE !!! Problem :" + problem);
+                            popCount--;
+                            continue;
+                        }
+                        long elapsed = chrono.stop();
+                        SolutionChecker.display(problem);
+                        if (!SolutionChecker.check(problem)) {
+                            chrono.total -= elapsed;
+                            popCount--;
+                            continue;
+                        }
+                        popQ += problem.plan.vertexSet().size();
+                        popExp += problem.expectedLength;
+                    }
+                    long pop = chrono.total;
+                    System.out.println(enthropy + " => POP " + pop);
+                    chrono.reset();
 
-            count = 0;
-            for (Problem problem : problems) {
-                Log.i("POP : problem #" + count++);
-                problem.clear();
-                chrono.start();
-                if (!PartialOrderPlanning.solve(problem)){
-                    Log.f("FAILLURE !!! Problem :" + problem);
-                }
-                chrono.stop();
-                SolutionChecker.display(problem);
-            }
-//                System.out.println(i + " => LOL " + chrono.total / number);
-            long lol = chrono.total / number;
-//                result.println(i + "," + chrono.total / number);
-            chrono.reset();
+                    int lolCount = 0;
+                    long lolQ = 0;
+                    long lolExp = 0;
+                    for (Problem problem : problems) {
+                        Log.i("LOL : problem " + enthropy + "|" + hardness + "#" + lolCount++);
+                        chrono.start();
+                        if (!Lollipop.solve(problem)) {
+                            Log.f("FAILLURE !!! Problem :" + problem);
+                            lolCount--;
+                            continue;
+                        }
+                        long elapsed = chrono.stop();
+                        SolutionChecker.display(problem);
+                        if (!SolutionChecker.check(problem)) {
+                            chrono.total -= elapsed;
+                            popCount--;
+                            continue;
+                        }
+                        lolQ += problem.plan.vertexSet().size();
+                        lolExp += problem.expectedLength;
+                    }
+                    long lol = chrono.total;
+                    System.out.println(enthropy + " => LOL " + lol);
+                    System.out.println(enthropy + " => diff " + (pop - lol));
 
-            System.out.println(i + " => diff " + (pop - lol));
+                    result.println(enthropy + "," + hardness + "," + pop + "," + lol + "," + popQ + "," + lolQ + "," + popExp + "," + lolExp);
+                    result.flush();
+                    chrono.reset();
+                }
+            }
+            result.println("Iterations/enthropy+hardness ," + number);
+            result.close();
         }
-//            result.println("Iterations/enthropy : " + number);
-//            result.close();
-//        } catch (FileNotFoundException ex) {
-//            Log.e(ex);
-//        }
     }
 }
