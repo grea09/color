@@ -1,0 +1,63 @@
+//# Language
+// * matches everything
+// _ means blank
+// ... means blanks (same as _[] )
+// : means definition
+// () for parameters
+// Type[] means ordered list of Type
+// Type{} means unordered set of Type
+// Type1[n]->Type2[m] means domain (m and n optional defaults to 1)
+// key->value is an entry
+// = means equals
+// !property means complementary
+
+
+is : _ -> Class // defines type. Class -> Class means subsumes
+
+new : _ -> Operator // instantiate the operator
+
+pre : Operator -> Statement{}  // Operators
+eff : Operator -> Statement{}  // Operators
+
+//# Sample
+bob is Person //Objects id shouldn't stat with a cap, Classes should
+kitchen is Room
+
+&54809 is ~12 //Unnamed are marked as this
+
+room : Movable -> Room
+
+Person is Movable //Person subsumes Movable
+
+bob room kitchen
+
+go(?movable, ?room) ?movable is Movable, ?room is Room
+	pre ?movable room _old, ?room != _old
+	eff ?movable room ?room
+
+&334(?movable) new go(?movable, kitchen)
+
+//# Queries
+
+//(> bob is ?
+//Person, Movable, Entity
+
+//(> bob room ?
+//kitchen
+
+//(> bob room kitchen
+//true
+
+//(> go(bob, living_room) pre ?
+//true
+
+//(> go(bob, living_room)
+//bob room living_room
+
+//(> go(bob, living_room)
+//[ERROR] Precondition not met go.?room != go._old with go.?room = living_room and go._old = living_room
+
+
+
+
+

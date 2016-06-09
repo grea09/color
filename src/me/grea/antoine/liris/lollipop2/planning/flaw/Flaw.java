@@ -1,0 +1,74 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package me.grea.antoine.liris.lollipop2.planning.flaw;
+
+import java.util.Deque;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import me.grea.antoine.liris.lollipop2.planning.domain.Action;
+import me.grea.antoine.liris.lollipop2.planning.domain.Fluent;
+import me.grea.antoine.liris.lollipop2.planning.problem.Plan;
+import me.grea.antoine.liris.lollipop2.planning.problem.Problem;
+
+/**
+ *
+ * @author antoine
+ * @param <F>
+ */
+public abstract class Flaw<F extends Fluent> {
+
+    protected final F fluent;
+    protected final Problem<F> problem;
+    protected final Action<F> needer;
+
+    public Flaw(F fluent, Action<F> needer, Problem<F> problem) {
+        this.fluent = fluent;
+        this.needer = needer;
+        this.problem = problem;
+    }
+    
+    public abstract Deque<Resolver<F>> resolvers();
+    public abstract Set<? extends Flaw<F>> related(Resolver<F> resolver);
+    public abstract boolean invalidated(Resolver<F> resolver);
+    public abstract Set<? extends Flaw<F>> flaws();
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 41 * hash + Objects.hashCode(this.fluent);
+        hash = 41 * hash + Objects.hashCode(this.problem);
+        hash = 41 * hash + Objects.hashCode(this.needer);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Flaw<?> other = (Flaw<?>) obj;
+        if (!Objects.equals(this.fluent, other.fluent)) {
+            return false;
+        }
+        if (!Objects.equals(this.problem, other.problem)) {
+            return false;
+        }
+        if (!Objects.equals(this.needer, other.needer)) {
+            return false;
+        }
+        return true;
+    }
+    
+    
+    
+}

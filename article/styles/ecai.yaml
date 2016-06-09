@@ -1,6 +1,0 @@
-ecai:
-    parent: article
-    latex:
-        metadata:
-            csl: bibliography/ieee.csl
-            documentclass: styles/latex/ecai
