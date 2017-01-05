@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import me.grea.antoine.utils.Collections;
+import me.grea.antoine.utils.collection.Collections;
 
 /**
  *

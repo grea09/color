@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
-import static me.grea.antoine.utils.Collections.union;
+import static me.grea.antoine.utils.collection.Collections.union;
 
 /**
  *

@@ -5,15 +5,15 @@
  */
 package io.genn.color.graph;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import static me.grea.antoine.utils.Collections.*;
+import static me.grea.antoine.utils.collection.Collections.*;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.HashSetValuedHashMap;
 
 /**
  * Custom dirrected graph
@@ -26,7 +26,7 @@ public class Graph<V, E extends Edge<V>> {
 
     private final Map<V, DirectedEdges<V, E>> graph;
     private final Class<?> edgeClass;
-    private final Multimap<V, V> reachability;
+    private final MultiValuedMap<V, V> reachability;
     public final boolean acyclic;
 
     public Graph(Class<?> edgeClass) {
@@ -36,14 +36,14 @@ public class Graph<V, E extends Edge<V>> {
     public Graph(Class<?> edgeClass, boolean acyclic) {
         this.edgeClass = edgeClass;
         graph = new HashMap<>();
-        reachability = HashMultimap.create();
+        reachability = new HashSetValuedHashMap();
         this.acyclic = acyclic;
     }
 
     public Graph(Graph other) {
         this.edgeClass = other.edgeClass;
         graph = new HashMap<>(other.graph);
-        reachability = HashMultimap.create(other.reachability);
+        reachability = new HashSetValuedHashMap(other.reachability);
         acyclic = other.acyclic;
     }
 
@@ -65,7 +65,7 @@ public class Graph<V, E extends Edge<V>> {
 
     public boolean reachable(V source, V target) //TODO tests
     {
-        return source == target || reachability.containsEntry(source, target);
+        return source == target || reachability.containsMapping(source, target);
     }
 
     private void additiveReachabilityUpdate(V source, V target) {
@@ -84,13 +84,13 @@ public class Graph<V, E extends Edge<V>> {
 
     private void substractiveReachabilityUpdate(V source, V target) {
         if (acyclic) {
-            reachability.remove(source, target);
-            for (Map.Entry<V, V> entry : HashMultimap.create(reachability).entries()) {
+            reachability.removeMapping(source, target);
+            for (Map.Entry<V, V> entry : new HashSetValuedHashMap<>(reachability).entries()) {
                 if (source.equals(entry.getValue()) && !containsEdge(entry.getKey(), target)) {
-                    reachability.remove(entry.getKey(), target);
+                    reachability.removeMapping(entry.getKey(), target);
                 }
                 if (target.equals(entry.getKey()) && !containsEdge(source, entry.getValue())) {
-                    reachability.remove(source, entry.getValue());
+                    reachability.removeMapping(source, entry.getValue());
                 }
             }
         }
@@ -105,7 +105,7 @@ public class Graph<V, E extends Edge<V>> {
         if (containsEdge(source, target)) {
             removeEdge(source, target);
         }
-        if (acyclic && (source == target || reachability.containsEntry(target, source))) {
+        if (acyclic && (source == target || reachability.containsMapping(target, source))) {
             throw new IllegalStateException("Adding " + edge + " will create a cycle !");
         }
         addVertex(source);

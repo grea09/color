@@ -5,12 +5,8 @@
  */
 package io.genn.color;
 
-import java.io.File;
-import java.io.IOException;
-import io.genn.color.parsing.ProblemParser;
-import io.genn.color.planning.algorithm.pop.Pop;
-import io.genn.color.planning.domain.IntFluent;
-import io.genn.color.planning.problem.Problem;
+import io.genn.world.World;
+import io.genn.world.parser.Parser;
 import me.grea.antoine.utils.Log;
 
 /**
@@ -19,15 +15,23 @@ import me.grea.antoine.utils.Log;
  */
 public class Main {
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) throws IOException {
-        // TODO code application logic here
-        Problem<IntFluent> problem = ProblemParser.parse(new File("data/sample.w"));
-        Pop pop = new Pop(problem);
-        pop.solve();
-        Log.i(problem);
-    }
-    
+	/**
+	 * @param args the command line arguments
+	 */
+	public static void main(String[] args) {
+		Log.CONTEXTUALIZED = true;
+		try {
+			World config = new Parser("data/config.w").parse();
+			World planning = new Parser("data/planning.w").parse();
+			World domain = new Parser("data/domain.w").world(planning.new_); //no prob !
+			
+			
+			
+			//Huston !
+			domain.addAll(new Parser("data/problem.w").world(domain.new_));
+		} catch (Exception e) {
+			Log.f(e);
+		}
+	}
+
 }
