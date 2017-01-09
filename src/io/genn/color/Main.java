@@ -23,7 +23,9 @@ public class Main {
 		try {
 			World config = new Parser("data/config.w").parse();
 			World planning = new Parser("data/planning.w").parse();
+			Log.d(planning);
 			World domain = new Parser("data/domain.w").world(planning.new_); //no prob !
+			Log.d(domain);
 			
 			
 			
@@ -33,5 +35,4 @@ public class Main {
 			Log.f(e);
 		}
 	}
-
 }

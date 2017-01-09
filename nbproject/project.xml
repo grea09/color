@@ -6,6 +6,7 @@
             <name>color</name>
             <source-roots>
                 <root id="src.dir"/>
+                <root id="src.data.dir" name="Data"/>
             </source-roots>
             <test-roots>
                 <root id="test.src.dir"/>

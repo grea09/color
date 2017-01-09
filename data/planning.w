@@ -1,9 +1,9 @@
 //-- title: Definitions for automated planning --
 
-Statement/Fluent;
-(name::String, pre::Fluent{}, eff::Fluent{})/Action;
-(source::Action, cause::Fluent{}, target::Action)/Link;
-Link{}/Plan;
+Fluent:Statement;
+Action:(name::String, pre::Fluent{}, eff::Fluent{});
+Link:(source::Action, cause::Fluent{}, target::Action);
+Plan:Link{};
 
-Action{}/Domain;
-(initial::Fluent{}, goal::Fluent{}, domain::Domain, solution::Plan)/Problem;
+Domain:Action{};
+Problem:(initial::Fluent{}, goal::Fluent{}, domain::Domain, solution::Plan);
