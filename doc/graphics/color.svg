@@ -14,7 +14,7 @@
    viewBox="0 0 327.26414 98.671263"
    id="svg2"
    version="1.1"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.0 unknown"
    sodipodi:docname="color.svg">
   <defs
      id="defs4">
@@ -49,16 +49,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.1653681"
-     inkscape:cx="148.83118"
-     inkscape:cy="51.438401"
+     inkscape:zoom="2.2382532"
+     inkscape:cx="61.820016"
+     inkscape:cy="59.667729"
      inkscape:document-units="px"
      inkscape:current-layer="g4472"
      showgrid="false"
      inkscape:window-width="1920"
-     inkscape:window-height="1024"
+     inkscape:window-height="1054"
      inkscape:window-x="0"
-     inkscape:window-y="30"
+     inkscape:window-y="1050"
      inkscape:window-maximized="1"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -96,19 +96,16 @@
        id="g4472"
        transform="translate(69.296464,15.556349)">
       <text
-         sodipodi:linespacing="125%"
          id="text3363"
          y="167.04324"
          x="-30.621061"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:149.39942932px;line-height:125%;font-family:Sansation;-inkscape-font-specification:Sansation;letter-spacing:0px;word-spacing:0px;opacity:1;fill:#839496;fill-opacity:1;stroke:url(#Checkerboard);stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
          xml:space="preserve"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:and;-inkscape-font-specification:'and Heavy';fill:none;fill-opacity:1;stroke:#93a1a1;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
+           style="font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:and;-inkscape-font-specification:'and Heavy';fill:#839496;fill-opacity:1;stroke:none;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
            y="167.04324"
            x="-30.621061"
            id="tspan3365"
-           sodipodi:role="line">c<tspan
-   style="stroke:#93a1a1;fill:#93a1a1;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
-   id="tspan4169">o</tspan>lor</tspan></text>
+           sodipodi:role="line">color</tspan></text>
       <g
          transform="translate(-80.90717,-235.83579)"
          id="g4452">
