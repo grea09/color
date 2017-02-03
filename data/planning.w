@@ -1,5 +1,6 @@
 //-- title: Definitions for automated planning --
 
+//-> "problem.w";
 
 Fluent:Statement;
 Action:(name::String, pre::Fluent{}, eff::Fluent{});

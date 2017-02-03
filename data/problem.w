@@ -9,3 +9,5 @@ problem : (
 	domain:blockworld,
 	solution:{}
 );
+
+a1 : pick(a);
