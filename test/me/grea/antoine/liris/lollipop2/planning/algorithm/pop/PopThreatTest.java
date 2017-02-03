@@ -5,23 +5,21 @@
  */
 package me.grea.antoine.liris.lollipop2.planning.algorithm.pop;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Deque;
-import java.util.Set;
 import me.grea.antoine.liris.lollipop2.parsing.ProblemParser;
 import me.grea.antoine.liris.lollipop2.planning.domain.Action;
 import me.grea.antoine.liris.lollipop2.planning.domain.IntFluent;
 import me.grea.antoine.liris.lollipop2.planning.domain.State;
 import me.grea.antoine.liris.lollipop2.planning.flaw.Resolver;
 import me.grea.antoine.liris.lollipop2.planning.problem.Problem;
+import org.junit.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Deque;
+import java.util.Set;
+
 import static me.grea.antoine.utils.Collections.queue;
 import static me.grea.antoine.utils.Collections.set;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**

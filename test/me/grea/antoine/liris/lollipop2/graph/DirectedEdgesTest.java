@@ -9,11 +9,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import static me.grea.antoine.utils.Collections.set;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -187,7 +187,7 @@ public class DirectedEdgesTest {
     /**
      * Test of remove method, of class DirectedEdges.
      */
-    @Test
+    @org.junit.jupiter.api.Test
     public void testRemove() {
         System.out.println("remove");
         int size = instance.size();
@@ -216,7 +216,7 @@ public class DirectedEdgesTest {
     /**
      * Test of addAll method, of class DirectedEdges.
      */
-    @Test(expected=NullPointerException.class)
+    @org.junit.jupiter.api.Test(expected=NullPointerException.class)
     public void testAddAll() {
         System.out.println("addAll");
         DirectedEdges copy = new DirectedEdges<>(instance);

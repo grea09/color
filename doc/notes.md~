@@ -41,4 +41,21 @@ La fusion de plan est utilisée en collaboration et multi-agent (tout comme POP)
 Dans certains cas on a pas besion de fusionner le plan. On peut simplement chercher la ressemblance ou la cohérence entre deux plans. Il est alors plus rapide de donner une solution approximative en faisant de la correlation. Pour réaliser ceci on devra tester plusieurs solutions de correlation entre elles afin de trouver la meilleure. On peut également utiliser une méthode de machine learning en utilisant la fusion de plan réel comme base d'apprentissage. Ainsi on peut lancer l'outil sur de nombreuses simulations afin d'obtenir une estimation bien plus fiable lors de la reconnaissance d'intentions. Ceci permet aussi de reconnaitre les cas ou plusieurs but sont poursuivit. Cette méthode se rapproche des solutions purement Bayesiennes proposé par la litérature. Je ne suis pas parvenu à trouver des travaux sur le sujet bien que je suis persouadé de leur existance.
 
 
+
+# Questions
+
+Différence avec Avrahami ? Lire sa thèse
+
+Apport sur la plannif ?
+
+Multi goal, qui en fait, comment ?
+
+HTN + POP : sur multibut ?
+
+Multi agent ?
+
+
+
+
+
 # Reférences

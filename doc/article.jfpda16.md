@@ -1,14 +1,14 @@
 ---
-title: "LOLLIPOP: Generating and using proper plan and negative refinements for online partial order planning"
+title: "LOLLIPOP: Generating and using an operator graph and negative refinements for online partial order planning"
 author:
     - Antoine Gréa
     - Samir Aknine
     - Laëtitia Matignon
-institute: Université de Lyon, CNRS\\Université Lyon 1, LIRIS, UMR5205, F-69622, France \\`prenom.nom@univ-lyon1.fr`
-tags: [POP, Partial Order Planning, PSP Plan-Space Planning, POCL, Partial Order Causal Link, automated planning, planning, negative refinements, proper plan, partial plan]
+institute: Université de Lyon, CNRS\\Université Claude Bernard Lyon 1 , LIRIS, UMR5205, F-69622, France \\`prenom.nom@univ-lyon1.fr`
+tags: [POP, Partial Order Planning, PSP Plan-Space Planning, POCL, Partial Order Causal Link, automated planning, planning, negative refinements, operator graph, partial plan]
 abstract: |
-    In recent years, automated planning domain has mainly focused on performances and advances in state space planning to improve scalability. That orientation shadows other less efficient ways of doing like Partial Order Planning (POP) that has the advantage to be much more flexible.
-    This flexibility allows these planners to take incomplete plans as input and to refine them into an optimized solution for the problem. This paper presents a set of mechanisms, called aLternative Optimization with partiaL pLan Injection Partial Ordered Planning (LOLLIPOP), that adapts the classical POP algorithm. The aim is to obtain a high plan quality while allowing fast online re-planning. Our algorithm builds a proper plan from the domain compilation that gives information on the possible behavior of operators. A safe proper plan is generated at initialization and used as LOLLIPOP's input to reduce the overhead of the initial subgoal backchaining. We prove that the use of these new mechanisms keeps POP sound and complete.
+    In recent years, the field of automatic planning has mainly focused on performances and advances in state space planning to improve scalability. That orientation shadows other less efficient ways of planning like Partial Order Planning (POP) that has the advantage to be much more flexible.
+    This flexibility allows these planners to take incomplete plans as input and to refine them into an optimized solution for the problem. This paper presents a set of mechanisms, called aLternative Optimization with partiaL pLan Injection Partial Ordered Planning (LOLLIPOP), that adapts the classical POP algorithm. The aim is to obtain a high plan quality while allowing fast online re-planning. Our algorithm builds an operator graph from the domain compilation that gives information on the possible behavior of operators. A safe operator graph is generated at initialization and used as LOLLIPOP's input to reduce the overhead of the initial subgoal backchaining. We prove that the use of these new mechanisms keeps POP sound and complete.
 
 style: jfpda
 
@@ -30,32 +30,32 @@ style: jfpda
 
 # Introduction {-}
 
-Until the end of the 90s, Plan-Space Planning (PSP) was generally preferred by the automated planning community. But, more recently, drastic improvements in state search planning (SSP) were made possible by advanced and efficient heuristics. This allowed those planners to scale up more efficiently than plan-space search ones, notably thanks to approaches like GraphPlan [@blum_fast_1997], fast-forward [@hoffmann_ff_2001], LAMA [@richter_lama_2011] and Fast Downward Stone Soup [@roger_fast_2014].
+Until the end of the 90s, Plan-Space Planning (PSP) was generally preferred by the automated planning community. But, more recently, drastic improvements in state search planning (SSP) were made possible by advanced and efficient heuristics. This allowed those planners to scale up more efficiently than plan-space search ones, notably thanks to approaches like GraphPlan [@blum_fast_1997], fast-forward [@hoffmann_ff_2001], LAMA [@richter_lama_2011] and Fast Downward Stone Soup [@helmert_fast_2011].
 This evolution led to a preference for performances upon other aspects of the problem of automated planning like expressiveness and flexibility, which are clear advantages of PSP over SSP. For instance, Partial Order Planning (POP), also known as Partial Order Causal Link (POCL), can take advantage of its least commitment strategy [@mccluskey_engineering_1997]. It allows to describe a partial plan with only the necessary order of the actions and not a fixed sequence of steps. Thus, POP has greater flexibility at plan execution time as explained in [@muise_monitoring_2011-1].
-It has also been proven to be well suited for multi-agent planning [@kvarnstrom_planning_2011] and temporal planning [@benton_temporal_2012] <!-- Refs from [@shekhar_learning_2016] -->. These advantages made UCPOP [@penberthy_ucpop_1992] one of the preferred POP planners of its time with works made to port some of its characteristics into state-based planning [@gazen_combining_1997].
+It has also been proven to be well suited for multi-agent planning [@kvarnstrom_planning_2011] and temporal planning [@benton_temporal_2012] <!-- Refs from [@shekhar_learning_2016] -->. These advantages made UCPOP [@penberthy_ucpop_1992] one of the preferred POP planners of its time with works made to import some of its characteristics into state-based planning [@gazen_combining_1997].
 
 Related works already tried to explore new ideas to make POP an attractive alternative to regular state-based planners like the appropriately named "Reviving partial order planning" [@nguyen_reviving_2001] and VHPOP [@younes_vhpop_2003]. More recent efforts [@coles_popf2_2011; @sapena_combining_2014] are trying to adapt the powerful heuristics from state-based planning to POP's approach. An interesting approach of these last efforts is found in [@shekhar_learning_2016] with meta-heuristics based on offline training on the domain. Yet, we clearly note that only a few papers lay the emphasis upon plan quality using POP [@ambite_planning_1997].
 
-The present paper lays the base for a project that aims to assist dependent persons in accomplishing tasks and so, to infer the pursued goals of the persons. One way of achieving goal recognition is to use inverted planning for plan inference, as for instance in [@ramirez_plan_2009]. This requires computing online planning with a feed of observational data. In a real world context, we also need to handle data derived from limited or noisy sensors. In this context, using inverted planning requires that the planner should be resilient to misleading input plans. From that perspective, we need a planner able to meet the following criteria:
+The present paper lays the base for a project that aims to assist dependent persons in accomplishing tasks and so, to infer the pursued goals of the persons. One way of achieving goal recognition is to use inverted planning for plan inference, as for instance in [@ramirez_plan_2009]. This requires performing online planning with a feed of observational data. In a real world context, we also need to handle data derived from limited or noisy sensors. In this context, using inverted planning requires that the planner should be resilient to misleading input plans. From that perspective, we need a planner able to meet the following criteria:
 
 * repair and optimize existing plans,
 * perform online planning efficiently
 * preserve performances on complex but medium sized problems
 
 In this article, we propose to improve POP with better refining techniques and resolver selection for online partial order planning.
-Classical POP algorithms don't meet most of these criteria but can be enhanced to fit the first one to fit plan reparation, as for instance in [@vanderkrogt_plan_2005]. Usually, POP algorithms take a problem as an input and use a loop or a recursive function to refine the plan into a solution. We can't solely use the refining recursive function to be able to use our existing partial plan. This causes multiples side effects if the input plan is suboptimal. This problem was already explored as of LGP-adapt [@borrajo_multi-agent_2013] that explains how re-using a partial plan often implies replanning parts of the plan.
+Classical POP algorithms don't meet most of these criteria but can be enhanced to fit the first one to fit plan repairing, as for instance in [@vanderkrogt_plan_2005]. Usually, POP algorithms take a problem as an input and use a loop or a recursive function to refine the plan into a solution. We can't solely use the refining recursive function to be able to use our existing partial plan. This causes multiples side effects if the input plan is suboptimal. This problem was already explored as of LGP-adapt [@borrajo_multi-agent_2013] that explains how re-using a partial plan often implies replanning parts of the plan.
 *Our view* on the problem diverges from other works: PSP is a  different approach compared to SSP. It is usually more computationally expensive than modern state space planners but brings several advantages. We want to make the most of them instead of trying to change POP's fundamental nature.
-That view is at the core of our model: we use the refining and least commitment abilities of POP to improve online performances and quality. In order to achieve this, we start by computing a *proper plan* that is computed offline with the input of the domain. Proper plan definition and generation are given in @sec:properplan.
+That view is at the core of our model: we use the refining and least commitment abilities of POP to improve online performances and quality. In order to achieve this, we start by computing an *operator graph* that is computed offline with the input of the domain. Operator graph definition and generation are given in @sec:operatorgraph.
 Using existing partial plans as POP's input leads to several issues, mainly because of new flaw types that aren't treated in classical POP. This is why we focus the @sec:negative of our paper on plan quality and negative refinements. We introduce new negative flaws and resolvers that aim to fix and optimize the plan.
 Side effects of negative flaws and resolvers can lead to conflicts. In order to avoid them and to enhance performances and quality, the algorithm needs resolver and flaw selection mechanisms that are explained in the @sec:selection.
-All these mechanisms are part of our aLternative Optimization with partiaL pLan Injection Partial Ordered Planning (LOLLIPOP) algorithm presented in details in @sec:algorithm. We prove that the use of these new mechanisms keeps LOLLIPOP sound and complete in @sec:analysis. Experimental results and benchmarks are presented in the @sec:results of this paper.
+All these mechanisms are part of our aLternative Optimization with partiaL pLan Injection Partial Ordered Planning (LOLLIPOP) algorithm presented in detail in @sec:algorithm. We prove that the use of these new mechanisms keeps LOLLIPOP sound and complete in @sec:analysis. Experimental results and benchmarks are presented in the @sec:results of this paper.
 
 # Partial Order Planning Preliminaries
 
 
 ## Notation
 
-In this paper, we use the notation defined in @tbl:symbols. These symbols are adapted from the ones described in [@ghallab_automated_2004].We use the symbol $\pm$ to signify that there is a notation for the positive and negative symbols but the current formula works regardless the sign. All related notions will be defined later.
+In this paper, we use the notation defined in @tbl:symbols. These symbols are adapted from the ones described in [@ghallab_automated_2004].We use the symbol $\pm$ to signify that there is a notation for the positive and negative symbols but the current formula works regardless of the sign. All related notions will be defined later.
 
 **Symbol**                          **Description**
 ----------                          ---------------
@@ -64,7 +64,7 @@ $\mathcal{D}$                       Planning domain
 $\mathcal{P}$                       Planning problem
 $l_{\rightarrow}$, $l_{\leftarrow}$ Source and target of the causal link $l$
 $o_1 \succ o_2$                     Precedence operator ($o_1$ precedes $o_2$)
-$O^\Pi$                             Proper plan of the set of operators $O$
+$O^\Pi$                             Operator graph of the set of operators $O$
 $d^\pm_\pi(o)$                      Outgoing and incoming degrees of $o$
 $d^\pm(o)$                          Proper degrees of $o$ ($|pre(o)|$ and $|eff(o)|$)
 $L^\pm_\pi(o)$                        Outgoing and incoming causal links of $o$
@@ -107,7 +107,7 @@ Along with a domain, every planner needs a problem representation. We use the cl
 <div id="def:problem" class="definition" name="Problem">
 The planning problem is defined as a tuple $\mathcal{P} = \langle \mathcal{D}, C_\mathcal{P}, I, G, \pi\rangle$ where
 
-* $\mathcal{P}$ is a planning domain,
+* $\mathcal{D}$ is a planning domain,
 * $C_\mathcal{P}$ is the set of **problem constants** disjoint from the domain constants $C$,
 * $I$ is the **initial state**,
 * $G$ is the **goal**,
@@ -134,7 +134,7 @@ A specificity of Partial Order Planning is that it fixes flaws in a partial plan
 <div class="definition" name="Subgoal">
 A flaw in a partial plan, called subgoal, is a missing causal link required to satisfy a precondition of a step. We can note a subgoal as:
 $a_p \xrightarrow{s} a_n \notin L \mid \{ a_p, a_n \} \subseteq S$
-with $a_n$ called the **needer** and $a_p$ an eventual **provider** of the fluent $s$. This fluent is called *open condition* or **proper fluent** of the subgoal.
+with $a_n$ called the **needer** and $a_p$ a possible **provider** of the fluent $s$. This fluent is called *open condition* or **proper fluent** of the subgoal.
 </div>
 
 <div class="definition" name="Threat">
@@ -207,26 +207,26 @@ To explain these limitations, we use the example described in @fig:example where
 
 # LOLLIPOP's Approach
 
-In this section, proper plan generation used by LOLLIPOP to ease the initial backchaining of POP is presented. Then we introduced new negative flaws for online planning refinements. LOLLIPOP algorithm and its resolvers and flaws selection based on the proper plan are finally detailed.
+In this section, operator graph generation used by LOLLIPOP to ease the initial backchaining of POP is presented. Then we introduced new negative flaws for online planning refinements. LOLLIPOP algorithm and its resolvers and flaws selection based on the operator graph are finally detailed.
 
-## Proper Plan Generation {#sec:properplan}
+## Operator Graph Generation {#sec:operatorgraph}
 
-One of the main contributions of the present paper is our use of the concept of *proper plan*. First of all, we define this notion.
+One of the main contributions of the present paper is our use of the concept of *operator graph*. First of all, we define this notion.
 
-<div class="definition" name="Proper Plan">
-A proper plan $O^\Pi$ of a set of operators $O$ is a labeled directed graph that binds two operators with the causal link $o_1 \xrightarrow{f} o_2$ iff there exists at least one unifying fluent $f \in eff(o_1) \cap pre(o_2)$.
+<div class="definition" name="Operator Graph">
+An operator graph $O^\Pi$ of a set of operators $O$ is a labeled directed graph that binds two operators with the causal link $o_1 \xrightarrow{f} o_2$ iff there exists at least one unifying fluent $f \in eff(o_1) \cap pre(o_2)$.
 </div>
 
-This definition was inspired by the notion of domain causal graph as explained in [@gobelbecker_coming_2010] and originally used as heuristic in [@helmert_fast_2006]. Causal graphs have fluents as their nodes and operators as their edges. Proper plans are the opposite: an *operator dependency graph* for a set of actions. A similar structure was used in [@smith_postponing_1993] that builds the operator dependency graph of goals and uses precondition nodes instead of labels.
+This definition was inspired by the notion of domain causal graph as explained in [@gobelbecker_coming_2010] and originally used as a heuristic in [@helmert_fast_2011]. Causal graphs have fluents as their nodes and operators as their edges. Operator graphs are the opposite: an *operator dependency graph* for a set of actions. A similar structure was used in [@smith_postponing_1993] that builds the operator dependency graph of goals and uses precondition nodes instead of labels.
 Cycles in this graph denote the dependencies of operators. We call *co-dependent* operators that form a cycle. If the cycle is made of only one operator (self-loop), then it is called *auto-dependent*.
 
-While building this proper plan, we need a **providing map** that indicates, for each fluent, the list of operators that can provide it. This is a simpler version of the causal graphs that is reduced to an associative table easier to update. The list of providers can be sorted to drive resolver selection (as detailed in @sec:selection). A **needing map** is also built but is only used for proper plan generation. We note $\mathcal{D}^\Pi$ the proper plan built with the set of operators in the domain $\mathcal{D}$. In the @fig:properplan, we illustrate the application of this mechanism on our example from @fig:example. Continuous lines correspond to the *domain proper plan* computed during domain compilation time.
+While building this operator graph, we need a **providing map** that indicates, for each fluent, the list of operators that can provide it. This is a simpler version of the causal graphs that is reduced to an associative table easier to update. The list of providers can be sorted to drive resolver selection (as detailed in @sec:selection). A **needing map** is also built but is only used for operator graph generation. We note $\mathcal{D}^\Pi$ the operator graph built with the set of operators in the domain $\mathcal{D}$. In the @fig:operatorgraph, we illustrate the application of this mechanism on our example from @fig:example. Continuous lines correspond to the *domain operator graph* computed during domain compilation time.
 
-![Diagram of the proper plan of example domain. Full arrows represent the domain proper plan and dotted arrows the dependencies added to inject the initial and goal steps.](graphics/properplan.svg){#fig:properplan}
+![Diagram of the operator graph of example domain. Full arrows represent the domain operator graph and dotted arrows the dependencies added to inject the initial and goal steps.](graphics/properplan.svg){#fig:operatorgraph}
 
-The generation of the proper plan is detailed in @alg:properplan. It explores the operators space and builds a providing and a needing map that gives the provided and needed fluents for each operator. Once done it iterates on every precondition and searches for a satisfying cause to add the causal links to the proper plan.
+The generation of the operator graph is detailed in @alg:operatorgraph. It explores the operators space and builds a providing and a needing map that gives the provided and needed fluents for each operator. Once done it iterates on every precondition and searches for a satisfying cause to add the causal links to the operator graph.
 
-<div id="alg:properplan" class="algorithm" name="Proper plan generation and update algorithm" >
+<div id="alg:operatorgraph" class="algorithm" name="Operator graph generation and update algorithm" >
 \footnotesize
 \Function{addVertex}{Operator $o$}
     \State \Call{cache}{$o$} \Comment{Update of the providing and needing map}
@@ -253,11 +253,11 @@ The generation of the proper plan is detailed in @alg:properplan. It explores th
 \EndFunction
 </div>
 
-To apply the notion of proper plans to planning problems, we just need to add the initial and goal steps to the proper plan. In @fig:properplan, we depict this insertion with our previous example using dotted lines. However, since proper plans may have cycles, they can't be used directly as input to POP algorithms to ease the initial backchaining. Moreover, the process of refining a proper plan into a usable one could be more computationally expensive than POP itself.
+To apply the notion of operator graphs to planning problems, we just need to add the initial and goal steps to the operator graph. In @fig:operatorgraph, we depict this insertion with our previous example using dotted lines. However, since operator graphs may have cycles, they can't be used directly as input to POP algorithms to ease the initial backchaining. Moreover, the process of refining an operator graph into a usable one could be more computationally expensive than POP itself.
 
-In order to give a head start to the LOLLIPOP algorithm, we propose to build proper plans differently with the algorithm detailed in @alg:safeproperplan. A similar notion was already presented as "basic plans" in [@sebastia_graph-based_2000]. These "basic" partial plans use a more complete but slower solution for the generation that ensures that each selected steps are *necessary* for the solution. In our case, we built a simpler solution that can solve some basic planning problems but that also make early assumptions (since our algorithm can handle them). It does a simple and fast backward construction of a partial plan driven by the providing map. Therefore, it can be tweaked with the powerful heuristics of state search planning.
+In order to give a head start to the LOLLIPOP algorithm, we propose to build operator graphs differently with the algorithm detailed in @alg:safeoperatorgraph. A similar notion was already presented as "basic plans" in [@sebastia_graph-based_2000]. These "basic" partial plans use a more complete but slower solution for the generation that ensures that each selected steps are *necessary* for the solution. In our case, we built a simpler solution that can solve some basic planning problems but that also make early assumptions (since our algorithm can handle them). It does a simple and fast backward construction of a partial plan driven by the providing map. Therefore, it can be tweaked with the powerful heuristics of state search planning.
 
-<div id="alg:safeproperplan" class="algorithm" name="Safe proper plan generation algorithm" >
+<div id="alg:safeoperatorgraph" class="algorithm" name="Safe operator graph generation algorithm" >
 \footnotesize
 \Function{safe}{Problem $\mathcal{P}$}
     \State Stack<Operator> $open \gets [G]$
@@ -298,12 +298,12 @@ An alternative is a negative flaw that occurs when there is a better provider ch
 An alternative to a causal link $a_p \xrightarrow{f} a_n$ is a provider $a_b$ that has a better *utility value* than $a_p$.
 </div>
 
-The **utility value** of an operator is a measure of usefulness at the heart of our ranking mechanism detailed in @sec:selection. It uses the incoming and outgoing degrees of the operator in the domain proper plan to measure its usefulness.
+The **utility value** of an operator is a measure of usefulness at the heart of our ranking mechanism detailed in @sec:selection. It uses the incoming and outgoing degrees of the operator in the domain operator graph to measure its usefulness.
 
-Finding an alternative to an operator is computationally expensive. It requires searching a better provider for every fluent needed by a step. To simplify that search, we select only the best provider for a given fluent and check if the one used is the same. If not, we add the alternative as a flaw. This search is done only on updated steps for online planning. Indeed, the safe proper plan mechanism is guaranteed to only choose the best provider (@alg:safeproperplan at @line:safefirst). Furthermore, subgoals won't introduce new fixable alternative as they are guaranteed to select the best possible provider.
+Finding an alternative to an operator is computationally expensive. It requires searching a better provider for every fluent needed by a step. To simplify that search, we select only the best provider for a given fluent and check if the one used is the same. If not, we add the alternative as a flaw. This search is done only on updated steps for online planning. Indeed, the safe operator graph mechanism is guaranteed to only choose the best provider (@alg:safeoperatorgraph at @line:safefirst). Furthermore, subgoals won't introduce new fixable alternative as they are guaranteed to select the best possible provider.
 
 <div class="definition" name="Orphan">
-An orphan is a negative flaw that means that a step in the partial plan (other than the initial or goal step) is not participating in the plan. Formally, $a_o$ is an orphan iff $a_o \neq I \land a_o \neq G \land \left( d_\pi^+(a_o) = 0 \right) \lor \forall l \in L_\pi^+(a_o), l=\emptyset$.
+An orphan is a negative flaw that occurs when a step in the partial plan (other than the initial or goal step) is not participating in the plan. Formally, $a_o$ is an orphan iff $a_o \neq I \land a_o \neq G \land \left( d_\pi^+(a_o) = 0 \right) \lor \forall l \in L_\pi^+(a_o), l=\emptyset$.
 </div>
 
 With $d_\pi^+(a_o)$ being the *outgoing degree* of $a_o$ in the directed graph formed by $\pi$ and $L_\pi^+(a_o)$ being the set of *outgoing causal links* of $a_o$ in $\pi$. This last condition checks for *hanging orphans* that are linked to the goal with only bare causal links (introduced by threat resolution).
@@ -328,7 +328,7 @@ A signed side effect is either a regular *causal side effect* or an *invalidatin
 
 The @fig:sideeffects exposes the extended notion of signed resolvers and side effects. When treating positive resolvers, nothing needs to change from the classical method. When dealing with negative resolvers, we need to search for extra subgoals and threats. Deletion of causal links and steps can cause orphan flaws that need to be identified for removal.
 
-In the method described in [@peot_threatremoval_1993], a **invalidating side effect** is explained under the name of *DEnd* strategy. In classical POP, it has been noticed that threats can disappear in some cases if subgoals or other threats were applied before them. For our mechanisms, we decide to gather under this notion every side effects that removes the need to consider a flaw. For example, orphans can be invalidated if a subgoal selects the considered step. Alternatives can remove the need to compute further subgoal of an orphan step as orphans simply remove the need to fix any flaws that concern the selected step.
+In the method described in [@peot_threatremoval_1993], a **invalidating side effect** is explained under the name of *DEnd* strategy. In classical POP, it has been noticed that threats can disappear in some cases if subgoals or other threats were applied before them. For our mechanisms, we decide to gather under this notion every side effect that removes the need to consider a flaw. For example, orphans can be invalidated if a subgoal selects the considered step. Alternatives can remove the need to compute further subgoal of an orphan step as orphans simply remove the need to fix any flaws that concern the selected step.
 
 These interactions between flaws are decisive for the validity and efficiency of the whole model, that is why we aim to drive flaw selection in a rigorous manner.
 
@@ -342,13 +342,13 @@ Based on the @fig:sideeffects, we define a base ordering of flaws by type. This 
 
 1. **Alternatives** will cut causal links that have a better provider. It is necessary to identify them early since they will add at least another subgoal to be fixed as a related flaw.
 2. **Subgoals** are the flaws that cause most of the branching factor in POP algorithms. This is why we need to make sure that all open conditions are fixed before proceeding on finer refinements.
-3. **Orphans** remove unneeded branches of the plan. Yet, these branches can be found out to be necessary for the plan to meet a subgoal. Since a branch can contain many actions, it is preferable to let the orphan in the plan until they are no longer needed. Also, threats involving orphans are invalidated if the orphan is resolved first.
+3. **Orphans** remove unneeded branches of the plan. Yet, these branches can be found out to be necessary for the plan to meet a subgoal. Since a branch can contain many actions, it is preferable to leave the orphan in the plan until they are no longer needed. Also, threats involving orphans are invalidated if the orphan is resolved first.
 4. **Threats** occur quite often in the computation. Searching and solving them is computationally expensive since they need to check if there are no paths that fix the flaw already. Many threats are generated without the need of resolver application [@peot_threatremoval_1993]. That is why we rank all related subgoals and orphans before threats because they can add causal links or remove threatening actions that will fix the threat.
 
 Resolvers need to be ordered as well, especially for the subgoal flaws. Ordering resolvers for a subgoal is the same operation as choosing a provider. Therefore, the problem becomes "how to rank operators?". The most relevant information on an operator is its usefulness and hurtfulness. These show how much an operator will help and how much it may cause branching after selection.
 
 <div class="definition" name="Degree of an operator">
-Degrees are a measurement of the usefulness of an operator. Such notion is derived from the incoming and outgoing degrees of a node in a graph.
+Degrees are a measurement of the usefulness of an operator. Such a notion is derived from the incoming and outgoing degrees of a node in a graph.
 
 We note $d_\pi^+(o)$ and $d_\pi^-(o)$ respectively the outgoing and incoming degrees of an operator in a plan $\pi$. These represent the number of causal links that goes out or toward the operator. We call proper degree of an operator $d^+(o) = |eff(o)|$ and $d^-(o) = |pre(o)|$ the number of preconditions and effects that reflect its intrinsic usefulness.
 </div>
@@ -359,14 +359,14 @@ Our ranking mechanism is based on scores noted $s^\pm(o)$. A score contains two 
 
 The first step is the computation of the **base scores**. They are computed according to the following:
 
-* $s^+(o)$ contains only $d_{\mathcal{D}^\Pi}^+(o)$, the positive degree of $o$ in the domain proper plan. This will give a measurement of the predicted usefulness of the operator.
+* $s^+(o)$ contains only $d_{\mathcal{D}^\Pi}^+(o)$, the positive degree of $o$ in the domain operator graph. This will give a measurement of the predicted usefulness of the operator.
 * $s^-(o)$ containing the following subscores:
     1. $d^-(o)$ the proper negative degree of $o$. Having more preconditions can lead to a potentially higher need for subgoals.
-    2. $\sum_{c \in C_o(\mathcal{D}^\Pi)}|c|$ with $C_o(\mathcal{D}^\Pi)$ being the set of cycles where $o$ participates in the domain proper plan. If an action is co‑dependent (cf. @sec:properplan) it may lead to a dead-end as its addition will cause the formation of a cycle.
+    2. $\sum_{c \in C_o(\mathcal{D}^\Pi)}|c|$ with $C_o(\mathcal{D}^\Pi)$ being the set of cycles where $o$ participates in the domain operator graph. If an action is co‑dependent (cf. @sec:operatorgraph) it may lead to a dead-end as its addition will cause the formation of a cycle.
     3. $|C_o^s(\mathcal{D}^\Pi)|$ is the number of self-cycle ($0$ or $1$) $o$ participates in. This is usually symptomatic of a *toxic operator* (cf. @def:toxic). Having an operator behaving this way can lead to backtracking because of operator instantiation.
-    4. $\left|pre(o) \setminus L_{\mathcal{D}^\Pi}^-(o)\right|$ with $L_{\mathcal{D}^\Pi}^-(o)$ being the set of incoming causal links of $o$ in the domain proper plan. This represents the number of open conditions. This is symptomatic of action that can't be satisfied without a compliant initial step.
+    4. $\left|pre(o) \setminus L_{\mathcal{D}^\Pi}^-(o)\right|$ with $L_{\mathcal{D}^\Pi}^-(o)$ being the set of incoming causal links of $o$ in the domain operator graph. This represents the number of open conditions. This is symptomatic of action that can't be satisfied without a compliant initial step.
 
-Once these subscores are computed, the ranking mechanism starts the second phase, which computes the **realization scores**. These scores are potential bonuses given once the problem is known. It first searches the *inapplicable operators* that are all operators in the domain proper plan that have a precondition that isn't satisfied with a causal link. Then it searches the *eager operators* that provide fluents with no corresponding causal link (as they are not needed). These operators are stored in relation with their inapplicable or eager fluents.
+Once these subscores are computed, the ranking mechanism starts the second phase, which computes the **realization scores**. These scores are potential bonuses given once the problem is known. It first searches the *inapplicable operators* that are all operators in the domain operator graph that have a precondition that isn't satisfied with a causal link. Then it searches the *eager operators* that provide fluents with no corresponding causal link (as they are not needed). These operators are stored in relation with their inapplicable or eager fluents.
 
 The third phase starts with the beginning of the solving algorithm, once the problem has been provided. It computes the **effective realization scores** based on the initial and goal steps. It will increment $s_1^+(o)$ for each realized eager links (if the goal contains the related fluent) and decrement $s_4^-(o)$ for each inapplicable preconditions realized by the initial step.
 
@@ -378,14 +378,14 @@ A parameterized coefficient is associated to each subscore. It is noted $p_n^\pm
 
 Choosing to compute the resolver selection at operator level has some positive consequences on the performances. Indeed, this computation is much lighter than approaches with heuristics on plan space [@shekhar_learning_2016] as it reduces the overhead caused by real time computation of heuristics on complex data. In order to reduce this overhead more, the algorithm sorts the providing associative array to easily retrieve the best operator for each fluent. This means that the evaluation of the heuristic is done only once for each operator. This reduces the overhead and allows for faster results on smaller plans.
 
-## LOLLIPOP Algorithm {#sec:algorithm}
+## The LOLLIPOP Algorithm {#sec:algorithm}
 
-The LOLLIPOP algorithm uses the same refinement algorithm as described in @alg:pop. The differences reside in the changes made on the behavior of resolvers and side effects. In @line:resolverapplication of @alg:pop, LOLLIPOP algorithm applies negative resolvers if the selected flaw is negative. In @line:sideeffectapplication, it searches for both signs of side effects. Another change resides in the initialization of the solving mechanism and the domain as detailed in @alg:lollipopinit. This algorithm contains several parts. First, the <span class="proc">domainInit</span> function corresponds to the code computed during the domain compilation time. It will prepare the rankings, the proper plan, and its caching mechanisms. It will also use strongly connected component detection algorithm to detect cycles. These cycles are used during the base score computation (@line:basescore). We add a detection of illegal fluents and operators in our domain initialization (@line:isillegal). Illegal operators are either inconsistent or toxic.
+The LOLLIPOP algorithm uses the same refinement algorithm as described in @alg:pop. The differences reside in the changes made on the behavior of resolvers and side effects. In @line:resolverapplication of @alg:pop, LOLLIPOP algorithm applies negative resolvers if the selected flaw is negative. In @line:sideeffectapplication, it searches for both signs of side effects. Another change resides in the initialization of the solving mechanism and the domain as detailed in @alg:lollipopinit. This algorithm contains several parts. First, the <span class="proc">domainInit</span> function corresponds to the code computed during the domain compilation time. It will prepare the rankings, the operator graph, and its caching mechanisms. It will also use strongly connected component detection algorithm to detect cycles. These cycles are used during the base score computation (@line:basescore). We add a detection of illegal fluents and operators in our domain initialization (@line:isillegal). Illegal operators are either inconsistent or toxic.
 
 <div id="alg:lollipopinit" class="algorithm" name="LOLLIPOP initialization mechanisms" >
 \footnotesize
 \Function{domainInit}{Operators $O$}
-    \State ProperPlan $\mathcal{D}^\Pi$
+    \State operatorgraph $\mathcal{D}^\Pi$
     \State Score $S$
     \ForAll{Operator $o \in O$}
         \If{\Call{isIllegal}{$o$}} \Comment{Remove toxic and useless fluents} \label{line:isillegal}
@@ -406,7 +406,7 @@ The LOLLIPOP algorithm uses the same refinement algorithm as described in @alg:p
     \State \Call{cache}{$providing, G$} \Comment{… as well as goal step}
     \State \Call{sort}{$providing, S$} \Comment{Sort the providing map}
     \If{$L = \emptyset$}
-        \State $\mathcal{P}^\Pi \gets$ \Call{safe}{$\mathcal{P}$} \Comment{Computing the safe proper plan if the plan is empty}
+        \State $\mathcal{P}^\Pi \gets$ \Call{safe}{$\mathcal{P}$} \Comment{Computing the safe operator graph if the plan is empty}
     \EndIf
     \State \Call{populate}{$a$, $\mathcal{P}$} \Comment{populate agenda with first flaws} \label{line:populate}
 \EndFunction
@@ -450,7 +450,7 @@ Toxic operators have effects that are already in their preconditions or empty ef
 
 Toxic actions can damage a plan as well as make the execution of POP algorithm longer than necessary. This is fixed by removing the toxic fluents ($pre(a) \nsubseteq eff(a)$) and by updating the effects with $eff(a) = eff(a) \setminus pre(a)$. If the effects become empty, the operator is removed from the domain.
 
-The <span class="proc">lollipopInit</span> function is executed during the initialization of the solving algorithm. We start by realizing the scores, then we add the initial and goal steps in the providing map by caching them. Once the ranking mechanism is ready, we sort the providing map. With the ordered providing map, the algorithm runs the fast generation of the safe proper plan for the problem's goal.
+The <span class="proc">lollipopInit</span> function is executed during the initialization of the solving algorithm. We start by realizing the scores, then we add the initial and goal steps in the providing map by caching them. Once the ranking mechanism is ready, we sort the providing map. With the ordered providing map, the algorithm runs the fast generation of the safe operator graph for the problem's goal.
 
 The last part of this initialization (@line:populate) is the agenda population that is detailed in the <span class="proc">populate</span> function. During this step, we perform a search of alternatives based on the list of updated fluents. Online updates can make the plan outdated relative to the domain. This forms liar links :
 
@@ -462,7 +462,7 @@ A liar link can be created by the removal of an effect or preconditions during o
 
 We call lies the fluents that are held by links without being in the connected operators. To resolve the problem, we remove all lies. We delete the link altogether if it doesn't bear any fluent as a result of this operation. This removal triggers the addition of orphan flaws as side effects.
 
-While the list of updated operators is crucial for solving online planning problems, a complementary mechanism is used  to ensure that LOLLIPOP is complete. This mechanism is explained in @lem:deadend-validity. <!--User provided plans have their steps tagged. This tag is used for failure. If the failure has backtracked to a user-provided step, then it is removed and replaced by subgoals that represent each of its participation in the plan. This mechanism loops until every user provided steps have been removed.-->
+While the list of updated operators is crucial for solving online planning problems, a complementary mechanism is used  to ensure that LOLLIPOP is complete. User provided plans have their steps tagged. If the failure has backtracked to a user-provided step, then it is removed and replaced by subgoals that represent each of its participation in the plan. This mechanism loops until every user provided steps have been removed.
 
 # Theoretical Analysis {#sec:analysis}
 
@@ -471,7 +471,7 @@ As proven in [@penberthy_ucpop_1992], the classical POP algorithm is *sound* and
 First, we define some new properties of partial plans. The following properties are taken from the original proof. We present them again for convenience.
 
 <div id="def:fullsupport" class="definition" name="Full Support">
-A partial plan $\pi$ is fully supported if each of its steps $o \in S$ is fully supported. A step is fully supported if each of its preconditions $f \in pre(o)$ is supported. A precondition is fully supported if it exists a causal link $l$ that provides it. We note:
+A partial plan $\pi$ is fully supported if each of its steps $o \in S$ is fully supported. A step is fully supported if each of its preconditions $f \in pre(o)$ is supported. A precondition is fully supported if there exists a causal link $l$ that provides it. We note:
 $$\Downarrow \pi \equiv
 \begin{array}{l}
     \forall o \in S \thickspace \forall f \in pre(o) \thickspace \exists l \in L_\pi^-(o): \\
@@ -481,7 +481,7 @@ with $L_\pi^-(o)$ being the incoming causal links of $o$ in $\pi$ and $l_{\right
 </div>
 
 <div id="def:partialplanvalidity" class="definition" name="Partial Plan Validity">
-A partial plan is a **valid solution** of a problem $\mathcal{P}$ iff it is *fully supported* and *contains no cycles*. The validity of $\pi$ regarding a problem $\mathcal{P}$ is noted $\pi \models \mathcal{P} \equiv \Downarrow \pi \land \left(C(\pi) = \emptyset \right)$ with $C(\pi)$ being the set of cycles in $\pi$.
+A partial plan is a **valid solution** of a problem $\mathcal{P}$ iff it is *fully supported* and *contains no cycles*. The validity of $\pi$ regarding a problem $\mathcal{P}$ is noted $\pi \models \left( \mathcal{P} \equiv \Downarrow \pi \land \left(C(\pi) = \emptyset \right) \right)$ with $C(\pi)$ being the set of cycles in $\pi$.
 </div>
 
 ##Proof of Soundness
@@ -508,7 +508,7 @@ where $L_\pi^-(G)_{\rightarrow}$ is the set of direct antecedents of $G$ and $C_
 
 This means that $\pi$ is a solution if all preconditions of $G$ are satisfied. We can satisfy these preconditions using operators iff their preconditions are all satisfied and if there is no other operator that threatens their supporting links.
 
-First, we need to prove that @eq:recursivevalidity holds on LOLLIPOP initialization. We use our hypothesis to rule out the case when the input plan is invalid. The @alg:safeproperplan will only solve open conditions in the same way subgoals do it. Thus, safe proper plans are valid input plans.
+First, we need to prove that @eq:recursivevalidity holds on LOLLIPOP initialization. We use our hypothesis to rule out the case when the input plan is invalid. The @alg:safeoperatorgraph will only solve open conditions in the same way subgoals do it. Thus, safe operator graphs are valid input plans.
 
 Since the soundness is proven for regular refinements and flaw selection, we need to consider the effects of the added mechanisms of LOLLIPOP.
 The newly introduced refinements are negative, they don't add new links:
@@ -538,14 +538,14 @@ With [@eq:nocycle; @eq:conssupport] and the proof of soundness, the conservation
 
 
 <div id="lem:incompletevalidity" class="lemma" name="Reaching Validity with incomplete partial plans">
-If the input plan is incomplete, LOLLIPOP returns a valid solution.
+If the input plan is incomplete, LOLLIPOP returns a valid solution if it exists.
 </div>
 <div class="proof">
 Since POP is complete and the @eq:conssupport proves the conservation of support by LOLLIPOP, then the algorithm will return a valid solution if the provided plan is an incomplete plan and the problem is solvable. \qedhere
 </div>
 
 <div class="lemma" name="Reaching Validity with empty partial plans">
-If the input plan is empty, LOLLIPOP returns a valid solution.
+If the input plan is empty and the problem is solvable, LOLLIPOP returns a valid solution.
 </div>
 <div class="proof">
 This is proven using @lem:incompletevalidity and POP's completeness. However, we want to add a trivial case to the proof: $pre(G) = \emptyset$. In this case the @line:emptygoal of the @alg:pop will return a valid plan. \qedhere
@@ -555,7 +555,7 @@ This is proven using @lem:incompletevalidity and POP's completeness. However, we
 If the input plan is in a dead-end, LOLLIPOP returns a valid solution.
 </div>
 <div class="proof">
-Using input plans that can be in a undermined state is not covered by the original proof. The problem lies in the existing steps in the input plan. Still, using our hypothesis we can add a failure mechanism that makes LOLLIPOP complete. On failure, the needer of the last flaw is deleted if it wasn't added by LOLLIPOP. User defined steps are deleted until the input plan acts like an empty plan. Each deletion will cause corresponding subgoals to be added to the agenda. In this case, the backtracking is preserved and all possibilities are explored as in POP. \qedhere
+Using input plans that can be in an undetermined state is not covered by the original proof. The problem lies in the existing steps in the input plan. Still, using our hypothesis we add a failure mechanism that makes LOLLIPOP complete. On failure, the needer of the last flaw is deleted if it wasn't added by LOLLIPOP. User defined steps are deleted until the input plan acts like an empty plan. Each deletion will cause corresponding subgoals to be added to the agenda. In this case, the backtracking is preserved and all possibilities are explored as in POP. \qedhere
 </div>
 
 Since all cases are covered, this proves the property of completeness.
@@ -567,14 +567,11 @@ The experimental results focused on the properties of LOLLIPOP for online planni
 ![Domain used to compute the results. First line is the initial and goal step along with the useful actions. Second line contains a threatening action $t$, two co-dependent actions $n$ and $l$, a useless action $u$, a toxic action $v$, a deadend action $w$ and an inconsistent action $x$ ](graphics/experiment.svg){#fig:experiment}
 
 In @fig:experiment, we expose the planning domain used for the experiments.
-During the domain initialization, the action $u$ and $v$ are eliminated from the domain since they serve no purpose in the solving process. The action $x$ is stripped of its negative effect because it is inconsistent with the effect $2$.
+During the domain initialization, the actions $u$ and $v$ are eliminated from the domain since they serve no purpose in the solving process. The action $x$ is stripped of its negative effect because it is inconsistent with the effect $2$.
 
-As the solving starts, LOLLIPOP computes a safe proper plan (full lines in @fig:experimentplan). As we can see this partial plan is nearly complete already. When the main refining function starts it receives an agenda with only a few flaws remaining.
+As the solving starts, LOLLIPOP computes a safe operator graph (full lines in @fig:experimentplan). As we can see this partial plan is nearly complete already. When the main refining function starts it receives an agenda with only a few flaws remaining.
 
-```{.lisp #lst:agenda}
-[DEBUG]    Agenda [? =(3)> G, A(=[1]+[3, 5]) X A(=[4]+[-5]) -[-5]> G, A(=[4]+[-5]) X A(=[1]+[3, 5]) -[5]> A(=[5]+[6])]
-```
-![In full lines the initial safe proper plan. In thin, sparse and irregularly dotted lines a subgoal, alternative and threat caused causal link.](graphics/experimentplan.svg){#fig:experimentplan}
+![In full lines the initial safe operator graph. In thin, sparse and irregularly dotted lines a subgoal, alternative and threat caused causal link.](graphics/experimentplan.svg){#fig:experimentplan}
 
 Then the main refinement function starts (time markers **1**). LOLLIPOP selects as resolver a causal link from $a$ to satisfy the open condition of the goal step.
 Once the first threat between $a$ and $t$ is resolved the second threat is invalidated. On a second execution, the domain changes for online planning with $6$ added to the initial step. This solving (time markers **2**) add as flaw an alternative on the link from $c$ to the goal step. A subgoal is added that links the initial and goal step for this fluent. An orphan flaw is also added that removes $c$ from the plan. Another solving takes place as the goal step doesn't need $3$ as a precondition (time markers **3**). This causes the link from $a$ to be cut since it became a liar link. This adds $a$ as an orphan that gets removed from the plan even if it was hanging by the bare link to $t$.
@@ -591,7 +588,7 @@ The measurements exposed in @tbl:results were made with an Intel® Core™ i7-47
 
 In this paper, we have presented a set of new mechanisms to perform online partial order planning. These mechanisms allow negative refinements to be made upon existing plans to improve their quality. This allows LOLLIPOP to use pre-calculated plans to improve the resulting plan. This input can be used in online planning and make LOLLIPOP suitable for use in dynamic environments often encountered in robotic applications. We proved that LOLLIPOP is sound and complete like POP.
 
-For future works, we plan to improve the performance and expressiveness of our algorithm to represent complex real-life problems encountered by dependent persons. We also aim to develop a soft solving mechanism that aims to give the best probable plan in the cases where the problem is unsolvable. Then this planner could be used for plan recognition using inverted planning.
+For future works, we plan to improve the performance and expressiveness of our algorithm to represent complex real-life problems encountered by dependent persons. We also aim to develop a soft solving mechanism that aims to give the best incomplete plan in the cases where the problem is unsolvable. Then this planner could be used for plan recognition using inverted planning.
 
 # Acknowledgments {-}
 

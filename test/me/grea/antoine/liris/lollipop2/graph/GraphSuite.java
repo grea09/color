@@ -13,7 +13,7 @@ import org.junit.runners.Suite;
  * @author antoine
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({me.grea.antoine.liris.lollipop2.graph.GraphTest.class, me.grea.antoine.liris.lollipop2.graph.DirectedEdgesTest.class})
+@Suite.SuiteClasses({me.grea.antoine.liris.lollipop2.graph.GraphTest.class})//, me.grea.antoine.liris.lollipop2.graph.DirectedEdgesTest.class})
 public class GraphSuite {
     
 }

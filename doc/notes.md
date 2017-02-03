@@ -1,0 +1,43 @@
+---
+title: Notes
+author:
+    - Antoine Gréa
+
+style: rapport
+
+---
+
+# Réparation de plan
+
+La réparation de plan dans la plannification générale est très complexe. En effet les modifications peuvent être de tout ordre 
+
+* **Modification du problème** : but ou état initial changé, y compris leurs variables d'instanciation
+* **Modification du domaine** : modification arbitraire d'opérateurs ce qui a un effet sur leurs instances
+
+Plusieurs papiers [@nebel_plan_1995, @komenda_domain-independent_2013] expliquent que la réparation de plan est souvent plus lente que de tout replannifier. Le problème viens du fait que de trouver les défauts et surtout la bonne manière pour les réparer demande beaucoup de temps. En effet, imaginons qu'une action pose problème dans un plan. Cette action peut demander un arbre de dépendances et causer beaucoup de recalcul. Elle peut aussi causer des menaces ou des préconditions non satisfaites. Une solution est de traiter le problème de manière locale. LPG [@gerevini_lpg_2002] et LPG adapt [@borrajo_multi-agent_2013] traitent ce problème de cette manière.
+
+## Plannification probabiliste
+
+La plannification probabiliste permet de considérer plusieurs plans alternatifs en même temps. Ceci ne permet pas de résister au changement de domaine. Cette méthode est plus efficace dans des dommaines où la probabilité d'echec est connue pour chaque actions. Ceci permet de modifier le plan en ligne dans la limite des specifications.
+
+## Plannification continue
+
+Ce type de plannification permet de faire évoluer l'état initial tout au long de l'exécution. On peut replanifier uniquement ce qui pose problème mais les effets de bords peuvent rendre ceci très inéfficace.
+
+## Replannification
+
+Cette solution permet de replanifier un plan en repartant de zéro. Plusieurs mécanismes d'aprentissage ou de cache permettent de rendre la replannification plus rapide la seconde fois.
+
+# Reconaissance d'intention
+
+Une astuce intéressante pour la reconaissance d'intention est que la modification est artificielle : elle ne sert qu'à forcer la selection d'actions dans le plan. C'est pourquoi elle n'est qu'un sous problème de la réparation de plan. Je propose une réparation de plan paar injection de contraintes. Dans un premier temps seules les contraintes de Ramirez serons considérées. On prends le plan observé et on tente de le fusioner avec le plan inféré. On peut ainsi dirrectement compter le nombre d'incohérences. Ainsi le plan poura se difféérencier de celui de Ramirez. Si on peut calculer les coûts de fusion de plans on peut aussi calculer des coeficients de correlation entre plusieurs plans (buts) et ainsi reconnaître les multi-buts.
+
+## Fusion de plans
+
+La fusion de plan est utilisée en collaboration et multi-agent (tout comme POP). On retrouve ainsi des papiers traitant de coopération robotique [@gravot_extension_2001, @alami_multi-robot_1995]. Dans notre cas on peut faire en sorte que le plan calculé est le  plan nominal. On lui attribue la personne observée comme effecteur. On observe les actions de la personnes et on fusione les plans dynamiquement. Ensuite on trouve par correlation/différence les plans les plus plausibles. Ces plans vont être notre prédiction. L'intérêt en robotique est que cela permet de faire de la prise de décisions dynamique. Si l'ensemble de plans les plus plausibles commence à se dégrader (ou a tarder) on peut alors demander à la personne si elle a besoin d'assistance. Si l'accord est donné on affecte les étapes réstantes qui sont réalisable par le robot au robot et on utilise un autre module pour les effectuer. On continue les observations même si la prédiction est en pause jusqu'à réalisation du but (puisqu'il a été confirmé par la personne). Les observations permettent de connaître les actions qui ont été entreprise par la personne afin de ne pas les refaire. On continue donc de fusioner le plan inféré et observé en temps réel.
+
+## Corrélation de plans
+
+Dans certains cas on a pas besion de fusionner le plan. On peut simplement chercher la ressemblance ou la cohérence entre deux plans. Il est alors plus rapide de donner une solution approximative en faisant de la correlation. Pour réaliser ceci on devra tester plusieurs solutions de correlation entre elles afin de trouver la meilleure. On peut également utiliser une méthode de machine learning en utilisant la fusion de plan réel comme base d'apprentissage. Ainsi on peut lancer l'outil sur de nombreuses simulations afin d'obtenir une estimation bien plus fiable lors de la reconnaissance d'intentions. Ceci permet aussi de reconnaitre les cas ou plusieurs but sont poursuivit. Cette méthode se rapproche des solutions purement Bayesiennes proposé par la litérature. Je ne suis pas parvenu à trouver des travaux sur le sujet bien que je suis persouadé de leur existance.
+
+# Reférences

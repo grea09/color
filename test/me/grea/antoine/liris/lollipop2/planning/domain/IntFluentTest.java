@@ -5,13 +5,11 @@
  */
 package me.grea.antoine.liris.lollipop2.planning.domain;
 
+import org.junit.*;
+
 import java.util.Set;
+
 import static me.grea.antoine.utils.Collections.set;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
