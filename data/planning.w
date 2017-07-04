@@ -1,11 +1,7 @@
-//-- title: Definitions for automated planning --
 
-//-> "problem.w";
-
-Fluent:Statement;
-Action:(name::String, pre::Fluent{}, eff::Fluent{});
-Link:(source::Action, cause::Fluent{}, target::Action);
-Plan:Link{};
-
-Domain:Action{};
-Problem:(initial::Fluent{}, goal::Fluent{}, domain::Domain, solution::Plan);
+Expression/Fluent;
+Action : (pre::Fluent, eff::Fluent, cost::Integer);
+Link : (source:Action, target:Action, cause:Fluent{});
+Plan: Link{};
+Domain: Action{};
+Problem : (initial::Action, goal::Action, domain::Domain, plan::Plan);

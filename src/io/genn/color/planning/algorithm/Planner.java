@@ -9,7 +9,7 @@ import io.genn.color.planning.domain.Fluent;
 import io.genn.color.planning.flaw.Agenda;
 import io.genn.color.planning.flaw.Flaw;
 import io.genn.color.planning.problem.Problem;
-import me.grea.antoine.utils.Log;
+import me.grea.antoine.utils.log.Log;
 
 /**
  *

@@ -6,11 +6,11 @@
 package io.genn.color.planning.problem;
 
 import java.util.Objects;
-import io.genn.color.graph.Edge;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Fluent;
 import io.genn.color.planning.domain.IntFluent;
 import io.genn.color.planning.domain.State;
+import me.grea.antoine.utils.graph.Edge;
 
 /**
  *

@@ -5,10 +5,9 @@
  */
 package io.genn.color.planning.problem;
 
-import io.genn.color.graph.Edge;
-import io.genn.color.graph.Graph;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Fluent;
+import me.grea.antoine.utils.graph.Graph;
 
 /**
  *
