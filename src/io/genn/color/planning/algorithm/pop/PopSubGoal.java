@@ -5,11 +5,6 @@
  */
 package io.genn.color.planning.algorithm.pop;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Fluent;
 import io.genn.color.planning.domain.State;
@@ -17,6 +12,10 @@ import io.genn.color.planning.flaw.Flaw;
 import io.genn.color.planning.flaw.Resolver;
 import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.planning.problem.Problem;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -57,7 +56,7 @@ public class PopSubGoal<F extends Fluent> extends Flaw<F> {
     }
 
     public Set<PopSubGoal<F>> related(Action<F> annoyer) {
-        State<F> open = new State<>(annoyer.pre, false, false);
+        State<F> open = new State<>(annoyer.pre, false);
         if (problem.plan.containsVertex(annoyer)) {
             for (CausalLink<F> link : problem.plan.incomingEdgesOf(annoyer)) {
                 open.removeAll(link.causes);

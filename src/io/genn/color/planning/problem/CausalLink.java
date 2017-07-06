@@ -8,8 +8,8 @@ package io.genn.color.planning.problem;
 import java.util.Objects;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Fluent;
-import io.genn.color.planning.domain.IntFluent;
 import io.genn.color.planning.domain.State;
+import java.util.Collections;
 import me.grea.antoine.utils.graph.Edge;
 
 /**
@@ -29,7 +29,7 @@ public class CausalLink<F extends Fluent> implements Edge<Action<F>> {
     public CausalLink(Action<F> source, Action<F> target, State<F> causes) {
         this.source = source;
         this.target = target;
-        this.causes = new State<>(causes, false, true);
+        this.causes = new State<>(Collections.unmodifiableSet(causes), false);
     }
 
     public CausalLink(CausalLink<F> other) {
@@ -94,13 +94,13 @@ public class CausalLink<F extends Fluent> implements Edge<Action<F>> {
     }
 
     public CausalLink<F> remove(F fluent) {
-        State<F> state = new State<>(causes, false, false);
+        State<F> state = new State<>(causes, false);
         state.remove(fluent);
         return new CausalLink<>(this, state);
     }
     
     public CausalLink<F> add(F fluent) {
-        State<F> state = new State<>(causes, false, false);
+        State<F> state = new State<>(causes, false);
         state.add(fluent);
         return new CausalLink<>(this, state);
     }

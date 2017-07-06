@@ -32,12 +32,6 @@ public class IntFluent implements Fluent<IntFluent>{
     }
 
     @Override
-    public IntFluent instanciate(IntFluent lesser) {
-        assert(unifies(lesser));
-        return this;
-    }
-
-    @Override
     public int hashCode() {
         return value;
     }

@@ -5,133 +5,135 @@
  */
 package io.genn.color.planning.domain;
 
-import static java.lang.Math.max;
+import io.genn.world.Flow;
+import io.genn.world.data.Entity;
+import io.genn.world.data.Store;
+import static io.genn.world.data.Types.STATEMENT;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
-import me.grea.antoine.utils.collection.Collections;
+import me.grea.antoine.utils.log.Log;
+import me.grea.antoine.utils.text.Formater;
 
 /**
  *
  * @author antoine
  * @param <F>
  */
-public class State<F extends Fluent> extends HashSet<F> implements Set<F> {
+public class State<F extends Fluent> extends HashSet<F> {
 
-    public final boolean closed;
-    public final boolean unmodifiable;
+	public final boolean closed;
 
-    public State() {
-        this(false, true);
-    }
+	public State() {
+		this(false);
+	}
 
-    public State(boolean closed) {
-        this(closed, true);
-    }
+	public State(boolean closed) {
+		this.closed = closed;
+	}
 
-    public State(boolean closed, boolean unmodifiable) {
-        this.closed = closed;
-        this.unmodifiable = unmodifiable;
-    }
+	public State(Entity collection, Flow flow, Class<? extends F> clas) {
+		Store s = flow.store;
+		if (collection != null) {
+			Collection<Entity> fluents = s.value(collection);
+			for (Entity fluent : fluents) {
+				assert (STATEMENT.equals(s.type(fluent)));
+				F f = null;
+				try {
+					f = clas.getConstructor(Entity.class, Flow.class).
+							newInstance(
+									fluent, flow);
+				} catch (NoSuchMethodException | SecurityException
+						| InstantiationException | IllegalAccessException
+						| IllegalArgumentException | InvocationTargetException ex) {
+					Log.f(ex);
+				}
 
-    public State(F... array) {
-        this(Arrays.asList(array), false, true);
-    }
-    
-    public State(Collection<? extends F> c) {
-        this(c, false, true);
-    }
+				if (!contradicts(f)) {
+					add(f);
+				}
+			}
+		}
 
-    public State(Collection<? extends F> c, boolean closed) {
-        this(c, closed, true);
-    }
-    
-    public State(Collection<? extends F> c, boolean closed, boolean unmodifiable) {
-        super(c);
-        for (F f : c) {
-            if (contradicts(f)) {
-                remove(f);
-            }
-        }
+		this.closed = false;
+	}
 
-        this.closed = closed;
-        this.unmodifiable = unmodifiable;
-    }
+	public State(F... array) {
+		this(Arrays.asList(array), false);
+	}
 
-    public State(State other) {
-        super(other);
-        this.closed = other.closed;
-        this.unmodifiable = other.unmodifiable;
-    }
+	public State(Collection<? extends F> c) {
+		this(c, false);
+	}
 
-    @Override
-    public boolean add(F e) {
-        if (unmodifiable || contradicts(e)) {
-            return false;
-        }
-        return super.add(e);
-    }
+	public State(Collection<? extends F> c, boolean closed) {
+		super(c);
+		for (F f : c) {
+			if (contradicts(f)) {
+				remove(f);
+			}
+		}
 
-    @Override
-    public boolean contains(Object o) {
-        if (closed && ((F) o).negative() && !contradicts((F) o)) {
-            return true;
-        }
-        return super.contains(o);
-    }
+		this.closed = closed;
+	}
 
-    @Override
-    public void clear() {
-        if (!unmodifiable) {
-            super.clear(); //To change body of generated methods, choose Tools | Templates.
-        }
-    }
+	public State(State other) {
+		super(other);
+		this.closed = other.closed;
+	}
 
-    @Override
-    public boolean remove(Object o) {
-        if (unmodifiable) {
-            return false;
-        }
-        return super.remove(o); //To change body of generated methods, choose Tools | Templates.
-    }
+	@Override
+	public boolean add(F e) {
+		if (contradicts(e)) {
+			return false;
+		}
+		return super.add(e);
+	}
 
-    public boolean contradicts(F fluent) {
-        if(super.contains(fluent))
-            return false;
-        if(closed && !fluent.negative())
-            return true;
-        for (F counter : this) { //FIXME : optimize this when further changes are made
-            if (counter.contradicts(fluent)) {
-                return true;
-            }
-        }
-        return false;
-    }
+	@Override
+	public boolean contains(Object o) {
+		if (closed && ((F) o).negative() && !contradicts((F) o)) {
+			return true;
+		}
+		return super.contains(o);
+	}
 
-    public boolean unifies(F fluent) {
-        if(contains(fluent))
-            return true;
-        for (F agree : this) { //FIXME : optimize this when further changes are made
-            if (agree.unifies(fluent)) {
-                return true;
-            }
-            if (agree.contradicts(fluent)) {
-                return false;
-            }
-        }
-        if(closed && fluent.negative())
-            return true;
-        return false;
-    }
+	public boolean contradicts(F fluent) {
+		if (super.contains(fluent)) {
+			return false;
+		}
+		if (closed && !fluent.negative()) {
+			return true;
+		}
+		for (F counter : this) { //FIXME : optimize this when further changes are made
+			if (counter.contradicts(fluent)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    @Override
-    public String toString() {
-        String accumulator = "";
-        accumulator = (stream().map((fluent) -> fluent + ",").reduce(accumulator, String::concat));
-        return "{" + accumulator.substring(0,max(0,accumulator.length()-1)) + '}';
-    }
-    
-    
+	public boolean unifies(F fluent) {
+		if (contains(fluent)) {
+			return true;
+		}
+		for (F agree : this) { //FIXME : optimize this when further changes are made
+			if (agree.unifies(fluent)) {
+				return true;
+			}
+			if (agree.contradicts(fluent)) {
+				return false;
+			}
+		}
+		if (closed && fluent.negative()) {
+			return true;
+		}
+		return false;
+	}
 
+	@Override
+	public String toString() {
+		return Formater.toString(this);
+	}
 }

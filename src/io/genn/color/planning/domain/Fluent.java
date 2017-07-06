@@ -12,7 +12,6 @@ package io.genn.color.planning.domain;
 public interface Fluent<F extends Fluent> {
     public boolean unifies(F lesser);
     public boolean contradicts(F counter); // imply that it doesn't unifies
-    public F instanciate(F lesser); //must unifies 
     public F negate(); //must contradicts 
     public boolean negative();
 }

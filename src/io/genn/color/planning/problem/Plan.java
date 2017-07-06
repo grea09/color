@@ -13,22 +13,23 @@ import me.grea.antoine.utils.graph.Graph;
  *
  * @author antoine
  */
-public class Plan<F extends Fluent> extends Graph<Action<F>, CausalLink<F> > {
-    
-    public Plan() {
-        super(CausalLink.class, true); // Java is an asshole with type errasure !
-    }
-    
-    public Plan(Graph other) {
-        super(other);
-    }
+public class Plan<F extends Fluent> extends Graph<Action<F>, CausalLink<F>> {
 
-    @Override
-    public String toString() {
-        String edges = "";
-        return edgeSet().stream().map((edge) -> "\t" + edge + "\n").reduce(edges, String::concat);
-    }
-    
-    
-    
+	public Plan() {
+		super(CausalLink.class, true); // Java is a %#$*? with type errasure !
+	}
+
+	public Plan(Graph other) {
+		super(other);
+	}
+
+	@Override
+	public String toString() {
+		String edges = "";
+		return edgeSet().stream().map(
+				(edge) ->
+				"\t" + edge + "\n")
+				.reduce(edges, String::concat);
+	}
+
 }

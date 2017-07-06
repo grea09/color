@@ -5,14 +5,14 @@
  */
 package io.genn.color;
 
+import io.genn.color.planning.algorithm.pop.Pop;
+import io.genn.color.planning.domain.Action;
+import io.genn.color.planning.domain.Domain;
+import io.genn.color.planning.domain.WorldFluent;
+import io.genn.color.planning.problem.Problem;
 import io.genn.world.CompilationException;
-import io.genn.world.Flow;
 import io.genn.world.World;
-import io.genn.world.data.Entity;
-import io.genn.world.data.Store;
 import java.io.FileNotFoundException;
-import java.util.HashSet;
-import java.util.Set;
 import me.grea.antoine.utils.log.Log;
 
 /**
@@ -26,26 +26,32 @@ public class Color {
 	 */
 	public static void main(String[] args) {
 		try {
-			Log.i("Opening the world");
+			Log.i("Opening the world...");
 			World world = new World("data/blocks.w");
 			Log.i("Compiling...");
 			world.compile();
-			Log.i("Tests begins");
-			test(world.flow);
+			Log.i("Parsing begins !");
+			Domain<WorldFluent> domain = new Domain<>(world.flow,
+													  WorldFluent.class);
+			Log.i("Domain :\n" + domain);
+			Action<WorldFluent> initial = null;
+			Action<WorldFluent> goal = null;
+			for (Action<WorldFluent> action : domain) {
+				if (action.goal()) {
+					goal = action;
+				}
+				if (action.initial()) {
+					initial = action;
+				}
+			}
+			domain.remove(initial);
+			domain.remove(goal);
+
+			Problem<WorldFluent> problem = new Problem(initial, goal, domain);
+			Pop<WorldFluent> pop = new Pop<>(problem);
+			pop.solve();
 		} catch (FileNotFoundException | CompilationException ex) {
 			Log.f(ex);
 		}
-	}
-	
-	private static void test(Flow flow) {
-		Store s = flow.store;
-		Set<Entity> actions = new HashSet<>();
-		for (Entity statement : s.querry(null, flow.interpreter.named("pre"))) {
-			actions.add(flow.store.subject(statement));
-		}
-		for (Entity statement : s.querry(null, flow.interpreter.named("eff"))) {
-			actions.add(s.subject(statement));
-		}
-		Log.i("Fetched actions " + actions);
 	}
 }

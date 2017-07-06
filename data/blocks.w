@@ -12,8 +12,10 @@ stack(x, y) eff (~ held true, x on y);
 unstack(x, y) pre (~ held true, x on y);
 unstack(x, y) eff (x held true, ~ on y);
 
-init : (~ on a, ~ on b, ~ on c, ~ on d, 
+init eff (~ on a, ~ on b, ~ on c, ~ on d, 
 		a on table, b on table, c on table, d on table,
 		~ held true);
 
-goal : (d on c, c on b, b on a);
+goal pre (d on c, c on b, b on a);
+
+//TODO parse plans for methods in HTN
