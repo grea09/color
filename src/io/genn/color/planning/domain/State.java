@@ -5,14 +5,13 @@
  */
 package io.genn.color.planning.domain;
 
-import io.genn.world.Flow;
-import io.genn.world.data.Entity;
-import io.genn.world.data.Store;
-import static io.genn.world.data.Types.STATEMENT;
 import java.lang.reflect.InvocationTargetException;
+import java.security.spec.ECField;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import me.grea.antoine.utils.log.Log;
 import me.grea.antoine.utils.text.Formater;
 
@@ -31,32 +30,6 @@ public class State<F extends Fluent> extends HashSet<F> {
 
 	public State(boolean closed) {
 		this.closed = closed;
-	}
-
-	public State(Entity collection, Flow flow, Class<? extends F> clas) {
-		Store s = flow.store;
-		if (collection != null) {
-			Collection<Entity> fluents = s.value(collection);
-			for (Entity fluent : fluents) {
-				assert (STATEMENT.equals(s.type(fluent)));
-				F f = null;
-				try {
-					f = clas.getConstructor(Entity.class, Flow.class).
-							newInstance(
-									fluent, flow);
-				} catch (NoSuchMethodException | SecurityException
-						| InstantiationException | IllegalAccessException
-						| IllegalArgumentException | InvocationTargetException ex) {
-					Log.f(ex);
-				}
-
-				if (!contradicts(f)) {
-					add(f);
-				}
-			}
-		}
-
-		this.closed = false;
 	}
 
 	public State(F... array) {
@@ -130,6 +103,25 @@ public class State<F extends Fluent> extends HashSet<F> {
 			return true;
 		}
 		return false;
+	}
+
+	public <E> Map<E, E> unify(F fluent) {
+		if (contains(fluent)) {
+			return new HashMap<>();
+		}
+		for (F agree : this) { //FIXME : optimize this when further changes are made
+			Map<E, E> unify = agree.unify(fluent);
+			if (unify != null) {
+				return unify;
+			}
+			if (agree.contradicts(fluent)) {
+				return null;
+			}
+		}
+		if (closed && fluent.negative()) {
+			return new HashMap<>();
+		}
+		return null;
 	}
 
 	@Override

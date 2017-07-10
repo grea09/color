@@ -9,9 +9,11 @@ import io.genn.color.planning.algorithm.pop.Pop;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Domain;
 import io.genn.color.planning.domain.WorldFluent;
+import io.genn.color.planning.domain.WorldControl;
 import io.genn.color.planning.problem.Problem;
 import io.genn.world.CompilationException;
 import io.genn.world.World;
+import io.genn.world.data.Entity;
 import java.io.FileNotFoundException;
 import me.grea.antoine.utils.log.Log;
 
@@ -29,14 +31,16 @@ public class Color {
 			Log.i("Opening the world...");
 			World world = new World("data/blocks.w");
 			Log.i("Compiling...");
+			Log.ENABLED = false;
 			world.compile();
-			Log.i("Parsing begins !");
-			Domain<WorldFluent> domain = new Domain<>(world.flow,
-													  WorldFluent.class);
-			Log.i("Domain :\n" + domain);
-			Action<WorldFluent> initial = null;
-			Action<WorldFluent> goal = null;
-			for (Action<WorldFluent> action : domain) {
+			Log.ENABLED = true;
+			Log.i("It begins !");
+			WorldControl worldControl = new WorldControl(world.flow);
+			Domain domination = worldControl.domain();
+			Log.i("We have :\n" + domination);
+			Action<WorldFluent, Entity> initial = null;
+			Action<WorldFluent, Entity> goal = null;
+			for (Action<WorldFluent, Entity> action : domination) {
 				if (action.goal()) {
 					goal = action;
 				}
@@ -44,12 +48,13 @@ public class Color {
 					initial = action;
 				}
 			}
-			domain.remove(initial);
-			domain.remove(goal);
+			domination.remove(initial);
+			domination.remove(goal);
 
-			Problem<WorldFluent> problem = new Problem(initial, goal, domain);
-			Pop<WorldFluent> pop = new Pop<>(problem);
+			Problem problem = new Problem(initial, goal, domination);
+			Pop pop = new Pop(problem);
 			pop.solve();
+			Log.i(problem.plan);
 		} catch (FileNotFoundException | CompilationException ex) {
 			Log.f(ex);
 		}

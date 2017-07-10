@@ -22,37 +22,20 @@ import me.grea.antoine.utils.text.Formater;
  * @author antoine
  * @param <F>
  */
-public class Domain<F extends Fluent> extends HashSet<Action<F>> {
+public class Domain extends HashSet<Action> {
 
     public Domain() {
     }
 	
-    public Domain(Flow flow, Class<? extends F> clas) {
-		Store s = flow.store;
-		Map<Entity, Entity> pres = new HashMap<>();
-		Map<Entity, Entity> effs = new HashMap<>();
-		
-		// FIXME UGH ! So UGLY !
-		for (Entity statement : s.querry(null, flow.interpreter.named("pre"))) { 
-			pres.put(s.subject(statement), s.object(statement));
-		}
-		for (Entity statement : s.querry(null, flow.interpreter.named("eff"))) {
-			effs.put(s.subject(statement), s.object(statement));
-		}
-		for (Entity action : Collections.union(pres.keySet(), effs.keySet())) {
-			add(new Action<>(action, pres.get(action), effs.get(action), flow, clas));
-		}
-    }
-    
-	
 
-    public Domain(Collection<? extends Action<F>> c) {
+
+    public Domain(Collection<? extends Action> c) {
         super(c);
     }
     
     @Override
     public String toString() {
-        return Formater.toString(this, "\n");
+        return Formater.toString(this, ", ");
     }
     
 }

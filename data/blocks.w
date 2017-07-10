@@ -1,21 +1,30 @@
-"planning.w";
+//"planning.w";
 
-pickUp(x) pre (~ on x, x on table, ~ held true);
-pickUp(x) eff (x ~(on) table, x held true);
+//on :: (!(Block) -> !(Block));
 
-putDown(x) pre (x held true);
-putDown(x) eff (~ held true, x on table);
+(! on !, held(!), down(_)) :: Fluent;
 
-stack(x, y) pre (x held true, ~ on y);
-stack(x, y) eff (~ held true, x on y);
+pickUp(x) pre (~ on x, down(x), held(~));
+pickUp(x) eff (~(down(x)), held(x));
 
-unstack(x, y) pre (~ held true, x on y);
-unstack(x, y) eff (x held true, ~ on y);
+putDown(x) pre (held(x));
+putDown(x) eff (held(~), down(x));
 
-init eff (~ on a, ~ on b, ~ on c, ~ on d, 
-		a on table, b on table, c on table, d on table,
-		~ held true);
+stack(x, y) pre (held(x), ~ on y);
+stack(x, y) eff (held(~), x on y);
 
-goal pre (d on c, c on b, b on a);
+unstack(x, y) pre (held(~), x on y);
+unstack(x, y) eff (held(x), ~ on y);
+
+//init eff (~ on a, ~ on b, ~ on c, ~ on d, 
+//		down(a), down(b), down(c), down(d),
+//		held(~));
+
+init eff (~ on a, ~ on b, down(a), down(b), held(~));
+
+//goal pre (d on c, c on b, b on a);
+
+goal pre (b on a);
+
 
 //TODO parse plans for methods in HTN

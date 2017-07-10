@@ -15,10 +15,10 @@ import me.grea.antoine.utils.log.Log;
  *
  * @author antoine
  */
-public abstract class Planner<F extends Fluent> {
+public abstract class Planner {
     
-    protected final Problem<F> problem;
-    protected Agenda<F> agenda;
+    protected final Problem problem;
+    protected Agenda agenda;
 
     public Planner(Problem problem) {
         this.problem = problem;
@@ -33,8 +33,8 @@ public abstract class Planner<F extends Fluent> {
         }
 
         try {
-            Flaw<F> fail = refine();
-            Log.w("Failure : flaw " + fail + " is unsolvable !");
+            Flaw fail = refine();
+            Log.e("Failure : flaw " + fail + " is unsolvable !");
             return false;
         } catch (Success ex) {
             Log.i("Success !");
@@ -42,6 +42,6 @@ public abstract class Planner<F extends Fluent> {
         }
     }
     
-    public abstract Flaw<F> refine() throws Success;
+    public abstract Flaw refine() throws Success;
     
 }

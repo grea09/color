@@ -5,17 +5,16 @@
  */
 package io.genn.color.planning.domain;
 
-import io.genn.world.Flow;
-import io.genn.world.data.Entity;
-import io.genn.world.data.Store;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
  *
  * @author antoine
  */
-public class Action<F extends Fluent> {
+public class Action<F extends Fluent<F, E>, E> {
 
 	public static enum Flag {
 		NORMAL('A'),
@@ -49,38 +48,25 @@ public class Action<F extends Fluent> {
 	}
 
 	public final String name;
-	public final Entity image;
-	public final List<Entity> parameters;
+	public final E image;
+	public final List<E> parameters;
 	public final State<F> pre;
 	public final State<F> eff;
 	public final Flag flag;
-	private final Flow flow;
-	private final Store s;
 
-	public Action(State<F> pre, State<F> eff, Flag flag, Entity image, Flow flow) {
+	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
+			Flag flag, E image) {
 		this.pre = new State(pre);
 		this.eff = new State(eff);
 		this.flag = flag;
 		this.image = image;
-		this.flow = flow;
-		this.s = flow.store;
-		this.name = s.name(image);
-		this.parameters = s.signature(image);
-	}
-	
-	public Action(Entity image, Entity pre, Entity eff, Flow flow, Class<? extends F> clas) {
-		this.image = image;
-		this.flow = flow;
-		this.s = flow.store;
-		this.name = s.name(image);
-		this.parameters = s.signature(image);
-		this.flag = name.equals("init") ? Flag.INIT : (name.equals("goal") ? Flag.GOAL : Flag.NORMAL);
-		this.pre = new State(pre, flow, clas);
-		this.eff = new State(eff, flow, clas);
+		this.name = name;
+		this.parameters = parameters;
 	}
 
-	public Action(Action other) {
-		this(other.pre, other.eff, other.flag, other.image, other.flow);
+	public Action(Action<F, E> other) {
+		this(other.name, other.parameters, other.pre, other.eff, other.flag,
+			 other.image);
 	}
 
 	@Override
@@ -91,6 +77,38 @@ public class Action<F extends Fluent> {
 //				(pre.isEmpty() ? "" : "pre " + pre) +
 //				(!pre.isEmpty() && !eff.isEmpty() ? ", " : "") +
 //				(eff.isEmpty() ? "" : "eff " + eff) + ")");
+	}
+
+	public Action<F, E> instanciate(F fluent, State<F> in) {
+		Map<E, E> unify = in.unify(fluent);
+		if (unify == null) {
+			return null;
+		}
+		if (unify.isEmpty()) {
+			return this;
+		}
+		List<E> newParameters = new ArrayList<>();
+		boolean changed = false;
+		for (E parameter : parameters) {
+			if (unify.containsKey(parameter)) {
+				newParameters.add(unify.get(parameter));
+				changed = true;
+			} else {
+				newParameters.add(parameter);
+			}
+		}
+		if (changed) {
+			return fluent.control().instanciate(this, newParameters);
+		}
+		return this;
+	}
+
+	public Action<F, E> instanciateFor(F toProvide) {
+		return instanciate(toProvide, eff);
+	}
+
+	public Action<F, E> instanciateFrom(F provided) {
+		return instanciate(provided, pre);
 	}
 
 	public boolean special() {
@@ -126,7 +144,7 @@ public class Action<F extends Fluent> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Action<?> other = (Action<?>) obj;
+		final Action<?, ?> other = (Action<?, ?>) obj;
 		return image.equals(other.image);
 //		if (!Objects.equals(this.pre, other.pre)) {
 //			return false;

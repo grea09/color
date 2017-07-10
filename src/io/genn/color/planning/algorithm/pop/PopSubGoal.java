@@ -21,76 +21,78 @@ import java.util.Set;
  *
  * @author antoine
  */
-public class PopSubGoal<F extends Fluent> extends Flaw<F> {
+public class PopSubGoal<F extends Fluent<F, ?>> extends Flaw<F> {
 
-    public PopSubGoal(Problem<F> problem) {
-        super(null, null, problem);
-    }
+	public PopSubGoal(Problem problem) {
+		super(null, null, problem);
+	}
 
-    public PopSubGoal(F fluent, Action<F> needer, Problem<F> problem) {
-        super(fluent, needer, problem);
-    }
+	public PopSubGoal(F fluent, Action<F, ?> needer, Problem problem) {
+		super(fluent, needer, problem);
+	}
 
-    @Override
-    public Deque<Resolver<F>> resolvers() {
-        Deque<Resolver<F>> resolvers = new ArrayDeque<>();
-        if (problem.initial.eff.unifies(fluent)) {
-            resolvers.add(new Resolver<>(problem.initial, needer, fluent));
-        }
-        for (Action<F> step : problem.plan.vertexSet()) {
-            if (step.eff.unifies(fluent)) {
-                resolvers.add(new Resolver<>(step, needer, fluent));
-            }
-        }
-        for (Action<F> action : problem.domain) {
-            if (action.eff.unifies(fluent)) {
-                resolvers.add(new Resolver<>(action, needer, fluent));
-            }
-        }
-        return resolvers;
-    }
+	@Override
+	public Deque<Resolver> resolvers() {
+		Deque<Resolver> resolvers = new ArrayDeque<>();
+		fill(problem.initial, resolvers);
+		for (Action<F, ?> step : problem.plan.vertexSet()) {
+			if (!step.special()) {
+				fill(step, resolvers);
+			}
+		}
+		for (Action<F, ?> action : problem.domain) {
+			fill(action, resolvers);
+		}
+		return resolvers;
+	}
 
-    @Override
-    public Set<PopSubGoal<F>> related(Resolver<F> resolver) {
-        return related(resolver.source);
-    }
+	public void fill(Action<F, ?> step, Deque<Resolver> resolvers) {
+		Action<F, ?> instanciateFor = step.instanciateFor(fluent);
+		if (instanciateFor != null) {
+			resolvers.add(new Resolver<>(instanciateFor, needer, fluent));
+		}
+	}
 
-    public Set<PopSubGoal<F>> related(Action<F> annoyer) {
-        State<F> open = new State<>(annoyer.pre, false);
-        if (problem.plan.containsVertex(annoyer)) {
-            for (CausalLink<F> link : problem.plan.incomingEdgesOf(annoyer)) {
-                open.removeAll(link.causes);
-            }
-        }
-        else {
-            return new HashSet<>();
-        }
-        Set<PopSubGoal<F>> related = new HashSet<>();
-        for (F f : open) {
-            related.add(new PopSubGoal<>(f, annoyer, problem));
-        }
-        return related;
-    }
+	@Override
+	public Set<PopSubGoal<F>> related(Resolver resolver) {
+		return related(resolver.source);
+	}
 
-    @Override
-    public Set<PopSubGoal<F>> flaws() {
-        Set<PopSubGoal<F>> flaws = new HashSet<>();
-        for (Action<F> action : problem.plan.vertexSet()) {
-            flaws.addAll(related(action));
-        }
-        return flaws;
-    }
+	public Set<PopSubGoal<F>> related(Action<F, ?> annoyer) {
+		State<F> open = new State<>(annoyer.pre, false);
+		if (problem.plan.containsVertex(annoyer)) {
+			for (CausalLink link : problem.plan.incomingEdgesOf(annoyer)) {
+				open.removeAll(link.causes);
+			}
+		} else {
+			return new HashSet<>();
+		}
+		Set<PopSubGoal<F>> related = new HashSet<>();
+		for (F f : open) {
+			related.add(new PopSubGoal<>(f, annoyer, problem));
+		}
+		return related;
+	}
 
-    @Override
-    public boolean invalidated(Resolver<F> resolver) {
-        return resolver.target == needer && resolver.fluent != null && fluent.unifies(resolver.fluent);//FIXME In Lollipop we need negative too
-    }
+	@Override
+	public Set<PopSubGoal<F>> flaws() {
+		Set<PopSubGoal<F>> flaws = new HashSet<>();
+		for (Action<F, ?> action : problem.plan.vertexSet()) {
+			flaws.addAll(related(action));
+		}
+		return flaws;
+	}
 
-    @Override
-    public String toString() {
-        return "<needer " + needer + ", fluent " + fluent + ">";
-    }
-    
-    
+	@Override
+	public boolean invalidated(Resolver resolver) {
+		return resolver.target == needer && resolver.fluent != null && fluent.
+				unifies((F) resolver.fluent);
+		//FIXME In Lollipop we need negative too
+	}
+
+	@Override
+	public String toString() {
+		return fluent + " -> " + needer;
+	}
 
 }

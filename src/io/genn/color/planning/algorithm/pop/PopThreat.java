@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Fluent;
+import io.genn.color.planning.domain.State;
 import io.genn.color.planning.flaw.Flaw;
 import io.genn.color.planning.flaw.Resolver;
 import io.genn.color.planning.problem.CausalLink;
@@ -20,26 +21,25 @@ import static me.grea.antoine.utils.collection.Collections.union;
 /**
  *
  * @author antoine
- * @param <F>
  */
-public class PopThreat<F extends Fluent> extends Flaw<F> {
+public class PopThreat extends Flaw {
 
-    private final CausalLink<F> threatened;
-    private final Action<F> breaker;
+    private final CausalLink threatened;
+    private final Action breaker;
 
-    public PopThreat(Problem<F> problem) {
+    public PopThreat(Problem problem) {
         this(null, null, null, problem);
     }
 
-    public PopThreat(F fluent, Action<F> breaker, CausalLink<F> threatened, Problem<F> problem) {
+    public <F extends Fluent<F, ?>> PopThreat(F fluent, Action<F, ?> breaker, CausalLink threatened, Problem problem) {
         super(fluent, threatened == null ? null : threatened.target(), problem);
         this.breaker = breaker;
         this.threatened = threatened;
     }
 
     @Override
-    public Deque<Resolver<F>> resolvers() {
-        Deque<Resolver<F>> resolvers = new ArrayDeque<>();
+    public Deque<Resolver> resolvers() {
+        Deque<Resolver> resolvers = new ArrayDeque<>();
         if (threatened.target() != problem.goal) {
 //            Log.w("Can't demote after goal step !");
             resolvers.add(new Resolver<>(threatened.target(), breaker));
@@ -52,14 +52,14 @@ public class PopThreat<F extends Fluent> extends Flaw<F> {
     }
 
     @Override
-    public Set<PopThreat<F>> related(Resolver<F> resolver) {
+    public Set<PopThreat> related(Resolver resolver) {
         return union(related(problem.plan.edge(resolver.source, resolver.target)),
                 related(resolver.source));
     }
 
-    public Set<PopThreat<F>> related(CausalLink<F> fragile) {
-        Set<PopThreat<F>> related = new HashSet<>();
-        for (Action<F> action : problem.plan.vertexSet()) {
+    public Set<PopThreat> related(CausalLink fragile) {
+        Set<PopThreat> related = new HashSet<>();
+        for (Action action : problem.plan.vertexSet()) {
             if (action != problem.initial && action != problem.goal) {
                 related.addAll(related(fragile, action));
             }
@@ -67,44 +67,44 @@ public class PopThreat<F extends Fluent> extends Flaw<F> {
         return related;
     }
 
-    public Set<PopThreat<F>> related(Action<F> breaker) {
-        Set<PopThreat<F>> related = new HashSet<>();
-        for (CausalLink<F> link : problem.plan.edgeSet()) {
+    public Set<PopThreat> related(Action breaker) {
+        Set<PopThreat> related = new HashSet<>();
+        for (CausalLink link : problem.plan.edgeSet()) {
             related.addAll(related(link, breaker));
         }
         return related;
     }
 
-    public Set<PopThreat<F>> related(CausalLink<F> fragile, Action<F> breaker) {
-        Set<PopThreat<F>> related = new HashSet<>();
-        for (F cause : fragile.causes) {
+    public <F extends Fluent<F, ?>> Set<PopThreat> related(CausalLink fragile, Action<F, ?> breaker) {
+        Set<PopThreat> related = new HashSet<>();
+        for (F cause : (State<F>) fragile.causes) {
             if (breaker.eff.contradicts(cause) && breaker != fragile.source() && breaker != fragile.target()
                     && (!problem.plan.reachable(fragile.target(), breaker)
                     && !problem.plan.reachable(breaker, fragile.source()))) {
-                related.add(new PopThreat<>(cause, breaker, fragile, problem));
+                related.add(new PopThreat(cause, breaker, fragile, problem));
             }
         }
         return related;
     }
 
     @Override
-    public Set<PopThreat<F>> flaws() {
-        Set<PopThreat<F>> flaws = new HashSet<>();
-        for (CausalLink<F> link : problem.plan.edgeSet()) {
+    public Set<PopThreat> flaws() {
+        Set<PopThreat> flaws = new HashSet<>();
+        for (CausalLink link : problem.plan.edgeSet()) {
             flaws.addAll(related(link));
         }
         return flaws;
     }
 
     @Override
-    public boolean invalidated(Resolver<F> resolver) {
+    public boolean invalidated(Resolver resolver) {
         return (problem.plan.reachable(threatened.target(), resolver.source) && problem.plan.reachable(resolver.target, breaker))
                 || (problem.plan.reachable(breaker, resolver.source) && problem.plan.reachable(resolver.target, threatened.source())); //FIXME Handle negative for LOLLIPOP
     }
     
     @Override
     public String toString() {
-        return "<threatened " + threatened + ", breaker " + breaker + ">";
+        return threatened + " =/= " + breaker;
     }
 
 }

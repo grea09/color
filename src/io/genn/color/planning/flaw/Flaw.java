@@ -6,12 +6,10 @@
 package io.genn.color.planning.flaw;
 
 import java.util.Deque;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Fluent;
-import io.genn.color.planning.problem.Plan;
 import io.genn.color.planning.problem.Problem;
 
 /**
@@ -19,21 +17,21 @@ import io.genn.color.planning.problem.Problem;
  * @author antoine
  * @param <F>
  */
-public abstract class Flaw<F extends Fluent> {
+public abstract class Flaw<F extends Fluent<F, ?>> {
 
     protected final F fluent;
-    protected final Problem<F> problem;
-    protected final Action<F> needer;
+    protected final Problem problem;
+    protected final Action needer;
 
-    public Flaw(F fluent, Action<F> needer, Problem<F> problem) {
+    public Flaw(F fluent, Action<F, ?> needer, Problem problem) {
         this.fluent = fluent;
         this.needer = needer;
         this.problem = problem;
     }
     
-    public abstract Deque<Resolver<F>> resolvers();
-    public abstract Set<? extends Flaw<F>> related(Resolver<F> resolver);
-    public abstract boolean invalidated(Resolver<F> resolver);
+    public abstract Deque<Resolver> resolvers();
+    public abstract Set<? extends Flaw<F>> related(Resolver resolver);
+    public abstract boolean invalidated(Resolver resolver);
     public abstract Set<? extends Flaw<F>> flaws();
 
     @Override

@@ -14,7 +14,7 @@ import io.genn.color.planning.problem.Problem;
  *
  * @author antoine
  */
-public abstract class Agenda<F extends Fluent> extends ArrayList<Flaw<F>> {
+public abstract class Agenda extends ArrayList<Flaw> {
     
     
     protected final Problem problem;
@@ -32,7 +32,7 @@ public abstract class Agenda<F extends Fluent> extends ArrayList<Flaw<F>> {
     }
     
     protected abstract void populate();
-    public abstract Flaw<F> choose();
-    public abstract void related(Resolver<F> resolver);
+    public abstract Flaw choose();
+    public abstract void related(Resolver resolver);
     
 }

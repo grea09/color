@@ -16,37 +16,37 @@ import me.grea.antoine.utils.graph.Edge;
  *
  * @author antoine
  */
-public class CausalLink<F extends Fluent> implements Edge<Action<F>> {
+public class CausalLink implements Edge<Action> {
 
-    private final Action<F> source;
-    private final Action<F> target;
-    public final State<F> causes;
+    private final Action source;
+    private final Action target;
+    public final State causes;
 
-    public CausalLink(Action<F> source, Action<F> target) {
+    public CausalLink(Action source, Action target) {
         this(source, target, new State<>());
     }
 
-    public CausalLink(Action<F> source, Action<F> target, State<F> causes) {
+    public CausalLink(Action source, Action target, State causes) {
         this.source = source;
         this.target = target;
         this.causes = new State<>(Collections.unmodifiableSet(causes), false);
     }
 
-    public CausalLink(CausalLink<F> other) {
+    public CausalLink(CausalLink other) {
         this(other.source, other.target, other.causes);
     }
 
-    public CausalLink(CausalLink<F> other, State<F> newCauses) {
+    public CausalLink(CausalLink other, State newCauses) {
         this(other.source, other.target, newCauses);
     }
 
     @Override
-    public Action<F> source() {
+    public Action source() {
         return source;
     }
 
     @Override
-    public Action<F> target() {
+    public Action target() {
         return target;
     }
 
@@ -75,7 +75,7 @@ public class CausalLink<F extends Fluent> implements Edge<Action<F>> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CausalLink<?> other = (CausalLink<?>) obj;
+        final CausalLink other = (CausalLink) obj;
         if (!Objects.equals(this.source, other.source)) {
             return false;
         }
@@ -90,19 +90,19 @@ public class CausalLink<F extends Fluent> implements Edge<Action<F>> {
 
     @Override
     public String toString() {
-        return "<source " + source + ", causes " + causes + ", target " + target + '>';
+        return source + " =[" + causes + "]=> " + target;
     }
 
-    public CausalLink<F> remove(F fluent) {
+    public <F extends Fluent<F, ?>> CausalLink remove(F fluent) {
         State<F> state = new State<>(causes, false);
         state.remove(fluent);
-        return new CausalLink<>(this, state);
+        return new CausalLink(this, state);
     }
     
-    public CausalLink<F> add(F fluent) {
+    public <F extends Fluent<F, ?>> CausalLink add(F fluent) {
         State<F> state = new State<>(causes, false);
         state.add(fluent);
-        return new CausalLink<>(this, state);
+        return new CausalLink(this, state);
     }
 
 }

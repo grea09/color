@@ -5,13 +5,17 @@
  */
 package io.genn.color.planning.domain;
 
+import java.util.Map;
+
 /**
  *
  * @author antoine
  */
-public interface Fluent<F extends Fluent> {
+public interface Fluent<F extends Fluent<F, E>, E> {
     public boolean unifies(F lesser);
+	public Map<E, E> unify(F lesser); // returns variable bindings
     public boolean contradicts(F counter); // imply that it doesn't unifies
     public F negate(); //must contradicts 
     public boolean negative();
+	public FluentControl<F,E> control();
 }

@@ -6,10 +6,8 @@
 package io.genn.color.planning.algorithm.pop;
 
 import java.util.Deque;
-import java.util.Set;
 import io.genn.color.planning.algorithm.Planner;
 import io.genn.color.planning.algorithm.Success;
-import io.genn.color.planning.domain.Fluent;
 import io.genn.color.planning.flaw.Agenda;
 import io.genn.color.planning.flaw.Flaw;
 import io.genn.color.planning.flaw.Resolver;
@@ -19,17 +17,16 @@ import me.grea.antoine.utils.log.Log;
 /**
  *
  * @author antoine
- * @param <F>
  */
-public class Pop<F extends Fluent> extends Planner<F>{
+public class Pop extends Planner{
 
     public Pop(Problem problem) {
         super(problem);
-        agenda = new PopAgenda<>(problem);
+        agenda = new PopAgenda(problem);
     }
 
     @Override
-    public Flaw<F> refine() throws Success {
+    public Flaw refine() throws Success {
         if (agenda.isEmpty()) {
             throw new Success();
         }
@@ -38,10 +35,10 @@ public class Pop<F extends Fluent> extends Planner<F>{
         Flaw flaw = agenda.choose();
         Log.d("Resolving " + flaw);
 
-        Deque<Resolver<F>> resolvers = flaw.resolvers();
+        Deque<Resolver> resolvers = flaw.resolvers();
         Log.d("Resolvers " + resolvers);
 
-        for (Resolver<F> resolver : resolvers) {
+        for (Resolver resolver : resolvers) {
             Log.d("Trying with " + resolver);
 
             if (resolver.appliable(problem.plan)) {
@@ -50,7 +47,7 @@ public class Pop<F extends Fluent> extends Planner<F>{
                 Log.w(resolver + " isn't appliable !");
                 continue;
             }
-            Agenda<F> oldAgenda = new PopAgenda<>(agenda);
+            Agenda oldAgenda = new PopAgenda(agenda);
             agenda.related(resolver);
             refine();
             Log.w("Failure reverting the application of " + resolver);

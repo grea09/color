@@ -13,7 +13,7 @@ import me.grea.antoine.utils.graph.Graph;
  *
  * @author antoine
  */
-public class Plan<F extends Fluent> extends Graph<Action<F>, CausalLink<F>> {
+public class Plan extends Graph<Action, CausalLink> {
 
 	public Plan() {
 		super(CausalLink.class, true); // Java is a %#$*? with type errasure !
