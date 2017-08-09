@@ -81,7 +81,17 @@ public class IntFluent implements Fluent<IntFluent, Integer> {
 	@Override
 	public FluentControl<IntFluent, Integer> control() {
 		return (Action<IntFluent, Integer> lifted, List<Integer> parameters) ->
-				 lifted;
+				 lifted.image;
+	}
+
+	@Override
+	public IntFluent instanciate(Map<Integer, Integer> unify) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public boolean coherent() {
+		return value != 0;
 	}
 
 }

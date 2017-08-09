@@ -29,18 +29,18 @@ public class Color {
 	public static void main(String[] args) {
 		try {
 			Log.i("Opening the world...");
-			World world = new World("data/blocks.w");
+			World world = new World("data/simple.w");
 			Log.i("Compiling...");
-			Log.ENABLED = false;
-			world.compile();
-			Log.ENABLED = true;
+			Log.LEVEL = Log.Level.VERB;
+			world.compile(false);
+			Log.LEVEL = Log.Level.DEBUG;
 			Log.i("It begins !");
-			WorldControl worldControl = new WorldControl(world.flow);
-			Domain domination = worldControl.domain();
-			Log.i("We have :\n" + domination);
+			WorldControl control = new WorldControl(world.flow);
+			Domain domain = control.domain();
+			Log.i("We have :\n" + domain);
 			Action<WorldFluent, Entity> initial = null;
 			Action<WorldFluent, Entity> goal = null;
-			for (Action<WorldFluent, Entity> action : domination) {
+			for (Action<WorldFluent, Entity> action : domain) {
 				if (action.goal()) {
 					goal = action;
 				}
@@ -48,10 +48,16 @@ public class Color {
 					initial = action;
 				}
 			}
-			domination.remove(initial);
-			domination.remove(goal);
+			domain.remove(initial);
+			domain.remove(goal);
+			if (initial == null) {
+				initial = control.action(world.flow.create("init"));
+			}
+			if (goal == null) {
+				goal = control.action(world.flow.create("goal"));
+			}
 
-			Problem problem = new Problem(initial, goal, domination);
+			Problem problem = new Problem(initial, goal, domain);
 			Pop pop = new Pop(problem);
 			pop.solve();
 			Log.i(problem.plan);

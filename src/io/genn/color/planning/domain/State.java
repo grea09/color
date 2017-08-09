@@ -111,11 +111,11 @@ public class State<F extends Fluent> extends HashSet<F> {
 		}
 		for (F agree : this) { //FIXME : optimize this when further changes are made
 			Map<E, E> unify = agree.unify(fluent);
-			if (unify != null) {
-				return unify;
-			}
 			if (agree.contradicts(fluent)) {
 				return null;
+			}
+			if (unify != null) {
+				return unify;
 			}
 		}
 		if (closed && fluent.negative()) {
@@ -124,8 +124,36 @@ public class State<F extends Fluent> extends HashSet<F> {
 		return null;
 	}
 
+	public <E> State<F> instanciate(Map<E, E> unify) {
+		State<F> instance = new State<>();
+		for (F toInstanciate : this) {
+			F instanciated = (F) toInstanciate.instanciate(unify);
+			if (instanciated == null) {
+				instance.add(toInstanciate);
+				continue;
+			}
+			instance.add(instanciated);
+		}
+		if (instance.equals(this)) {
+			return this;
+		}
+		return instance;
+	}
+
 	@Override
 	public String toString() {
 		return Formater.toString(this);
+	}
+
+	boolean coherent() {
+		for (F fluent : this) {
+			if (!fluent.coherent()) {
+				return false;
+			}
+			if (contradicts(fluent)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

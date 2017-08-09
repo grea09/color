@@ -5,10 +5,12 @@
  */
 package io.genn.color.planning.domain;
 
+import io.genn.color.planning.problem.Plan;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import static me.grea.antoine.utils.collection.Collections.first;
 
 /**
  *
@@ -52,21 +54,30 @@ public class Action<F extends Fluent<F, E>, E> {
 	public final List<E> parameters;
 	public final State<F> pre;
 	public final State<F> eff;
+	public final State<F> constr;
 	public final Flag flag;
+	public final Plan method;
 
 	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
-			Flag flag, E image) {
+			State<F> constr, Flag flag, E image) {
+		this(name, parameters, pre, eff, constr, flag, image, null);
+	}
+
+	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
+			State<F> constr, Flag flag, E image, Plan method) {
 		this.pre = new State(pre);
 		this.eff = new State(eff);
+		this.constr = new State(constr);
 		this.flag = flag;
 		this.image = image;
 		this.name = name;
 		this.parameters = parameters;
+		this.method = method;
 	}
 
 	public Action(Action<F, E> other) {
-		this(other.name, other.parameters, other.pre, other.eff, other.flag,
-			 other.image);
+		this(other.name, other.parameters, other.pre, other.eff, other.constr,
+			 other.flag, other.image);
 	}
 
 	@Override
@@ -79,13 +90,15 @@ public class Action<F extends Fluent<F, E>, E> {
 //				(eff.isEmpty() ? "" : "eff " + eff) + ")");
 	}
 
-	public Action<F, E> instanciate(F fluent, State<F> in) {
-		Map<E, E> unify = in.unify(fluent);
+	public List<E> parameterize(Map<E, E> unify) {
+		if (parameters == null) {
+			return null;
+		}
 		if (unify == null) {
 			return null;
 		}
 		if (unify.isEmpty()) {
-			return this;
+			return parameters;
 		}
 		List<E> newParameters = new ArrayList<>();
 		boolean changed = false;
@@ -97,18 +110,43 @@ public class Action<F extends Fluent<F, E>, E> {
 				newParameters.add(parameter);
 			}
 		}
-		if (changed) {
-			return fluent.control().instanciate(this, newParameters);
+		if (changed) { //TODO here that we do the stuff
+			return newParameters;
 		}
-		return this;
+		return parameters;
 	}
 
-	public Action<F, E> instanciateFor(F toProvide) {
-		return instanciate(toProvide, eff);
+	public Action<F, E> instanciate(Map<E, E> unify,
+			FluentControl<F, E> control) {
+		if (unify == null) {
+			return null;
+		}
+		List<E> newParameters = parameterize(unify);
+		if (newParameters == null) {
+			return parameters == null ? this : null;
+		} else if (newParameters.equals(parameters)) {
+			return this;
+		}
+		State newEff = eff.instanciate(unify);
+		State newPre = pre.instanciate(unify);
+		State newConstr = constr.instanciate(unify);
+		if (!newConstr.coherent()) {
+			return null;
+		}
+		E newImage = control.instanciate(this, newParameters);
+		//FIXME parameterize method
+		return new Action<>(name, newParameters,
+							newPre, newEff, newConstr,
+							flag, newImage,
+							method);
 	}
 
-	public Action<F, E> instanciateFrom(F provided) {
-		return instanciate(provided, pre);
+	public Action<F, E> provide(F toProvide) {
+		return instanciate(eff.unify(toProvide), toProvide.control());
+	}
+
+	public Action<F, E> provided(F provided) {
+		return instanciate(pre.unify(provided), provided.control());
 	}
 
 	public boolean special() {

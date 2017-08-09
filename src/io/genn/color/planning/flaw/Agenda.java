@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import io.genn.color.planning.domain.Fluent;
 import io.genn.color.planning.problem.Problem;
+import me.grea.antoine.utils.collection.Collections;
+import me.grea.antoine.utils.text.Formater;
 
 /**
  *
@@ -34,5 +36,21 @@ public abstract class Agenda extends ArrayList<Flaw> {
     protected abstract void populate();
     public abstract Flaw choose();
     public abstract void related(Resolver resolver);
+
+	@Override
+	public String toString() {
+		return Formater.toString(this, "\n");
+	}
+
+	@Override
+	public boolean add(Flaw e) {
+		if(contains(e))
+			return false;
+		return super.add(e); //To change body of generated methods, choose Tools | Templates.
+	}
+	
+	
+	
+	
     
 }

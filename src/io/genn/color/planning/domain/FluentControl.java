@@ -12,5 +12,5 @@ import java.util.List;
  * @author antoine
  */
 public interface FluentControl<F extends Fluent<F,E> , E> {
-	public Action<F, E> instanciate(Action<F, E> lifted, List<E> parameters);
+	public E instanciate(Action<F, E> lifted, List<E> parameters);
 }

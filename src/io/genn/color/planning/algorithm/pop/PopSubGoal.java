@@ -33,7 +33,16 @@ public class PopSubGoal<F extends Fluent<F, ?>> extends Flaw<F> {
 
 	@Override
 	public Deque<Resolver> resolvers() {
-		Deque<Resolver> resolvers = new ArrayDeque<>();
+		Deque<Resolver> resolvers = new ArrayDeque<Resolver>() {
+			@Override
+			public boolean add(Resolver e) {
+				if (contains(e)) {
+					return false;
+				}
+				return super.add(e); //To change body of generated methods, choose Tools | Templates.
+			}
+
+		};
 		fill(problem.initial, resolvers);
 		for (Action<F, ?> step : problem.plan.vertexSet()) {
 			if (!step.special()) {
@@ -47,7 +56,7 @@ public class PopSubGoal<F extends Fluent<F, ?>> extends Flaw<F> {
 	}
 
 	public void fill(Action<F, ?> step, Deque<Resolver> resolvers) {
-		Action<F, ?> instanciateFor = step.instanciateFor(fluent);
+		Action<F, ?> instanciateFor = step.provide(fluent); //FIXME prevent instanciation when existing
 		if (instanciateFor != null) {
 			resolvers.add(new Resolver<>(instanciateFor, needer, fluent));
 		}

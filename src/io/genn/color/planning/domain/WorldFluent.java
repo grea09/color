@@ -11,13 +11,14 @@ import io.genn.world.CompilationException;
 import io.genn.world.Flow;
 import io.genn.world.data.Entity;
 import io.genn.world.data.Store;
-import io.genn.world.data.Types;
+import io.genn.world.lang.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import static me.grea.antoine.utils.collection.Collections.*;
 import me.grea.antoine.utils.log.Log;
 
@@ -56,9 +57,26 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 			this.parameters = Collections.unmodifiableList(
 					list(s.subject(image), s.object(image)));
 		} else {
-			this.parameters = Collections.unmodifiableList(new ArrayList<>(s.
-					signature(property)));
+			if (s.signature(this.property) != null) {
+				this.parameters = Collections.unmodifiableList(new ArrayList<>(
+						s.signature(this.property)));
+			} else {
+				this.parameters = Collections.unmodifiableList(list());
+			}
 		}
+	}
+
+	public WorldFluent(Entity image, Entity property, List<Entity> parameters,
+			Flow flow, WorldControl worldControl, boolean statement,
+			boolean negative) {
+		this.image = image;
+		this.property = property;
+		this.parameters = parameters;
+		this.flow = flow;
+		this.s = flow.store;
+		this.worldControl = worldControl;
+		this.statement = statement;
+		this.negative = negative;
 	}
 
 	@Override
@@ -73,6 +91,9 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 		}
 		Quantifier filter = Quantifier.and(worldControl.fluents.get(s.general(
 				property)));
+		if (filter == null) {
+			filter = SMTH;
+		}
 		Iterator<Entity> sourcesIt = counter.parameters.iterator();
 		Iterator<Entity> targetsIt = parameters.iterator();
 		boolean matches = true;
@@ -96,7 +117,7 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 			}
 		}
 
-		return matches & !(negative ^ counter.negative);
+		return matches && (negative ^ counter.negative);
 	}
 
 	@Override
@@ -150,6 +171,73 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 	@Override
 	public FluentControl<WorldFluent, Entity> control() {
 		return worldControl == null ? new WorldControl(flow) : worldControl;
+	}
+
+	@Override
+	public WorldFluent instanciate(Map<Entity, Entity> unify) {
+		if (unify == null) {
+			return null;
+		}
+		boolean change = false;
+		List<Entity> newParameters = list();
+		for (Entity parameter : parameters) {
+			if (unify.containsKey(parameter)) {
+				change = true;
+				newParameters.add(unify.get(parameter));
+				continue;
+			}
+			newParameters.add(parameter);
+		}
+		if (!change) {
+			return this;
+		}
+		Entity image;
+		if (statement) {
+			image = s.statement(newParameters.get(0),
+								negative ?
+								s.parameterize(NULL.image(), list(property)) :
+								property,
+								newParameters.get(1));
+		} else {
+			image = s.parameterize(property, newParameters);
+			if (negative) {
+				image = s.parameterize(NULL.image(), list(image));
+			}
+		}
+		return new WorldFluent(image, property, newParameters,
+							   flow, worldControl,
+							   statement, negative);
+	}
+
+	@Override
+	public boolean coherent() {
+		if (worldControl.EQUALITY.equals(property)) {
+			return negative ^ parameters.get(0).equals(parameters.get(1));
+		}
+		return true; //FIXME other things ?
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(this.image);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final WorldFluent other = (WorldFluent) obj;
+		if (!Objects.equals(this.image, other.image)) {
+			return false;
+		}
+		return true;
 	}
 
 }
