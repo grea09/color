@@ -3,13 +3,23 @@
 (~, !, _, *, ?)::Quantifier;
 #;
 
-(boiled(_)) :: Fluent;
+//(boiled(_)) :: Fluent;
 
-boil(x) eff (boiled(x));
+
+use(appliance) eff (used(appliance));
+
+take(obj) eff (taken(obj));
+
+boil(liquid) pre (used(boiler), ~(boiled(liquid)));
+boil(liquid) eff (boiled(liquid));
 
 make(x) pre (boiled(water), ~(ready(x)));
 make(x) eff (ready(x));
 
-init eff (~(ready(covfefe)));
+makeWith(x, y) pre (boiled(water), ~(ready(x)), taken(y));
+makeWith(x, y) eff (ready(x), added(y));
 
-goal pre (ready(covfefe));
+
+init eff (~(ready(*)), boiled(~));
+
+goal pre (ready(covfefe), added(sugar));

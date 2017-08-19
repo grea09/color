@@ -57,14 +57,16 @@ public class Action<F extends Fluent<F, E>, E> {
 	public final State<F> constr;
 	public final Flag flag;
 	public final Plan method;
+	public final Action instanceOf;
 
 	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
-			State<F> constr, Flag flag, E image) {
-		this(name, parameters, pre, eff, constr, flag, image, null);
+			State<F> constr, Flag flag, E image, Action<F,E> instanceOf) {
+		this(name, parameters, pre, eff, constr, flag, image, null, instanceOf);
 	}
 
 	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
-			State<F> constr, Flag flag, E image, Plan method) {
+			State<F> constr, Flag flag, E image, 
+			Plan method, Action<F,E> instanceOf) {
 		this.pre = new State(pre);
 		this.eff = new State(eff);
 		this.constr = new State(constr);
@@ -73,11 +75,12 @@ public class Action<F extends Fluent<F, E>, E> {
 		this.name = name;
 		this.parameters = parameters;
 		this.method = method;
+		this.instanceOf = instanceOf;
 	}
 
 	public Action(Action<F, E> other) {
 		this(other.name, other.parameters, other.pre, other.eff, other.constr,
-			 other.flag, other.image);
+			 other.flag, other.image, other.instanceOf);
 	}
 
 	@Override
@@ -138,7 +141,7 @@ public class Action<F extends Fluent<F, E>, E> {
 		return new Action<>(name, newParameters,
 							newPre, newEff, newConstr,
 							flag, newImage,
-							method);
+							method, this);
 	}
 
 	public Action<F, E> provide(F toProvide) {

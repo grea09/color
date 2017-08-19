@@ -47,19 +47,20 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 		this.statement = Types.STATEMENT.equals(s.type(image));
 		Entity property = statement ? s.property(image) : image;
 		if (NULL.image().equals(s.general(property))) {
-			this.property = first(s.signature(property));
+			property = first(s.signature(property));
+			this.property = s.general(property);
 			this.negative = true;
 		} else {
-			this.property = property;
+			this.property = s.general(property);
 			this.negative = false;
 		}
 		if (statement) {
 			this.parameters = Collections.unmodifiableList(
 					list(s.subject(image), s.object(image)));
 		} else {
-			if (s.signature(this.property) != null) {
+			if (s.signature(property) != null) {
 				this.parameters = Collections.unmodifiableList(new ArrayList<>(
-						s.signature(this.property)));
+						s.signature(property)));
 			} else {
 				this.parameters = Collections.unmodifiableList(list());
 			}
@@ -94,30 +95,47 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 		if (filter == null) {
 			filter = SMTH;
 		}
+		Log.v("Contradicting " + this + " -> " + counter);
 		Iterator<Entity> sourcesIt = counter.parameters.iterator();
 		Iterator<Entity> targetsIt = parameters.iterator();
+		boolean negates = (negative ^ counter.negative);
+		Log.v("Negates " + negates);
 		boolean matches = true;
 		while (sourcesIt.hasNext() && targetsIt.hasNext()) {
 			Entity source = sourcesIt.next();
 			Entity target = targetsIt.next();
-			if (NULL.image().equals(source) || NULL.image().equals(target)) {
-				return !(NULL.image().equals(source) &&
-						NULL.image().equals(target));
+
+			boolean nul = (NULL.image().equals(source) ||
+					 NULL.image().equals(target));
+			boolean all = (ALL.image().equals(source) ||
+					 ALL.image().equals(target));
+			
+			Log.v("NULL " + nul + " ALL " + all);
+
+			if (nul && !negates || !nul && all && negates) {
+				return true;
+			}
+			
+			if(nul && negates) {
+				return false;
 			}
 
 			switch (filter) {
 				case NULL:
 					return true;
 				case UNIQ:
-					matches &= s.unify(source, target) != null;
+					if (!nul || !all) {
+						matches &= s.unify(source, target) != null;
+					}
 				case SMTH:
 					continue;
 				case ALL:
 					return false;
 			}
 		}
+		Log.v("Matches " + matches);
 
-		return matches && (negative ^ counter.negative);
+		return matches && negates;
 	}
 
 	@Override
@@ -158,11 +176,36 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 		if (!s.general(property).equals(s.general(lesser.property))) {
 			return null;
 		}
+		Log.v("Unifying " + this + " -> " + lesser);
+
 		Map<Entity, Entity> unify = s.unify(lesser.parameters, parameters);
-		if (unify != null &&
-				(unify.containsKey(NULL.image()) ||
-				unify.containsValue(NULL.image()))) {
-			return null;
+		Iterator<Entity> sourcesIt = lesser.parameters.iterator();
+		Iterator<Entity> targetsIt = parameters.iterator();
+		while (sourcesIt.hasNext() && targetsIt.hasNext()) {
+			Entity source = sourcesIt.next();
+			Entity target = targetsIt.next();
+			boolean nul = (NULL.image().equals(source) ||
+					 NULL.image().equals(target));
+			boolean all = (ALL.image().equals(source) ||
+					 ALL.image().equals(target));
+			
+			if (nul || all) { // FIXME dirrection is important !
+				if (unify == null) {
+					Log.v("Forcing " + this + " -> " + lesser);
+					unify = new HashMap<>();
+				}
+//				unify.put(source, target);
+			}
+		}
+
+		if (unify != null) {
+			// Quantifiers handling
+
+			if (((unify.containsKey(NULL.image()) && !negative) ||
+					(unify.containsValue(NULL.image()) && !lesser.negative))) {
+				Log.v("Something is null in " + this + " -> " + lesser);
+				return null;
+			}
 		}
 
 		return unify;

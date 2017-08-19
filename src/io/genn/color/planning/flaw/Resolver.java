@@ -38,7 +38,7 @@ public class Resolver<F extends Fluent<F, ?>> {
 		public Existing(Plan plan) {
 			this.source = plan.containsVertex(Resolver.this.source);
 			this.target = plan.containsVertex(Resolver.this.target);
-			link = plan.edge(Resolver.this.source, Resolver.this.target);
+			this.link = plan.edge(Resolver.this.source, Resolver.this.target);
 			this.plan = plan;
 		}
 

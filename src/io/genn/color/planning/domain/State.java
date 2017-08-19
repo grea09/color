@@ -116,7 +116,7 @@ public class State<F extends Fluent> extends HashSet<F> {
 			}
 			if (unify != null) {
 				return unify;
-			}
+		}
 		}
 		if (closed && fluent.negative()) {
 			return new HashMap<>();

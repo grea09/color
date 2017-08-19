@@ -212,7 +212,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 						  name.equals("init") ? Action.Flag.INIT :
 						  (name.equals("goal") ? Action.Flag.GOAL :
 						   Action.Flag.NORMAL),
-						  action, method);
+						  action, method, null);
 	}
 
 	public Action<WorldFluent, Entity> action(Entity action) throws CompilationException {

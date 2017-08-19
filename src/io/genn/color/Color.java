@@ -31,7 +31,7 @@ public class Color {
 			Log.i("Opening the world...");
 			World world = new World("data/simple.w");
 			Log.i("Compiling...");
-			Log.LEVEL = Log.Level.VERB;
+			Log.LEVEL = Log.Level.INFO;
 			world.compile(false);
 			Log.LEVEL = Log.Level.DEBUG;
 			Log.i("It begins !");
