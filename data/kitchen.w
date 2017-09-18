@@ -19,7 +19,6 @@ make(x) eff (ready(x));
 makeWith(x, y) pre (boiled(water), ~(ready(x)), taken(y));
 makeWith(x, y) eff (ready(x), added(y));
 
-
 init eff (~(ready(*)), boiled(~));
 
-goal pre (ready(covfefe), added(sugar));
+goal pre (ready(covfefe), ready(tea), added(sugar), added(cream));

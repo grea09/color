@@ -5,12 +5,15 @@
  */
 package io.genn.color.planning.domain;
 
-import io.genn.color.planning.problem.Plan;
+import io.genn.color.planning.domain.fluents.Fluent;
+import io.genn.color.planning.domain.fluents.FluentControl;
+import io.genn.color.planning.plan.Plan;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import static me.grea.antoine.utils.collection.Collections.first;
+import static me.grea.antoine.utils.collection.Collections.*;
 
 /**
  *
@@ -58,15 +61,18 @@ public class Action<F extends Fluent<F, E>, E> {
 	public final Flag flag;
 	public final Plan method;
 	public final Action instanceOf;
+	public final FluentControl<F, E> control;
 
 	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
-			State<F> constr, Flag flag, E image, Action<F,E> instanceOf) {
-		this(name, parameters, pre, eff, constr, flag, image, null, instanceOf);
+			State<F> constr, Flag flag, E image, Action<F, E> instanceOf,
+			FluentControl<F, E> control) {
+		this(name, parameters, pre, eff, constr, flag, image, null, instanceOf,
+			 control);
 	}
 
 	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
-			State<F> constr, Flag flag, E image, 
-			Plan method, Action<F,E> instanceOf) {
+			State<F> constr, Flag flag, E image,
+			Plan method, Action<F, E> instanceOf, FluentControl<F, E> control) {
 		this.pre = new State(pre);
 		this.eff = new State(eff);
 		this.constr = new State(constr);
@@ -76,11 +82,12 @@ public class Action<F extends Fluent<F, E>, E> {
 		this.parameters = parameters;
 		this.method = method;
 		this.instanceOf = instanceOf;
+		this.control = control;
 	}
 
 	public Action(Action<F, E> other) {
 		this(other.name, other.parameters, other.pre, other.eff, other.constr,
-			 other.flag, other.image, other.instanceOf);
+			 other.flag, other.image, other.instanceOf, other.control);
 	}
 
 	@Override
@@ -119,8 +126,22 @@ public class Action<F extends Fluent<F, E>, E> {
 		return parameters;
 	}
 
-	public Action<F, E> instanciate(Map<E, E> unify,
-			FluentControl<F, E> control) {
+	public Collection<Action<F, E>> instanciate(
+			Collection<Map<E, E>> unifications) {
+		Collection<Action<F, E>> result = set();
+		if (unifications != null) {
+			for (Map<E, E> unify : unifications) {
+				Action<F, E> instanciate = instanciate(unify);
+				if (instanciate != null) {
+					result.add(instanciate);
+				}
+			}
+		}
+		return result;
+
+	}
+
+	public Action<F, E> instanciate(Map<E, E> unify) {
 		if (unify == null) {
 			return null;
 		}
@@ -141,15 +162,23 @@ public class Action<F extends Fluent<F, E>, E> {
 		return new Action<>(name, newParameters,
 							newPre, newEff, newConstr,
 							flag, newImage,
-							method, this);
+							method, this, control);
 	}
 
-	public Action<F, E> provide(F toProvide) {
-		return instanciate(eff.unify(toProvide), toProvide.control());
+	public Collection<Action<F, E>> asked(F asked) {
+		return instanciate(eff.provide(asked));
 	}
 
-	public Action<F, E> provided(F provided) {
-		return instanciate(pre.unify(provided), provided.control());
+	public Collection<Action<F, E>> given(F given) {
+		return instanciate(pre.provide(given));
+	}
+
+	public Collection<Action<F, E>> given(State<F> given) {
+		Collection<Map<E, E>> result = set();
+		for (F f : pre) {
+			result.addAll(given.provide(f));
+		}
+		return instanciate(result);
 	}
 
 	public boolean special() {

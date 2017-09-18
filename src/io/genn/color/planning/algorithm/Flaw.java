@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.flaw;
+package io.genn.color.planning.algorithm;
 
 import java.util.Deque;
 import java.util.Objects;
 import java.util.Set;
 import io.genn.color.planning.domain.Action;
-import io.genn.color.planning.domain.Fluent;
-import io.genn.color.planning.problem.Problem;
+import io.genn.color.planning.domain.fluents.Fluent;
+import io.genn.color.planning.domain.Problem;
 
 /**
  *
@@ -21,7 +21,7 @@ public abstract class Flaw<F extends Fluent<F, ?>> {
 
     protected final F fluent;
     protected final Problem problem;
-    protected final Action needer;
+    protected final Action<F,?> needer;
 
     public Flaw(F fluent, Action<F, ?> needer, Problem problem) {
         this.fluent = fluent;
@@ -29,9 +29,9 @@ public abstract class Flaw<F extends Fluent<F, ?>> {
         this.problem = problem;
     }
     
-    public abstract Deque<Resolver> resolvers();
-    public abstract Set<? extends Flaw<F>> related(Resolver resolver);
-    public abstract boolean invalidated(Resolver resolver);
+    public abstract Deque<Resolver<F>> resolvers();
+    public abstract Set<? extends Flaw<F>> related(Resolver<F> resolver);
+    public abstract boolean invalidated(Resolver<F> resolver);
     public abstract Set<? extends Flaw<F>> flaws();
 
     @Override

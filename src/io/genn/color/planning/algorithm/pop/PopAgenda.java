@@ -5,11 +5,13 @@
  */
 package io.genn.color.planning.algorithm.pop;
 
+import io.genn.color.planning.algorithm.pop.flaws.PopSubGoal;
+import io.genn.color.planning.algorithm.pop.flaws.PopThreat;
 import java.util.ArrayList;
-import io.genn.color.planning.flaw.Agenda;
-import io.genn.color.planning.flaw.Flaw;
-import io.genn.color.planning.flaw.Resolver;
-import io.genn.color.planning.problem.Problem;
+import io.genn.color.planning.algorithm.Agenda;
+import io.genn.color.planning.algorithm.Flaw;
+import io.genn.color.planning.algorithm.Resolver;
+import io.genn.color.planning.domain.Problem;
 import me.grea.antoine.utils.random.Dice;
 
 /**

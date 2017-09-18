@@ -8,9 +8,9 @@ package io.genn.color;
 import io.genn.color.planning.algorithm.pop.Pop;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Domain;
-import io.genn.color.planning.domain.WorldFluent;
-import io.genn.color.planning.domain.WorldControl;
-import io.genn.color.planning.problem.Problem;
+import io.genn.color.planning.domain.world.WorldFluent;
+import io.genn.color.planning.domain.world.WorldControl;
+import io.genn.color.planning.domain.Problem;
 import io.genn.world.CompilationException;
 import io.genn.world.World;
 import io.genn.world.data.Entity;
@@ -29,7 +29,7 @@ public class Color {
 	public static void main(String[] args) {
 		try {
 			Log.i("Opening the world...");
-			World world = new World("data/simple.w");
+			World world = new World("data/logistics.w");
 			Log.i("Compiling...");
 			Log.LEVEL = Log.Level.INFO;
 			world.compile(false);

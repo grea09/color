@@ -3,10 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.domain;
+package io.genn.color.planning.domain.world;
 
-import io.genn.color.planning.problem.CausalLink;
-import io.genn.color.planning.problem.Plan;
+import io.genn.color.planning.domain.Action;
+import io.genn.color.planning.domain.Domain;
+import io.genn.color.planning.domain.fluents.FluentControl;
+import io.genn.color.planning.domain.State;
+import io.genn.color.planning.domain.world.WorldFluent;
+import io.genn.color.planning.plan.CausalLink;
+import io.genn.color.planning.plan.Plan;
 import io.genn.world.CompilationException;
 import io.genn.world.Flow;
 import io.genn.world.data.Entity;
@@ -92,6 +97,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 	private final Entity CONSTR;
 	private final Entity METHOD;
 	public final Entity EQUALITY;
+	public final Entity SOLVE;
 
 	public WorldControl(Flow flow) {
 		this.flow = flow; //TODO get rid of flow
@@ -101,6 +107,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		this.CONSTR = flow.interpreter.named("constr");
 		this.METHOD = flow.interpreter.named("method");
 		this.EQUALITY = flow.interpreter.named(":");
+		this.SOLVE = flow.interpreter.named("?");
 		Quantifier.init(s);
 		fluents = new HashMap<>();
 	}
@@ -178,12 +185,12 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 			if (fluents != null) {
 				State<WorldFluent> state = new State<>();
 				for (Entity fluent : fluents) {
-					assert (STATEMENT.equals(s.type(fluent)));
+//					assert (STATEMENT.equals(s.type(fluent)));
 					WorldFluent f = null;
 					f = new WorldFluent(fluent, flow, this);
-					if (!state.contradicts(f)) {
+//					if (!state.contradicts(f)) {
 						state.add(f);
-					}
+//					}
 				}
 				return state;
 			}
@@ -212,7 +219,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 						  name.equals("init") ? Action.Flag.INIT :
 						  (name.equals("goal") ? Action.Flag.GOAL :
 						   Action.Flag.NORMAL),
-						  action, method, null);
+						  action, method, null, this);
 	}
 
 	public Action<WorldFluent, Entity> action(Entity action) throws CompilationException {
@@ -256,6 +263,11 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 			Action<WorldFluent, Entity> lifted, List<Entity> parameters) {
 		Entity action = s.parameterize(lifted.image, parameters);
 		return action;
+	}
+
+	@Override
+	public boolean discard(WorldFluent fluent) {
+		return (SOLVE.equals(fluent.property));
 	}
 
 	private Plan plan(Entity method) throws CompilationException {

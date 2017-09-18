@@ -5,10 +5,8 @@
  */
 package io.genn.color.planning.algorithm;
 
-import io.genn.color.planning.domain.Fluent;
-import io.genn.color.planning.flaw.Agenda;
-import io.genn.color.planning.flaw.Flaw;
-import io.genn.color.planning.problem.Problem;
+import io.genn.color.planning.domain.fluents.Fluent;
+import io.genn.color.planning.domain.Problem;
 import me.grea.antoine.utils.log.Log;
 
 /**

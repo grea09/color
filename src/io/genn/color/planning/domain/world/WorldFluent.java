@@ -3,10 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.domain;
+package io.genn.color.planning.domain.world;
 
-import io.genn.color.planning.domain.WorldControl.Quantifier;
-import static io.genn.color.planning.domain.WorldControl.Quantifier.*;
+import io.genn.color.planning.domain.Action;
+import io.genn.color.planning.domain.fluents.Fluent;
+import io.genn.color.planning.domain.fluents.FluentControl;
+import io.genn.color.planning.domain.world.WorldControl.Quantifier;
+import static io.genn.color.planning.domain.world.WorldControl.Quantifier.*;
 import io.genn.world.CompilationException;
 import io.genn.world.Flow;
 import io.genn.world.data.Entity;
@@ -259,10 +262,15 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 		}
 		return true; //FIXME other things ?
 	}
-
+	
+	
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.image);
+		int hash = 5;
+		hash = 41 * hash + Objects.hashCode(this.property);
+		hash = 41 * hash + Objects.hashCode(this.parameters);
+		hash = 41 * hash + Objects.hashCode(this.negative);
+		return hash;
 	}
 
 	@Override
@@ -277,10 +285,18 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 			return false;
 		}
 		final WorldFluent other = (WorldFluent) obj;
-		if (!Objects.equals(this.image, other.image)) {
+//		return image.equals(other.image);
+		if (!Objects.equals(this.property, other.property)) {
+			return false;
+		}
+		if (!Objects.equals(this.parameters, other.parameters)) {
+			return false;
+		}
+		if (this.negative != other.negative) {
 			return false;
 		}
 		return true;
 	}
+	
 
 }

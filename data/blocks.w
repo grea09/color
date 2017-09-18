@@ -1,34 +1,37 @@
-//"planning.w";
+# ; // Language Operator and End Of Statement
+:: :: Property(Entity, Type);
+(~, !, _, *, ?)::Quantifier;
+#;
 
 //on :: (!(Block) -> !(Block));
 
 (! on !, held(!), down(_)) :: Fluent;
 
-pickUp(x) pre (~ on x, down(x), held(~));
-pickUp(x) eff (~(down(x)), held(x));
+pickUp(xu) pre (~ on xu, down(xu), held(~));
+pickUp(xu) eff (~(down(xu)), held(xu));
 
-putDown(x) pre (held(x));
-putDown(x) eff (held(~), down(x));
+putDown(xd) pre (held(xd));
+putDown(xd) eff (held(~), down(xd));
 
-stack(x, y) pre (held(x), ~ on y);
-stack(x, y) eff (held(~), x on y);
-stack(x, y) constr (x ~(:) y);
+stack(xs, ys) pre (held(xs), ~ on ys);
+stack(xs, ys) eff (held(~), xs on ys);
+stack(xs, ys) constr (xs ~(:) ys);
 
-unstack(x, y) pre (held(~), x on y);
-unstack(x, y) eff (held(x), ~ on y);
-unstack(x, y) constr (x ~(:) y);
+unstack(xn, yn) pre (held(~), xn on yn);
+unstack(xn, yn) eff (held(xn), ~ on yn);
+unstack(xn, yn) constr (xn ~(:) yn);
 
 (a,b,c,d) :: Block;
 
-init eff (~ on a, ~ on b, ~ on c, ~ on d, 
+init eff (~ on *,
 		down(a), down(b), down(c), down(d),
 		held(~));
 
 //goal pre (d on c, c on b, b on a);
 
-goal pre (b on a);
+//goal pre (b on a);
 
-//goal pre (~ on a);
+goal pre (~ on a);
 
 //TODO parse plans for methods in HTN
 /*

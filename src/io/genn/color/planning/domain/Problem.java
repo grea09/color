@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.problem;
+package io.genn.color.planning.domain;
 
+import io.genn.color.planning.plan.Plan;
 import io.genn.color.planning.algorithm.pop.PopAgenda;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Domain;
-import io.genn.color.planning.flaw.Agenda;
+import io.genn.color.planning.algorithm.Agenda;
 
 /**
  *

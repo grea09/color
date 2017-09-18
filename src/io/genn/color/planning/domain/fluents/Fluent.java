@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.domain;
+package io.genn.color.planning.domain.fluents;
 
+import io.genn.color.planning.domain.fluents.FluentControl;
 import java.util.Map;
 
 /**

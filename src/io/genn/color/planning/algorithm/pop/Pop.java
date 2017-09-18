@@ -8,10 +8,10 @@ package io.genn.color.planning.algorithm.pop;
 import java.util.Deque;
 import io.genn.color.planning.algorithm.Planner;
 import io.genn.color.planning.algorithm.Success;
-import io.genn.color.planning.flaw.Agenda;
-import io.genn.color.planning.flaw.Flaw;
-import io.genn.color.planning.flaw.Resolver;
-import io.genn.color.planning.problem.Problem;
+import io.genn.color.planning.algorithm.Agenda;
+import io.genn.color.planning.algorithm.Flaw;
+import io.genn.color.planning.algorithm.Resolver;
+import io.genn.color.planning.domain.Problem;
 import me.grea.antoine.utils.log.Log;
 
 /**
@@ -49,16 +49,14 @@ public class Pop extends Planner{
             }
             Agenda oldAgenda = new PopAgenda(agenda);
             agenda.related(resolver);
-            refine();
+            refine(); // Return means failure
             Log.w("Failure reverting the application of " + resolver);
-            resolver.revert(); // Return means failure
+            resolver.revert(); 
             Log.w("Restoring agenda to " + oldAgenda);
             agenda = oldAgenda;
         }
         agenda.add(flaw);
         Log.w("No suitable resolver for " + flaw);
-//        Log.d(agenda);
-//        Log.v(problem.planToString());
         return flaw;
     }
     

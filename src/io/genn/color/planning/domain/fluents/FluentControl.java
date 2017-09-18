@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.domain;
+package io.genn.color.planning.domain.fluents;
 
+import io.genn.color.planning.domain.Action;
 import java.util.List;
 
 /**
@@ -13,4 +14,5 @@ import java.util.List;
  */
 public interface FluentControl<F extends Fluent<F,E> , E> {
 	public E instanciate(Action<F, E> lifted, List<E> parameters);
+	public boolean discard(F fluent);
 }

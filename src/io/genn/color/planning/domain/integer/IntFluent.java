@@ -3,8 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.domain;
+package io.genn.color.planning.domain.integer;
 
+import io.genn.color.planning.domain.Action;
+import io.genn.color.planning.domain.fluents.Fluent;
+import io.genn.color.planning.domain.fluents.FluentControl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,8 +83,18 @@ public class IntFluent implements Fluent<IntFluent, Integer> {
 
 	@Override
 	public FluentControl<IntFluent, Integer> control() {
-		return (Action<IntFluent, Integer> lifted, List<Integer> parameters) ->
-				 lifted.image;
+		return new FluentControl<IntFluent, Integer>() {
+			@Override
+			public Integer instanciate(Action<IntFluent, Integer> lifted,
+					List<Integer> parameters) {
+				return lifted.image;
+			}
+
+			@Override
+			public boolean discard(IntFluent fluent) {
+				return fluent.value == 0;
+			}
+		};
 	}
 
 	@Override

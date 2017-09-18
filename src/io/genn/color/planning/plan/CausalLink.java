@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.problem;
+package io.genn.color.planning.plan;
 
 import java.util.Objects;
 import io.genn.color.planning.domain.Action;
-import io.genn.color.planning.domain.Fluent;
+import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.domain.State;
 import java.util.Collections;
 import me.grea.antoine.utils.graph.Edge;

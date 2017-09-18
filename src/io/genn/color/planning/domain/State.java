@@ -5,6 +5,7 @@
  */
 package io.genn.color.planning.domain;
 
+import io.genn.color.planning.domain.fluents.Fluent;
 import java.lang.reflect.InvocationTargetException;
 import java.security.spec.ECField;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.Map;
 import me.grea.antoine.utils.log.Log;
 import me.grea.antoine.utils.text.Formater;
+import static me.grea.antoine.utils.collection.Collections.*;
 
 /**
  *
@@ -58,9 +60,9 @@ public class State<F extends Fluent> extends HashSet<F> {
 
 	@Override
 	public boolean add(F e) {
-		if (contradicts(e)) {
-			return false;
-		}
+//		if (contradicts(e)) {
+//			return false;
+//		}
 		return super.add(e);
 	}
 
@@ -87,7 +89,7 @@ public class State<F extends Fluent> extends HashSet<F> {
 		return false;
 	}
 
-	public boolean unifies(F fluent) {
+	public boolean meets(F fluent) {
 		if (contains(fluent)) {
 			return true;
 		}
@@ -105,23 +107,72 @@ public class State<F extends Fluent> extends HashSet<F> {
 		return false;
 	}
 
-	public <E> Map<E, E> unify(F fluent) {
+	public boolean satisfies(F fluent) {
 		if (contains(fluent)) {
-			return new HashMap<>();
+			return true;
 		}
+		for (F agree : this) { //FIXME : optimize this when further changes are made
+			if (fluent.unifies(agree)) {
+				return true;
+			}
+			if (fluent.contradicts(agree)) {
+				return false;
+			}
+		}
+		if (closed && fluent.negative()) {
+			return true;
+		}
+		return false;
+	}
+
+	public <E> Collection<Map<E, E>> provide(F fluent) {
+		Collection<Map<E, E>> result = set();
+		if (contains(fluent)) {
+			return result;
+		}
+		boolean contradiction = false;
 		for (F agree : this) { //FIXME : optimize this when further changes are made
 			Map<E, E> unify = agree.unify(fluent);
 			if (agree.contradicts(fluent)) {
-				return null;
+				contradiction = true;
+				continue;
 			}
 			if (unify != null) {
-				return unify;
-		}
+				result.add(unify);
+			}
 		}
 		if (closed && fluent.negative()) {
-			return new HashMap<>();
+			return contradiction ? null : set();
 		}
-		return null;
+		if (result.isEmpty()) {
+			return null;
+		}
+		return result;
+	}
+
+	public <E> Collection<Map<E, E>> obtain(F fluent) {
+		Collection<Map<E, E>> result = set();
+		if (contains(fluent)) {
+			return result;
+		}
+		boolean contradiction = false;
+		for (F agree : this) { //FIXME : optimize this when further changes are made
+			Map<E, E> unify = fluent.unify(agree);
+			if (fluent.contradicts(agree)) {
+				contradiction = true;
+				continue;
+			}
+			if (unify != null) {
+				result.add(unify);
+			}
+		}
+		if (closed && fluent.negative()) {
+			return contradiction ? null : set();
+		}
+		if (result.isEmpty()) {
+			return null;
+		}
+		return result;
 	}
 
 	public <E> State<F> instanciate(Map<E, E> unify) {
@@ -145,7 +196,7 @@ public class State<F extends Fluent> extends HashSet<F> {
 		return Formater.toString(this);
 	}
 
-	boolean coherent() {
+	public boolean coherent() {
 		for (F fluent : this) {
 			if (!fluent.coherent()) {
 				return false;
@@ -156,4 +207,5 @@ public class State<F extends Fluent> extends HashSet<F> {
 		}
 		return true;
 	}
+
 }
