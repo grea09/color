@@ -44,7 +44,7 @@ public class CompositeResolver<F extends Fluent<F, ?>> extends ArrayList<Resolve
 			}
 		}
 		appliable &= get(i--).appliable(plan);
-		for (; i != 0; i--) {
+		for (; i >= 0; i--) {
 			get(i).revert();
 		}
 		return appliable;
@@ -59,7 +59,7 @@ public class CompositeResolver<F extends Fluent<F, ?>> extends ArrayList<Resolve
 
 	@Override
 	public void revert() {
-		for (int i = size() - 1; i != 0; i--) {
+		for (int i = size() - 1; i >= 0; i--) {
 			get(i).revert();
 		}
 	}

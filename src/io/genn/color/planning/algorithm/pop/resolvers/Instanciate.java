@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import static me.grea.antoine.utils.collection.Collections.list;
+import me.grea.antoine.utils.log.Log;
 
 /**
  *
@@ -45,6 +46,9 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 	}
 
 	private void computeTree(Plan plan) {
+		if(plan.containsVertex(adding))
+			return;
+		
 		Stack<Action<F, E>> open = new Stack<>();
 
 		List<E> newParameters = existing.parameterize(unification);
@@ -59,15 +63,15 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 			Action<F, E> current = open.pop();
 			closed.add(current);
 
-			for (CausalLink link : plan.incomingEdgesOf(current)) {
+			for (CausalLink link : plan.outgoingEdgesOf(current)) {
 				if (!closed.contains(link.target())) {
 					open.push(link.target());
 				}
 				if (!tree.contains(link)) {
-					State instanciate = link.causes.instanciate(unification);
-					if (!instanciate.equals(link.causes)) {
+//					State instanciate = link.causes.instanciate(unification);
+//					if (!instanciate.equals(link.causes)) {
 						tree.add(link);
-					}
+//					}
 				}
 			}
 		}
@@ -76,6 +80,9 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 
 	@Override
 	public boolean appliable(Plan plan) {
+		if(plan.containsVertex(adding))
+			return true;
+		
 		if (tree.isEmpty()) {
 			computeTree(plan);
 		}
@@ -90,11 +97,14 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 			}
 			Action<F, E> source = link.source().instanciate(unification);
 			Action<F, E> target = link.target().instanciate(unification);
-			if (adding.equals(source) ||
-					plan.reachable(adding, link.source()) ||
-					plan.reachable(target, source)) {
+//			if (adding.equals(target) ||
+//					plan.reachable(adding, link.source()) ||
+//					plan.reachable(target, source)) {
+//				return false;
+//			}
+			
+			if(source == null || target == null || causes == null)
 				return false;
-			}
 
 			newTree.add(new CausalLink(source, target, causes));
 		}
@@ -104,6 +114,9 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 
 	@Override
 	public void apply(Plan plan) {
+		if(plan.containsVertex(adding))
+			return;
+		
 		if (unification.isEmpty()) {
 			return;
 		}
@@ -125,6 +138,7 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 
 	@Override
 	public void revert() {
+		Log.e("Removing " + changes);
 		for (Change reverter : changes) {
 			reverter.undo();
 		}

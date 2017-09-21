@@ -196,5 +196,8 @@ public class PopSubGoal<F extends Fluent<F, E>, E> extends Flaw<F> {
 	public String toString() {
 		return fluent + " -> " + needer;
 	}
+	
+	
+	
 
 }

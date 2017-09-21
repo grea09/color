@@ -4,6 +4,7 @@
 #;
 
 //(_ @ !, _ city !, ! in !, plane(_)) :: Fluent;
+(! @ !) :: Fluent;
 
 drive(t, from, to) pre (t @ from, ?(to));
 drive(t, from, to) eff (t ~(@) from, t @ to);

@@ -38,7 +38,7 @@ public abstract class Flaw<F extends Fluent<F, ?>> {
     public int hashCode() {
         int hash = 7;
         hash = 41 * hash + Objects.hashCode(this.fluent);
-        hash = 41 * hash + Objects.hashCode(this.problem);
+//        hash = 41 * hash + Objects.hashCode(this.problem);
         hash = 41 * hash + Objects.hashCode(this.needer);
         return hash;
     }
@@ -58,9 +58,9 @@ public abstract class Flaw<F extends Fluent<F, ?>> {
         if (!Objects.equals(this.fluent, other.fluent)) {
             return false;
         }
-        if (!Objects.equals(this.problem, other.problem)) {
-            return false;
-        }
+//        if (!Objects.equals(this.problem, other.problem)) {
+//            return false;
+//        }
         if (!Objects.equals(this.needer, other.needer)) {
             return false;
         }

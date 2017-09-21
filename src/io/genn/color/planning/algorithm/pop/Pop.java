@@ -18,46 +18,51 @@ import me.grea.antoine.utils.log.Log;
  *
  * @author antoine
  */
-public class Pop extends Planner{
-
-    public Pop(Problem problem) {
-        super(problem);
-        agenda = new PopAgenda(problem);
-    }
-
-    @Override
-    public Flaw refine() throws Success {
-        if (agenda.isEmpty()) {
-            throw new Success();
-        }
-        Log.d("Agenda " + agenda);
-
-        Flaw flaw = agenda.choose();
-        Log.d("Resolving " + flaw);
-
-        Deque<Resolver> resolvers = flaw.resolvers();
-        Log.d("Resolvers " + resolvers);
-
-        for (Resolver resolver : resolvers) {
-            Log.d("Trying with " + resolver);
-
-            if (resolver.appliable(problem.plan)) {
-                resolver.apply(problem.plan);
-            } else {
-                Log.w(resolver + " isn't appliable !");
-                continue;
-            }
-            Agenda oldAgenda = new PopAgenda(agenda);
-            agenda.related(resolver);
-            refine(); // Return means failure
-            Log.w("Failure reverting the application of " + resolver);
-            resolver.revert(); 
-            Log.w("Restoring agenda to " + oldAgenda);
-            agenda = oldAgenda;
-        }
-        agenda.add(flaw);
-        Log.w("No suitable resolver for " + flaw);
-        return flaw;
-    }
-    
+public class Pop extends Planner {
+	
+	public Pop(Problem problem) {
+		super(problem);
+		agenda = new PopAgenda(problem);
+	}
+	
+	@Override
+	public Flaw refine() throws Success {
+		if (agenda.isEmpty()) {
+			throw new Success();
+		}
+		Log.d("Agenda " + agenda);
+		
+		Flaw flaw = agenda.choose();
+		Log.d("Resolving " + flaw);
+		
+		Deque<Resolver> resolvers = flaw.resolvers();
+		Log.d("Resolvers " + resolvers);
+		
+		for (Resolver resolver : resolvers) {
+			Log.d("Trying with " + resolver);
+			int hashcode = problem.plan.hashCode();
+			
+			if (resolver.appliable(problem.plan)) {
+				resolver.apply(problem.plan);
+			} else {
+				Log.w(resolver + " isn't appliable !");
+				continue;
+			}
+			Agenda oldAgenda = new PopAgenda(agenda);
+			agenda.related(resolver);
+			refine(); // Return means failure
+			Log.w("Failure reverting the application of " + resolver);
+			resolver.revert();			
+			if (problem.plan.hashCode() != hashcode) {
+				throw new IllegalStateException("Resolver " + resolver +
+						" violated the reversion contract !");
+			}
+			Log.w("Restoring agenda to " + oldAgenda);
+			agenda = oldAgenda;
+		}
+		agenda.add(flaw);
+		Log.w("No suitable resolver for " + flaw);
+		return flaw;
+	}
+	
 }
