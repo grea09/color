@@ -23,7 +23,7 @@ public abstract class Planner {
     }
 
     public boolean solve() {
-        Log.v(problem);
+        Log.i(problem);
         if (problem.goal.pre.isEmpty()) {
             problem.plan.addEdge(problem.initial, problem.goal);
             Log.i("Goal is empty !");

@@ -9,13 +9,13 @@
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/Color.java</file>
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/Change.java</file>
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/pop/flaws/PopSubGoal.java</file>
-            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/pop/resolvers/Bind.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/Flaw.java</file>
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/domain/world/WorldFluent.java</file>
-            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/domain/State.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/Planner.java</file>
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/CompositeResolver.java</file>
             <file>file:/home/antoine/Projets/gennio/color/data/logistics.w</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/Agenda.java</file>
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/pop/resolvers/Instanciate.java</file>
-            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/domain/world/WorldControl.java</file>
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/pop/Pop.java</file>
         </group>
     </open-files>

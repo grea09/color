@@ -33,6 +33,9 @@ public class CompositeResolver<F extends Fluent<F, ?>> extends ArrayList<Resolve
 	@Override
 	public boolean appliable(Plan plan) {
 		boolean appliable = true;
+//		for (Resolver<F> resolver : this) {
+//			appliable &= resolver.appliable(plan);
+//		}
 		int i = 0;
 		for (; i < this.size() - 1; i++) {
 			Resolver<F> resolver = this.get(i);

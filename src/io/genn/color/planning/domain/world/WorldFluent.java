@@ -98,11 +98,11 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 		if (filter == null) {
 			filter = SMTH;
 		}
-		Log.v("Contradicting " + this + " -> " + counter);
+//		Log.v("Contradicting " + this + " -> " + counter);
 		Iterator<Entity> sourcesIt = counter.parameters.iterator();
 		Iterator<Entity> targetsIt = parameters.iterator();
 		boolean negates = (negative ^ counter.negative);
-		Log.v("Negates " + negates);
+//		Log.v("Negates " + negates);
 		boolean matches = true;
 		while (sourcesIt.hasNext() && targetsIt.hasNext()) {
 			Entity source = sourcesIt.next();
@@ -113,7 +113,7 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 			boolean all = (ALL.image().equals(source) ||
 					 ALL.image().equals(target));
 			
-			Log.v("NULL " + nul + " ALL " + all);
+//			Log.v("NULL " + nul + " ALL " + all);
 
 			if (nul && !negates || !nul && all && negates) {
 				return true;
@@ -136,7 +136,7 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 					return false;
 			}
 		}
-		Log.v("Matches " + matches);
+//		Log.v("Matches " + matches);
 
 		return matches && negates;
 	}
@@ -179,7 +179,7 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 		if (!s.general(property).equals(s.general(lesser.property))) {
 			return null;
 		}
-		Log.v("Unifying " + this + " -> " + lesser);
+//		Log.v("Unifying " + this + " -> " + lesser);
 
 		Map<Entity, Entity> unify = s.unify(lesser.parameters, parameters);
 		Iterator<Entity> sourcesIt = lesser.parameters.iterator();
@@ -194,7 +194,7 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 			
 			if (nul || all) { // FIXME dirrection is important !
 				if (unify == null) {
-					Log.v("Forcing " + this + " -> " + lesser);
+//					Log.v("Forcing " + this + " -> " + lesser);
 					unify = new HashMap<>();
 				}
 //				unify.put(source, target);

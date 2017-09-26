@@ -177,6 +177,9 @@ public class PopSubGoal<F extends Fluent<F, E>, E> extends Flaw<F> {
 
 	@Override
 	public boolean invalidated(Resolver<F> resolver) {
+		if (problem.plan.containsVertex(needer)) {
+				return true;
+			}
 		for (Change change : resolver.changes()) {
 			if (change.source.equals(needer) &&
 					change.sourceDelete ||

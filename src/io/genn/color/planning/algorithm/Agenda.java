@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.Set;
 import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.domain.Problem;
-import me.grea.antoine.utils.collection.Collections;
+import java.util.Collection;
+import static me.grea.antoine.utils.collection.Collections.*;
 import me.grea.antoine.utils.log.Log;
 import me.grea.antoine.utils.text.Formater;
 
@@ -39,15 +40,26 @@ public abstract class Agenda extends ArrayList<Flaw> {
 
 	@Override
 	public String toString() {
-		return Formater.toString(this, "\n");
+		return Formater.toString(this, "\n\t * ");
 	}
 
 	@Override
 	public boolean add(Flaw e) {
-		if (contains(e)) {
-			return false;
-		}
+		removeAll(list(e));
 		return super.add(e); //To change body of generated methods, choose Tools | Templates.
 	}
+
+	@Override
+	public boolean addAll(
+			Collection<? extends Flaw> clctn) {
+//		Log.e(this);
+		boolean changed = false;
+		for (Flaw flaw : clctn) {
+			changed |= add(flaw);
+		}
+		return changed;
+	}
+	
+	
 
 }

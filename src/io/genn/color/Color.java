@@ -33,11 +33,12 @@ public class Color {
 			Log.i("Compiling...");
 			Log.LEVEL = Log.Level.INFO;
 			world.compile(false);
-			Log.LEVEL = Log.Level.DEBUG;
+			Log.LEVEL = Log.Level.VERB;
+//			Log.CONTEXTUALIZED = true;
 			Log.i("It begins !");
 			WorldControl control = new WorldControl(world.flow);
 			Domain domain = control.domain();
-			Log.i("We have :\n" + domain);
+//			Log.i("We have :\n" + domain);
 			Action<WorldFluent, Entity> initial = null;
 			Action<WorldFluent, Entity> goal = null;
 			for (Action<WorldFluent, Entity> action : domain) {

@@ -34,6 +34,9 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 	private final Map<E, E> unification;
 	private final Set<CausalLink> tree;
 	private final Set<CausalLink> newTree;
+	private Plan plan;
+	private boolean addingExisted;
+	private boolean existingExisted;
 
 	public Instanciate(Action<F, E> from,
 			Action<F, E> to, Map<E, E> unification) {
@@ -46,9 +49,10 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 	}
 
 	private void computeTree(Plan plan) {
-		if(plan.containsVertex(adding))
+		if (plan.containsVertex(adding)) {
 			return;
-		
+		}
+
 		Stack<Action<F, E>> open = new Stack<>();
 
 		List<E> newParameters = existing.parameterize(unification);
@@ -70,7 +74,7 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 				if (!tree.contains(link)) {
 //					State instanciate = link.causes.instanciate(unification);
 //					if (!instanciate.equals(link.causes)) {
-						tree.add(link);
+					tree.add(link);
 //					}
 				}
 			}
@@ -80,9 +84,10 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 
 	@Override
 	public boolean appliable(Plan plan) {
-		if(plan.containsVertex(adding))
+		if (plan.containsVertex(adding)) {
 			return true;
-		
+		}
+
 		if (tree.isEmpty()) {
 			computeTree(plan);
 		}
@@ -102,9 +107,10 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 //					plan.reachable(target, source)) {
 //				return false;
 //			}
-			
-			if(source == null || target == null || causes == null)
+
+			if (source == null || target == null || causes == null) {
 				return false;
+			}
 
 			newTree.add(new CausalLink(source, target, causes));
 		}
@@ -114,12 +120,18 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 
 	@Override
 	public void apply(Plan plan) {
-		if(plan.containsVertex(adding))
+		this.plan = plan;
+		if (plan.containsVertex(adding)) {
 			return;
-		
+		}
+
 		if (unification.isEmpty()) {
 			return;
 		}
+
+		addingExisted = plan.containsVertex(adding);
+		existingExisted = plan.containsVertex(existing);
+
 		for (CausalLink link : tree) {
 			changes.add(new Change(plan, link,
 								   existing.equals(link.source()),
@@ -138,9 +150,21 @@ public class Instanciate<F extends Fluent<F, E>, E> implements Resolver<F> {
 
 	@Override
 	public void revert() {
-		Log.e("Removing " + changes);
+//		Log.d("Reverting " + changes);
+
 		for (Change reverter : changes) {
 			reverter.undo();
+		}
+		
+		if (!addingExisted) {
+			plan.removeVertex(adding);
+		} else {
+			plan.addVertex(adding);
+		}
+		if (!existingExisted) {
+			plan.removeVertex(existing);
+		} else {
+			plan.addVertex(existing);
 		}
 	}
 
