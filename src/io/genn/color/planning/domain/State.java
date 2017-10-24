@@ -132,11 +132,11 @@ public class State<F extends Fluent> extends HashSet<F> {
 		}
 		boolean contradiction = false;
 		for (F agree : this) { //FIXME : optimize this when further changes are made
-			Map<E, E> unify = agree.unify(fluent);
 			if (agree.contradicts(fluent)) {
 				contradiction = true;
 				continue;
 			}
+			Map<E, E> unify = agree.unify(fluent);
 			if (unify != null) {
 				result.add(unify);
 			}

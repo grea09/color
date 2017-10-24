@@ -29,7 +29,7 @@ public class Color {
 	public static void main(String[] args) {
 		try {
 			Log.i("Opening the world...");
-			World world = new World("data/logistics.w");
+			World world = new World("data/kitchen.w");
 			Log.i("Compiling...");
 			Log.LEVEL = Log.Level.INFO;
 			world.compile(false);

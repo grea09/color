@@ -41,7 +41,7 @@ public class Pop extends Planner {
 		for (Resolver resolver : resolvers) {
 			Log.v("Plan : " + problem.plan);
 			Log.d("Trying with " + resolver);
-			int hashcode = problem.plan.hashCode();
+//			int hashcode = problem.plan.hashCode();
 
 			if (resolver.appliable(problem.plan)) {
 				resolver.apply(problem.plan);
@@ -53,13 +53,13 @@ public class Pop extends Planner {
 			Agenda oldAgenda = new PopAgenda(agenda);
 			agenda.related(resolver);
 			refine(); // Return means failure
-			Log.w("Failure reverting the application of " + resolver);
+			Log.w("Reverting the application of " + resolver);
 			resolver.revert();
 			Log.v("Plan : " + problem.plan);
-			if (problem.plan.hashCode() != hashcode) {
-				throw new IllegalStateException("Resolver " + resolver +
-						" violated the reversion contract !");
-			}
+//			if (problem.plan.hashCode() != hashcode) {
+//				throw new IllegalStateException("Resolver " + resolver +
+//						" violated the reversion contract !");
+//			}
 			Log.w("Restoring agenda to " + oldAgenda);
 			agenda = oldAgenda;
 		}
