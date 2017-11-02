@@ -5,6 +5,9 @@
  */
 package io.genn.color.planning.domain;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.domain.fluents.FluentControl;
 import io.genn.color.planning.plan.Plan;
@@ -62,6 +65,7 @@ public class Action<F extends Fluent<F, E>, E> {
 	public final Plan method;
 	public final Action instanceOf;
 	public final FluentControl<F, E> control;
+	public final int level;
 
 	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
 			State<F> constr, Flag flag, E image, Action<F, E> instanceOf,
@@ -71,8 +75,8 @@ public class Action<F extends Fluent<F, E>, E> {
 	}
 
 	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
-			State<F> constr, Flag flag, E image,
-			Plan method, Action<F, E> instanceOf, FluentControl<F, E> control) {
+			State<F> constr, Flag flag, E image, Plan method,
+			Action<F, E> instanceOf, FluentControl<F, E> control) {
 		this.pre = new State(pre);
 		this.eff = new State(eff);
 		this.constr = new State(constr);
@@ -83,6 +87,16 @@ public class Action<F extends Fluent<F, E>, E> {
 		this.method = method;
 		this.instanceOf = instanceOf;
 		this.control = control;
+		int maxLevel = 0;
+		if (method != null) {
+			for (Action step : method.vertexSet()) {
+				if (step.level > maxLevel) {
+					maxLevel = step.level;
+				}
+			}
+			maxLevel++;
+		}
+		this.level = maxLevel;
 	}
 
 	public Action(Action<F, E> other) {

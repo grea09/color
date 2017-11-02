@@ -5,6 +5,8 @@
  */
 package io.genn.color.planning.domain.world;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Domain;
 import io.genn.color.planning.domain.fluents.FluentControl;
@@ -99,6 +101,9 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 	public final Entity EQUALITY;
 	public final Entity SOLVE;
 
+	public static final Multimap<String, Action<WorldFluent, Entity>> cache =
+			HashMultimap.create();
+
 	public WorldControl(Flow flow) {
 		this.flow = flow; //TODO get rid of flow
 		this.s = flow.store;
@@ -156,8 +161,8 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		}
 		Domain domain = new Domain();
 		for (Entity action : actions) {
-			domain.add(action(action, pres.get(action), effs.get(action), 
-														constrs.get(action)));
+			domain.add(action(action, pres.get(action), effs.get(action),
+							  constrs.get(action)));
 		}
 
 		pres.clear();
@@ -189,7 +194,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 					WorldFluent f = null;
 					f = new WorldFluent(fluent, flow, this);
 //					if (!state.contradicts(f)) {
-						state.add(f);
+					state.add(f);
 //					}
 				}
 				return state;
@@ -211,15 +216,28 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 	public Action<WorldFluent, Entity> action(Entity action, State pre,
 			State eff, State constr, Plan method) {
 		String name = s.name(action);
-		return new Action(s.name(action),
-						  s.signature(action),
-						  pre,
-						  eff,
-						  constr,
-						  name.equals("init") ? Action.Flag.INIT :
+		List<Entity> parameters = s.signature(action);
+		Collection<Action<WorldFluent, Entity>> cached = cache.get(name);
+		for (Action existing : cached) {
+			if (existing.parameters == parameters ||
+					 (existing.parameters != null &&
+					existing.parameters.equals(parameters))) {
+				return existing;
+			}
+		}
+
+		Action<WorldFluent, Entity> result =
+				new Action(name,
+						parameters,
+						pre,
+						eff,
+						constr,
+						name.equals("init") ? Action.Flag.INIT :
 						  (name.equals("goal") ? Action.Flag.GOAL :
 						   Action.Flag.NORMAL),
-						  action, method, null, this);
+						action, method, null, this);
+		cache.put(name, result);
+		return result;
 	}
 
 	public Action<WorldFluent, Entity> action(Entity action) throws CompilationException {
@@ -227,7 +245,8 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 	}
 
 	public Action<WorldFluent, Entity> action(Entity action, Plan method) throws CompilationException {
-		Set<Entity> pres = new HashSet<>(), effs = new HashSet<>(), constrs = new HashSet<>();
+		Set<Entity> pres = new HashSet<>(), effs = new HashSet<>(), constrs =
+				new HashSet<>();
 		for (Entity statement : s.querry(action, PRE)) {
 			pres.add(s.object(statement));
 		}
@@ -252,6 +271,16 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		if (!constrs.isEmpty()) {
 			for (Entity constraint : constrs) {
 				constr.addAll(state(constraint));
+			}
+		}
+		if (method != null) {
+			for (Action step : method.vertexSet()) {
+				if (step.initial()) {
+					pre.addAll(step.eff);
+				}
+				if (step.goal()) {
+					eff.addAll(step.pre);
+				}
 			}
 		}
 
@@ -279,31 +308,26 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 			Entity parameters = s.parameters(s.property(link));
 			if (parameters != null) {
 				causalLink.causes.addAll(state(parameters));
-			}
-			for (WorldFluent eff : source.eff) {
-				for (WorldFluent pre : target.pre) {
-					if (pre.unifies(eff)) {
-						causalLink.add(eff);
+			} else {
+				for (WorldFluent eff : source.eff) {
+					for (WorldFluent pre : target.pre) {
+						if (pre.unifies(eff)) {
+							causalLink.causes.add(eff);
+						}
 					}
 				}
-			}
-			Action<WorldFluent, Entity> init =
-					source.initial() ? source : target.initial() ? target : null;
-			Action<WorldFluent, Entity> goal =
-					source.goal() ? source : target.goal() ? target : null;
-			if (init != null) {
-				Set<CausalLink> outs = plan.outgoingEdgesOf(init);
-				init.eff.clear();
-				for (CausalLink out : outs) {
-					init.eff.addAll(out.target().pre);
+
+				if (source.initial()) {
+					source.eff.addAll(target.pre); //FIXME Check for inconsistencies
+					causalLink.causes.addAll(source.eff);
+					source.pre.addAll(source.eff); //FIXME is that good ?
 				}
-			}
-			if (goal != null) {
-				Set<CausalLink> ins = plan.incomingEdgesOf(goal);
-				goal.pre.clear();
-				for (CausalLink in : ins) {
-					goal.pre.addAll(in.source().eff);
+				if (target.goal()) {
+					target.pre.addAll(source.eff); //FIXME Check for inconsistencies
+					causalLink.causes.addAll(target.pre);
+					target.eff.addAll(target.pre); //FIXME is that good ?
 				}
+
 			}
 		}
 		return plan;

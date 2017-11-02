@@ -15,11 +15,11 @@ fly(a, flyFrom, flyTo) pre (plane(a), a @ flyFrom, ?(flyTo));
 fly(a, flyFrom, flyTo) eff (a ~(@) flyFrom, a @ flyTo);
 fly(a, flyFrom, flyTo) constr (flyFrom ~(:) flyTo, ?(a));
 
-/*load(vL, pkL, locL) pre (vL @ locL, pkL @ locL);
+load(vL, pkL, locL) pre (vL @ locL, pkL @ locL);
 load(vL, pkL, locL) eff (pkL ~(@) locL, pkL in vL);
 
 unload(vU, pkU, locU) pre (vU @ locU, pkU in vU);
-unload(vU, pkU, locU) eff (pkU @ locU, pkU ~(in) vU);*/
+unload(vU, pkU, locU) eff (pkU @ locU, pkU ~(in) vU);
 
 (truckRoger, truckMarcel) :: Truck;
 (saxe, maginot, doua) :: Place;
