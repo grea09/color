@@ -3,19 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.domain.world;
+package io.genn.color.world;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Domain;
+import io.genn.color.planning.problem.Problem;
 import io.genn.color.planning.domain.fluents.FluentControl;
 import io.genn.color.planning.domain.State;
-import io.genn.color.planning.domain.world.WorldFluent;
-import io.genn.color.planning.plan.CausalLink;
-import io.genn.color.planning.plan.Plan;
+import io.genn.color.world.WorldFluent;
+import io.genn.color.planning.problem.CausalLink;
+import io.genn.color.planning.problem.Plan;
 import io.genn.world.CompilationException;
 import io.genn.world.Flow;
+import io.genn.world.World;
 import io.genn.world.data.Entity;
 import io.genn.world.data.Store;
 import static io.genn.world.lang.Types.GROUP;
@@ -115,6 +117,31 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		this.SOLVE = flow.interpreter.named("?");
 		Quantifier.init(s);
 		fluents = new HashMap<>();
+	}
+
+	public Problem problem() throws CompilationException {
+		Domain domain = domain();
+		//			Log.i("We have :\n" + domain);
+		Action<WorldFluent, Entity> initial = null;
+		Action<WorldFluent, Entity> goal = null;
+		for (Action<WorldFluent, Entity> action : domain) {
+			if (action.goal()) {
+				goal = action;
+			}
+			if (action.initial()) {
+				initial = action;
+			}
+		}
+		domain.remove(initial);
+		domain.remove(goal);
+		if (initial == null) {
+			initial = action(flow.create("init"));
+		}
+		if (goal == null) {
+			goal = action(flow.create("goal"));
+		}
+		Problem problem = new Problem(initial, goal, domain);
+		return problem;
 	}
 
 	public Domain domain() throws CompilationException {
@@ -220,7 +247,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		Collection<Action<WorldFluent, Entity>> cached = cache.get(name);
 		for (Action existing : cached) {
 			if (existing.parameters == parameters ||
-					 (existing.parameters != null &&
+					(existing.parameters != null &&
 					existing.parameters.equals(parameters))) {
 				return existing;
 			}
@@ -228,14 +255,14 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 
 		Action<WorldFluent, Entity> result =
 				new Action(name,
-						parameters,
-						pre,
-						eff,
-						constr,
-						name.equals("init") ? Action.Flag.INIT :
-						  (name.equals("goal") ? Action.Flag.GOAL :
-						   Action.Flag.NORMAL),
-						action, method, null, this);
+						   parameters,
+						   pre,
+						   eff,
+						   constr,
+						   name.equals("init") ? Action.Flag.INIT :
+						   (name.equals("goal") ? Action.Flag.GOAL :
+							Action.Flag.NORMAL),
+						   action, method, null, this);
 		cache.put(name, result);
 		return result;
 	}

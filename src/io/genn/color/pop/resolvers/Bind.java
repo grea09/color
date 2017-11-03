@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the change.
  */
-package io.genn.color.planning.algorithm.pop.resolvers;
+package io.genn.color.pop.resolvers;
 
 import io.genn.color.planning.algorithm.Change;
 import java.util.Objects;
@@ -12,8 +12,8 @@ import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.domain.State;
 import io.genn.color.planning.algorithm.Resolver;
-import io.genn.color.planning.plan.CausalLink;
-import io.genn.color.planning.plan.Plan;
+import io.genn.color.planning.problem.CausalLink;
+import io.genn.color.planning.problem.Plan;
 import java.util.Collection;
 import static me.grea.antoine.utils.collection.Collections.list;
 
@@ -21,16 +21,14 @@ import static me.grea.antoine.utils.collection.Collections.list;
  *
  * @author antoine
  */
-public class Cut<F extends Fluent<F, ?>> implements Resolver<F> {
+public class Bind<F extends Fluent<F, ?>> implements Resolver<F> {
 
 	public final Action<F, ?> target;
 	public final Action<F, ?> source;
 	public final F fluent;
 	protected Change change;
-//	protected Set<CausalLink> orphans = null;
 
-	public Cut(Action<F, ?> source, Action<F, ?> target, F fluent,
-			boolean negative) {
+	public Bind(Action<F, ?> source, Action<F, ?> target, F fluent) {
 		this.source = source;
 		this.target = target;
 		this.fluent = fluent;
@@ -38,46 +36,36 @@ public class Cut<F extends Fluent<F, ?>> implements Resolver<F> {
 		change = null;
 	}
 
-	public Cut(Action<F, ?> source, Action<F, ?> target, F fluent) {
-		this(source, target, fluent, false);
-	}
-
-	public Cut(Action<F, ?> source, Action<F, ?> target) {
-		this(source, target, null, false);
+	public Bind(Action<F, ?> source, Action<F, ?> target) {
+		this(source, target, null);
 	}
 
 	@Override
 	public boolean appliable(Plan plan) {
-		return (plan.containsEdge(source, target) || (plan.
-			   containsVertex(source) && target == null));
+		return !plan.reachable(target, source) &&
+				(fluent == null || (source.eff.meets(fluent) && target.pre.
+				meets(fluent)));
 	}
 
 	@Override
 	public void apply(Plan plan) {
 		change = new Change(plan, source, target);
-			if (target == null) {
-//				orphans = plan.incomingEdgesOf(source);
-				plan.removeVertex(source);
-				return;
+		if (fluent != null) {
+			if (!source.eff.meets(fluent) || !target.pre.meets(fluent)) {
+				revert();
+				throw new IllegalArgumentException(
+						"Impossible to create lying link.");
+			} else {
+				CausalLink link = plan.addEdge(source, target);
+				plan.addEdge(link.add(fluent));
 			}
-			CausalLink link = plan.edge(source, target);
-			plan.removeEdge(link);
-			if (link != null && fluent != null) {
-				link = link.remove(fluent);
-				if (!link.causes.isEmpty()) {
-					plan.addEdge(link);
-				}
-			}
+
+		}
 	}
 
 	@Override
 	public void revert() {
 		change.undo();
-//		if (orphans != null) {
-//			for (CausalLink orphan : orphans) {
-//				change.plan.addEdge(orphan);
-//			}
-//		}
 	}
 
 	@Override
@@ -100,7 +88,7 @@ public class Cut<F extends Fluent<F, ?>> implements Resolver<F> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Cut<?> other = (Cut<?>) obj;
+		final Bind<?> other = (Bind<?>) obj;
 		if (!Objects.equals(this.target, other.target)) {
 			return false;
 		}
@@ -120,7 +108,7 @@ public class Cut<F extends Fluent<F, ?>> implements Resolver<F> {
 
 	@Override
 	public State<F> provides() {
-		return new State<>(list(fluent));
+		return new State<>(fluent == null ? list() : list(fluent));
 	}
 
 	@Override

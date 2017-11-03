@@ -3,15 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.algorithm.pop;
+package io.genn.color.pop;
 
+import io.genn.color.planning.algorithm.Success;
 import java.util.Deque;
 import io.genn.color.planning.algorithm.Planner;
-import io.genn.color.planning.algorithm.Success;
 import io.genn.color.planning.algorithm.Agenda;
 import io.genn.color.planning.algorithm.Flaw;
 import io.genn.color.planning.algorithm.Resolver;
-import io.genn.color.planning.domain.Problem;
+import io.genn.color.planning.problem.Problem;
+import io.genn.color.pop.problem.PopSolution;
 import me.grea.antoine.utils.log.Log;
 
 /**
@@ -22,6 +23,8 @@ public class Pop extends Planner {
 
 	public Pop(Problem problem) {
 		super(problem);
+		problem.solution = new PopSolution();
+		problem.solution.working().addEdge(problem.initial, problem.goal);
 		agenda = new PopAgenda(problem);
 	}
 
@@ -33,34 +36,25 @@ public class Pop extends Planner {
 		Log.d("Agenda " + agenda);
 
 		Flaw flaw = agenda.choose();
-		Log.d("Resolving " + flaw);
+		Log.i("Resolving " + flaw);
 
 		Deque<Resolver> resolvers = flaw.resolvers();
 		Log.d("Resolvers " + resolvers);
 
 		for (Resolver resolver : resolvers) {
-			Log.v("Plan : " + problem.plan);
-			Log.d("Trying with " + resolver);
-//			int hashcode = problem.plan.hashCode();
-
-			if (resolver.appliable(problem.plan)) {
-				resolver.apply(problem.plan);
+			Log.i("Trying with " + resolver);
+			if (resolver.appliable(problem.solution.working())) {
+				resolver.apply(problem.solution.working());
 			} else {
 				Log.w(resolver + " isn't appliable !");
 				continue;
 			}
-			Log.v("Plan : " + problem.plan);
 			Agenda oldAgenda = new PopAgenda(agenda);
 			agenda.related(resolver);
 			refine(); // Return means failure
-			Log.w("Reverting the application of " + resolver);
+			Log.i("Reverting the application of " + resolver);
 			resolver.revert();
-			Log.v("Plan : " + problem.plan);
-//			if (problem.plan.hashCode() != hashcode) {
-//				throw new IllegalStateException("Resolver " + resolver +
-//						" violated the reversion contract !");
-//			}
-			Log.w("Restoring agenda to " + oldAgenda);
+			Log.d("Restoring agenda to " + oldAgenda);
 			agenda = oldAgenda;
 		}
 		agenda.add(flaw);

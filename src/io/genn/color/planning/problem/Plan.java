@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.plan;
+package io.genn.color.planning.problem;
 
+import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.fluents.Fluent;
 import me.grea.antoine.utils.graph.Graph;
@@ -16,7 +17,7 @@ import me.grea.antoine.utils.graph.Graph;
 public class Plan extends Graph<Action, CausalLink> {
 
 	public Plan() {
-		super(CausalLink.class, true); // Java is a %#$*? with type errasure !
+		super(CausalLink.class, true); // Java is an @$$#?!3 with type errasure !
 	}
 
 	public Plan(Graph other) {

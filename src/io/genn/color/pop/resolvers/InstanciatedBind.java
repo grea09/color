@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.algorithm.pop.resolvers;
+package io.genn.color.pop.resolvers;
 
 import io.genn.color.planning.algorithm.Change;
 import io.genn.color.planning.algorithm.Instanciation;
@@ -11,8 +11,8 @@ import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.State;
 import io.genn.color.planning.domain.fluents.Fluent;
-import io.genn.color.planning.plan.CausalLink;
-import io.genn.color.planning.plan.Plan;
+import io.genn.color.planning.problem.CausalLink;
+import io.genn.color.planning.problem.Plan;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -63,7 +63,8 @@ public class InstanciatedBind<F extends Fluent<F, E>, E> implements Resolver<F> 
 		}
 		instanciations = new HashSet<>();
 		if (replace && liftedSource != source) {
-			Instanciation instanciation = new Instanciation(liftedSource, unification,
+			Instanciation instanciation = new Instanciation(liftedSource,
+															unification,
 															plan);
 			if (!instanciation.search()) {
 				return false;
@@ -71,8 +72,8 @@ public class InstanciatedBind<F extends Fluent<F, E>, E> implements Resolver<F> 
 			instanciations.add(instanciation);
 		}
 		if (liftedTarget != target &&
-				 plan.containsVertex(liftedTarget) &&
-				 !plan.containsVertex(target)) {
+				plan.containsVertex(liftedTarget) &&
+				!plan.containsVertex(target)) {
 			Instanciation instanciation = new Instanciation(liftedTarget,
 															unification,
 															plan);
@@ -81,10 +82,10 @@ public class InstanciatedBind<F extends Fluent<F, E>, E> implements Resolver<F> 
 			}
 			instanciations.add(instanciation);
 		}
-		return !plan.reachable(target, source) && 
+		return !plan.reachable(target, source) &&
 				!plan.reachable(target, liftedSource) &&
 				!plan.reachable(liftedTarget, liftedSource) &&
-				(fluent == null || 
+				(fluent == null ||
 				(source.eff.meets(fluent) && target.pre.meets(fluent)));
 	}
 

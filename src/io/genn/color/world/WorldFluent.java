@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.domain.world;
+package io.genn.color.world;
 
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.domain.fluents.FluentControl;
-import io.genn.color.planning.domain.world.WorldControl.Quantifier;
-import static io.genn.color.planning.domain.world.WorldControl.Quantifier.*;
+import io.genn.color.world.WorldControl.Quantifier;
+import static io.genn.color.world.WorldControl.Quantifier.*;
 import io.genn.world.CompilationException;
 import io.genn.world.Flow;
 import io.genn.world.data.Entity;
@@ -109,17 +109,16 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 			Entity target = targetsIt.next();
 
 			boolean nul = (NULL.image().equals(source) ||
-					 NULL.image().equals(target));
+					NULL.image().equals(target));
 			boolean all = (ALL.image().equals(source) ||
-					 ALL.image().equals(target));
-			
-//			Log.v("NULL " + nul + " ALL " + all);
+					ALL.image().equals(target));
 
+//			Log.v("NULL " + nul + " ALL " + all);
 			if (nul && !negates || !nul && all && negates) {
 				return true;
 			}
-			
-			if(nul && negates) {
+
+			if (nul && negates) {
 				return false;
 			}
 
@@ -188,10 +187,10 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 			Entity source = sourcesIt.next();
 			Entity target = targetsIt.next();
 			boolean nul = (NULL.image().equals(source) ||
-					 NULL.image().equals(target));
+					NULL.image().equals(target));
 			boolean all = (ALL.image().equals(source) ||
-					 ALL.image().equals(target));
-			
+					ALL.image().equals(target));
+
 			if (nul || all) { // FIXME dirrection is important !
 				if (unify == null) {
 //					Log.v("Forcing " + this + " -> " + lesser);
@@ -262,8 +261,7 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 		}
 		return true; //FIXME other things ?
 	}
-	
-	
+
 	@Override
 	public int hashCode() {
 		int hash = 5;
@@ -297,6 +295,5 @@ public class WorldFluent implements Fluent<WorldFluent, Entity> {
 		}
 		return true;
 	}
-	
 
 }

@@ -10,7 +10,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.domain.fluents.FluentControl;
-import io.genn.color.planning.plan.Plan;
+import io.genn.color.planning.problem.Plan;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

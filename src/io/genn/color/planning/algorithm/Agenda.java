@@ -6,12 +6,9 @@
 package io.genn.color.planning.algorithm;
 
 import java.util.ArrayList;
-import java.util.Set;
-import io.genn.color.planning.domain.fluents.Fluent;
-import io.genn.color.planning.domain.Problem;
+import io.genn.color.planning.problem.Problem;
 import java.util.Collection;
 import static me.grea.antoine.utils.collection.Collections.*;
-import me.grea.antoine.utils.log.Log;
 import me.grea.antoine.utils.text.Formater;
 
 /**
@@ -59,7 +56,5 @@ public abstract class Agenda extends ArrayList<Flaw> {
 		}
 		return changed;
 	}
-	
-	
 
 }

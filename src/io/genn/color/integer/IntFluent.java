@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.domain.integer;
+package io.genn.color.integer;
 
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.fluents.Fluent;

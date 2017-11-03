@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.planning.algorithm.pop.flaws;
+package io.genn.color.pop.flaws;
 
 import io.genn.color.planning.algorithm.Change;
 import io.genn.color.planning.domain.Action;
@@ -11,10 +11,10 @@ import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.domain.State;
 import io.genn.color.planning.algorithm.Flaw;
 import io.genn.color.planning.algorithm.Resolver;
-import io.genn.color.planning.algorithm.pop.resolvers.Bind;
-import io.genn.color.planning.algorithm.pop.resolvers.InstanciatedBind;
-import io.genn.color.planning.plan.CausalLink;
-import io.genn.color.planning.domain.Problem;
+import io.genn.color.pop.resolvers.Bind;
+import io.genn.color.pop.resolvers.InstanciatedBind;
+import io.genn.color.planning.problem.CausalLink;
+import io.genn.color.planning.problem.Problem;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
@@ -47,12 +47,12 @@ public class PopSubGoal<F extends Fluent<F, E>, E> extends Flaw<F> {
 				if (contains(e)) {
 					return false;
 				}
-				return super.add(e); //To change body of generated methods, choose Tools | Templates.
+				return super.add(e);
 			}
 
 		};
 		resolvers.addAll(solve(problem.initial));
-		for (Action<F, E> step : problem.plan.vertexSet()) {
+		for (Action<F, E> step : problem.solution.working().vertexSet()) {
 			if (!step.special()) {
 				resolvers.addAll(solve(step));
 			}
@@ -63,7 +63,7 @@ public class PopSubGoal<F extends Fluent<F, E>, E> extends Flaw<F> {
 		return resolvers;
 	}
 
-	private Deque<Resolver<F>> solve(Action<F, E> provider) {
+	protected Deque<Resolver<F>> solve(Action<F, E> provider) {
 		Deque<Resolver<F>> resolvers = queue();
 
 		Collection<Map<E, E>> unifications = set();
@@ -100,8 +100,8 @@ public class PopSubGoal<F extends Fluent<F, E>, E> extends Flaw<F> {
 				resolvers.add(new Bind(provider, needer, fluent));
 			} else {
 				boolean replace = !(gProvider.equals(provider) ||
-						!problem.plan.containsVertex(provider) ||
-						problem.plan.containsVertex(gProvider));
+						!problem.solution.working().containsVertex(provider) ||
+						problem.solution.working().containsVertex(gProvider));
 				resolvers.add(new InstanciatedBind(provider, gProvider, needer,
 												   gNeeder, fluent, gFluent,
 												   unification, replace));
@@ -130,13 +130,15 @@ public class PopSubGoal<F extends Fluent<F, E>, E> extends Flaw<F> {
 			return set();
 		}
 		State<F> open = new State<>(annoyer.pre, false);
-		if (problem.plan.containsVertex(annoyer)) {
-			if (!annoyer.goal() && (problem.plan.outDegreeOf(annoyer) == 0 ||
-					!problem.plan.reachable(annoyer, problem.goal))) {
+		if (problem.solution.working().containsVertex(annoyer)) {
+			if (!annoyer.goal() && (problem.solution.working().outDegreeOf(
+					annoyer) == 0 ||
+					!problem.solution.working().reachable(annoyer, problem.goal))) {
 				return set();
 			}
 
-			for (CausalLink link : problem.plan.incomingEdgesOf(annoyer)) {
+			for (CausalLink link : problem.solution.working().incomingEdgesOf(
+					annoyer)) {
 				open.removeAll(link.causes);
 			}
 		} else {
@@ -154,7 +156,7 @@ public class PopSubGoal<F extends Fluent<F, E>, E> extends Flaw<F> {
 	@Override
 	public Set<PopSubGoal<F, E>> flaws() {
 		Set<PopSubGoal<F, E>> flaws = new HashSet<>();
-		for (Action<F, E> action : problem.plan.vertexSet()) {
+		for (Action<F, E> action : problem.solution.working().vertexSet()) {
 			flaws.addAll(related(action));
 		}
 		return flaws;

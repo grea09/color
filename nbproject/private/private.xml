@@ -7,10 +7,18 @@
         </group>
         <group name="gennio">
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/Color.java</file>
-            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/domain/world/WorldFluent.java</file>
-            <file>file:/home/antoine/Projets/gennio/color/data/kitchen_multi.w</file>
-            <file>file:/home/antoine/Projets/gennio/color/data/blocks.w</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/pop/flaws/PopSubGoal.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/Resolver.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/abort/flaws/AbortSubGoal.java</file>
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/domain/world/WorldControl.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/Flaw.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/domain/world/WorldFluent.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/domain/Action.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/plan/CausalLink.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/domain/Domain.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/data/kitchen_multi.w</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/algorithm/abort/Abort.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/domain/Problem.java</file>
         </group>
     </open-files>
 </project-private>

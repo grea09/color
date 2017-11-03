@@ -5,12 +5,12 @@
  */
 package io.genn.color;
 
-import io.genn.color.planning.algorithm.pop.Pop;
+import io.genn.color.pop.Pop;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Domain;
-import io.genn.color.planning.domain.world.WorldFluent;
-import io.genn.color.planning.domain.world.WorldControl;
-import io.genn.color.planning.domain.Problem;
+import io.genn.color.world.WorldFluent;
+import io.genn.color.world.WorldControl;
+import io.genn.color.planning.problem.Problem;
 import io.genn.world.CompilationException;
 import io.genn.world.World;
 import io.genn.world.data.Entity;
@@ -37,31 +37,10 @@ public class Color {
 //			Log.CONTEXTUALIZED = true;
 			Log.i("It begins !");
 			WorldControl control = new WorldControl(world.flow);
-			Domain domain = control.domain();
-//			Log.i("We have :\n" + domain);
-			Action<WorldFluent, Entity> initial = null;
-			Action<WorldFluent, Entity> goal = null;
-			for (Action<WorldFluent, Entity> action : domain) {
-				if (action.goal()) {
-					goal = action;
-				}
-				if (action.initial()) {
-					initial = action;
-				}
-			}
-			domain.remove(initial);
-			domain.remove(goal);
-			if (initial == null) {
-				initial = control.action(world.flow.create("init"));
-			}
-			if (goal == null) {
-				goal = control.action(world.flow.create("goal"));
-			}
-
-			Problem problem = new Problem(initial, goal, domain);
+			Problem problem = control.problem();
 			Pop pop = new Pop(problem);
 			pop.solve();
-			Log.i(problem.plan);
+			Log.i(problem.solution);
 		} catch (FileNotFoundException | CompilationException ex) {
 			Log.f(ex);
 		}

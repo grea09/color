@@ -24,18 +24,16 @@ import me.grea.antoine.utils.text.Formater;
  */
 public class Domain extends HashSet<Action> {
 
-    public Domain() {
-    }
-	
+	public Domain() {
+	}
 
+	public Domain(Collection<? extends Action> c) {
+		super(c);
+	}
 
-    public Domain(Collection<? extends Action> c) {
-        super(c);
-    }
-    
-    @Override
-    public String toString() {
-        return Formater.toString(this, ", ");
-    }
-    
+	@Override
+	public String toString() {
+		return Formater.toString(this, ", ");
+	}
+
 }

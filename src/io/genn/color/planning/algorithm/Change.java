@@ -6,8 +6,8 @@
 package io.genn.color.planning.algorithm;
 
 import io.genn.color.planning.domain.Action;
-import io.genn.color.planning.plan.CausalLink;
-import io.genn.color.planning.plan.Plan;
+import io.genn.color.planning.problem.CausalLink;
+import io.genn.color.planning.problem.Plan;
 
 /**
  *

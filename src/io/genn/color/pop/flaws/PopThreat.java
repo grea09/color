@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the reverter.
  */
-package io.genn.color.planning.algorithm.pop.flaws;
+package io.genn.color.pop.flaws;
 
 import io.genn.color.planning.algorithm.Change;
 import java.util.ArrayDeque;
@@ -15,9 +15,9 @@ import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.domain.State;
 import io.genn.color.planning.algorithm.Flaw;
 import io.genn.color.planning.algorithm.Resolver;
-import io.genn.color.planning.algorithm.pop.resolvers.Bind;
-import io.genn.color.planning.plan.CausalLink;
-import io.genn.color.planning.domain.Problem;
+import io.genn.color.pop.resolvers.Bind;
+import io.genn.color.planning.problem.CausalLink;
+import io.genn.color.planning.problem.Problem;
 import static me.grea.antoine.utils.collection.Collections.union;
 
 /**
@@ -60,7 +60,8 @@ public class PopThreat<F extends Fluent<F, ?>> extends Flaw<F> {
 		for (Change change : resolver.changes()) {
 			if (change.link == null) {
 				CausalLink link =
-						problem.plan.edge(change.source, change.target);
+						problem.solution.working().edge(change.source,
+														change.target);
 				if (link != null) {
 					result.addAll(related(link));
 				}
@@ -71,7 +72,7 @@ public class PopThreat<F extends Fluent<F, ?>> extends Flaw<F> {
 
 	public Set<PopThreat<F>> related(CausalLink fragile) {
 		Set<PopThreat<F>> related = new HashSet<>();
-		for (Action action : problem.plan.vertexSet()) {
+		for (Action action : problem.solution.working().vertexSet()) {
 			if (action != problem.initial && action != problem.goal) {
 				related.addAll(related(fragile, action));
 			}
@@ -81,7 +82,7 @@ public class PopThreat<F extends Fluent<F, ?>> extends Flaw<F> {
 
 	public Set<PopThreat<F>> related(Action<F, ?> breaker) {
 		Set<PopThreat<F>> related = new HashSet<>();
-		for (CausalLink link : problem.plan.edgeSet()) {
+		for (CausalLink link : problem.solution.working().edgeSet()) {
 			related.addAll(related(link, breaker));
 		}
 		return related;
@@ -93,8 +94,10 @@ public class PopThreat<F extends Fluent<F, ?>> extends Flaw<F> {
 		for (F cause : (State<F>) fragile.causes) {
 			if (breaker.eff.contradicts(cause) && breaker != fragile.source() &&
 					breaker != fragile.target() &&
-					(!problem.plan.reachable(fragile.target(), breaker) &&
-					!problem.plan.reachable(breaker, fragile.source()))) {
+					(!problem.solution.working().reachable(fragile.target(),
+														   breaker) &&
+					!problem.solution.working().reachable(breaker, fragile.
+														  source()))) {
 				related.add(new PopThreat(cause, breaker, fragile, problem));
 			}
 		}
@@ -104,7 +107,7 @@ public class PopThreat<F extends Fluent<F, ?>> extends Flaw<F> {
 	@Override
 	public Set<PopThreat<F>> flaws() {
 		Set<PopThreat<F>> flaws = new HashSet<>();
-		for (CausalLink link : problem.plan.edgeSet()) {
+		for (CausalLink link : problem.solution.working().edgeSet()) {
 			flaws.addAll(related(link));
 		}
 		return flaws;
@@ -114,10 +117,13 @@ public class PopThreat<F extends Fluent<F, ?>> extends Flaw<F> {
 	public boolean invalidated(Resolver<F> resolver) {
 		for (Change change : resolver.changes()) {
 			if (change.link == null &&
-					(problem.plan.reachable(threatened.target(), change.source) &&
-					problem.plan.reachable(change.target, breaker)) ||
-					(problem.plan.reachable(breaker, change.source) &&
-					problem.plan.reachable(change.target, threatened.source()))) {
+					(problem.solution.working().reachable(threatened.target(),
+														  change.source) &&
+					problem.solution.working().reachable(change.target, breaker)) ||
+					(problem.solution.working().
+							reachable(breaker, change.source) &&
+					problem.solution.working().reachable(change.target,
+														 threatened.source()))) {
 				return true;
 			}
 		}

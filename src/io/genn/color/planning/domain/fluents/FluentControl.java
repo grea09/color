@@ -12,7 +12,9 @@ import java.util.List;
  *
  * @author antoine
  */
-public interface FluentControl<F extends Fluent<F,E> , E> {
+public interface FluentControl<F extends Fluent<F, E>, E> {
+
 	public E instanciate(Action<F, E> lifted, List<E> parameters);
+
 	public boolean discard(F fluent);
 }
