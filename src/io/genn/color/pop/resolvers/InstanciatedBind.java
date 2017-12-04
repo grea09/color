@@ -13,6 +13,7 @@ import io.genn.color.planning.domain.State;
 import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.planning.problem.Plan;
+import io.genn.color.planning.problem.Solution;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,14 +24,14 @@ import me.grea.antoine.utils.log.Log;
  *
  * @author antoine
  */
-public class InstanciatedBind<F extends Fluent<F, E>, E> implements Resolver<F> {
+public class InstanciatedBind<F extends Fluent<F, E>, E> extends Bind<F> { //implements Resolver<F>
 
 	protected final Action<F, ?> liftedSource;
-	public final Action<F, ?> source;
+//	public final Action<F, ?> source;
 	protected final Action<F, ?> liftedTarget;
-	public final Action<F, ?> target;
+//	public final Action<F, ?> target;
 	protected final F liftedFluent;
-	public final F fluent;
+//	public final F fluent;
 	protected final Set<Change> changes;
 	public final Map<E, E> unification;
 	public final boolean replace;
@@ -42,61 +43,62 @@ public class InstanciatedBind<F extends Fluent<F, E>, E> implements Resolver<F> 
 			Action<F, ?> liftedTarget,
 			Action<F, ?> target, F liftedFluent, F fluent,
 			Map<E, E> unification, boolean replaceSource) {
+		super(source,target, fluent);
 		this.liftedSource = liftedSource;
-		this.source = source;
+//		this.source = source;
 		this.liftedTarget = liftedTarget;
-		this.target = target;
+//		this.target = target;
 		this.liftedFluent = liftedFluent;
-		this.fluent = fluent;
+//		this.fluent = fluent;
 		this.unification = unification;
 		this.changes = new HashSet<>();
 		this.replace = replaceSource;
 	}
 
 	@Override
-	public boolean appliable(Plan plan) {
+	public boolean appliable(Solution solution) {
 		if (source == null || target == null || fluent == null) {
 			return false;
 		}
-		if (replace && !plan.containsVertex(liftedSource)) {
+		if (replace && !solution.working().containsVertex(liftedSource)) {
 			return false;
 		}
 		instanciations = new HashSet<>();
 		if (replace && liftedSource != source) {
 			Instanciation instanciation = new Instanciation(liftedSource,
 															unification,
-															plan);
+															solution.working());
 			if (!instanciation.search()) {
 				return false;
 			}
 			instanciations.add(instanciation);
 		}
 		if (liftedTarget != target &&
-				plan.containsVertex(liftedTarget) &&
-				!plan.containsVertex(target)) {
+				solution.working().containsVertex(liftedTarget) &&
+				!solution.working().containsVertex(target)) {
 			Instanciation instanciation = new Instanciation(liftedTarget,
 															unification,
-															plan);
+															solution.working());
 			if (!instanciation.search()) {
 				return false;
 			}
 			instanciations.add(instanciation);
 		}
-		return !plan.reachable(target, source) &&
-				!plan.reachable(target, liftedSource) &&
-				!plan.reachable(liftedTarget, liftedSource) &&
+		return !solution.working().reachable(target, source) &&
+				!solution.working().reachable(target, liftedSource) &&
+				!solution.working().reachable(liftedTarget, liftedSource) &&
 				(fluent == null ||
 				(source.eff.meets(fluent) && target.pre.meets(fluent)));
 	}
 
 	@Override
-	public void apply(Plan plan) {
+	public void apply(Solution solution) {
 		for (Instanciation instanciation : instanciations) {
 			changes.addAll(instanciation.apply());
 		}
-		changes.add(new Change(plan, source, target));
-		CausalLink link = plan.addEdge(source, target);
-		plan.addEdge(link.add(fluent));
+		changes.add(new Change(solution.working(), source, target));
+		CausalLink link = solution.working().addEdge(source, target);
+		solution.working().addEdge(link.add(fluent));
 	}
 
 	@Override

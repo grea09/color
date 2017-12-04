@@ -33,7 +33,7 @@ public abstract class Agenda extends ArrayList<Flaw> {
 
 	public abstract Flaw choose();
 
-	public abstract void related(Resolver resolver);
+	public abstract void update(Resolver resolver);
 
 	@Override
 	public String toString() {
@@ -43,16 +43,17 @@ public abstract class Agenda extends ArrayList<Flaw> {
 	@Override
 	public boolean add(Flaw e) {
 		removeAll(list(e));
-		return super.add(e); //To change body of generated methods, choose Tools | Templates.
+		return super.add(e);
 	}
 
 	@Override
 	public boolean addAll(
 			Collection<? extends Flaw> clctn) {
-//		Log.e(this);
 		boolean changed = false;
-		for (Flaw flaw : clctn) {
-			changed |= add(flaw);
+		if (clctn != null) {
+			for (Flaw flaw : clctn) {
+				changed |= add(flaw);
+			}
 		}
 		return changed;
 	}

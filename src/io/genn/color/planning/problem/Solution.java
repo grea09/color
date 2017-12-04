@@ -11,6 +11,8 @@ package io.genn.color.planning.problem;
  */
 public interface Solution {
 
+	public int level();
+
 	public Plan working(); //Working plan
 
 	public Plan plan(); //Solution plan (null if not completed)

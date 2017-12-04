@@ -30,4 +30,4 @@ make(drink) method (
 );
 
 init eff (ready(~), taken(~), boiled(~), * ~(in) *);
-goal pre (ready(tea), sugar in cup);
+goal pre (ready(tea));

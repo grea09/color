@@ -90,7 +90,9 @@ public class CausalLink implements Edge<Action> {
 
 	@Override
 	public String toString() {
-		return source + " =[" + causes + "]=> " + target;
+		return source + ((causes != null && !causes.isEmpty()) ?
+						 " =[" + causes + "]" :
+						 "") + "=> " + target;
 	}
 
 	public <F extends Fluent<F, ?>> CausalLink remove(F fluent) {

@@ -5,6 +5,7 @@
  */
 package io.genn.color;
 
+import io.genn.color.abort.Abort;
 import io.genn.color.pop.Pop;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.Domain;
@@ -38,8 +39,8 @@ public class Color {
 			Log.i("It begins !");
 			WorldControl control = new WorldControl(world.flow);
 			Problem problem = control.problem();
-			Pop pop = new Pop(problem);
-			pop.solve();
+			Abort planner = new Abort(problem);
+			planner.solve();
 			Log.i(problem.solution);
 		} catch (FileNotFoundException | CompilationException ex) {
 			Log.f(ex);

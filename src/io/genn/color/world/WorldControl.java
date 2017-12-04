@@ -15,6 +15,8 @@ import io.genn.color.planning.domain.State;
 import io.genn.color.world.WorldFluent;
 import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.planning.problem.Plan;
+import io.genn.color.pop.Pop;
+import io.genn.color.pop.problem.SimpleSolution;
 import io.genn.world.CompilationException;
 import io.genn.world.Flow;
 import io.genn.world.World;
@@ -203,7 +205,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 			Entity action = entry.getKey();
 			Entity method = entry.getValue();
 			//Parse method
-			Plan plan = plan(method);
+			Plan plan = method(method);
 
 			domain.add(action(action, plan));
 		}
@@ -326,38 +328,56 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		return (SOLVE.equals(fluent.property));
 	}
 
-	private Plan plan(Entity method) throws CompilationException {
-		Plan plan = new Plan();
-		for (Entity link : (List<Entity>) s.value(method)) {
+	private Plan method(Entity composite) throws CompilationException {
+		Plan method = new Plan();
+		Action init = null, goal = null;
+		for (Entity link : (List<Entity>) s.value(composite)) {
 			Action<WorldFluent, Entity> source = action(s.subject(link));
 			Action<WorldFluent, Entity> target = action(s.object(link));
-			CausalLink causalLink = plan.addEdge(source, target);
+			CausalLink causalLink = method.addEdge(source, target);
 			Entity parameters = s.parameters(s.property(link));
 			if (parameters != null) {
 				causalLink.causes.addAll(state(parameters));
 			} else {
 				for (WorldFluent eff : source.eff) {
 					for (WorldFluent pre : target.pre) {
-						if (pre.unifies(eff)) {
-							causalLink.causes.add(eff);
+						if (eff.unifies(pre)) {
+							causalLink.causes.add(pre);
 						}
 					}
 				}
 
 				if (source.initial()) {
+					init = source;
 					source.eff.addAll(target.pre); //FIXME Check for inconsistencies
-					causalLink.causes.addAll(source.eff);
-					source.pre.addAll(source.eff); //FIXME is that good ?
+					causalLink.causes.addAll(target.pre);
+//					source.pre.addAll(source.eff); //FIXME is that good ?
 				}
 				if (target.goal()) {
+					goal = target;
 					target.pre.addAll(source.eff); //FIXME Check for inconsistencies
 					causalLink.causes.addAll(target.pre);
-					target.eff.addAll(target.pre); //FIXME is that good ?
+//					target.eff.addAll(target.pre); //FIXME is that good ?
 				}
-
 			}
 		}
-		return plan;
+		if (init != null && goal != null) {
+			method.addEdge(init, goal);
+		} else {
+			throw new IllegalStateException(
+					"Methods must have an initial and goal action !");
+		}
+		Problem problem = new Problem(init, goal, new Domain());
+		problem.solution = new SimpleSolution(method);
+		Log.ENABLED = false;
+		boolean success = new Pop(problem).solve();
+		Log.ENABLED = true;
+		if(!success)
+			Log.w("Can't solve method of " + composite + " this might explain longer execution times.");
+		init.pre.addAll(init.eff);
+		goal.eff.addAll(goal.pre);
+		Log.v("Method parsed :" + method);
+		return method;
 	}
 
 }

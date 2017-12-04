@@ -14,6 +14,7 @@ import io.genn.color.planning.domain.State;
 import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.planning.problem.Plan;
+import io.genn.color.planning.problem.Solution;
 import java.util.Collection;
 import static me.grea.antoine.utils.collection.Collections.list;
 
@@ -26,7 +27,7 @@ public class Bind<F extends Fluent<F, ?>> implements Resolver<F> {
 	public final Action<F, ?> target;
 	public final Action<F, ?> source;
 	public final F fluent;
-	protected Change change;
+	private Change change;
 
 	public Bind(Action<F, ?> source, Action<F, ?> target, F fluent) {
 		this.source = source;
@@ -41,23 +42,23 @@ public class Bind<F extends Fluent<F, ?>> implements Resolver<F> {
 	}
 
 	@Override
-	public boolean appliable(Plan plan) {
-		return !plan.reachable(target, source) &&
+	public boolean appliable(Solution solution) {
+		return !solution.working().reachable(target, source) &&
 				(fluent == null || (source.eff.meets(fluent) && target.pre.
 				meets(fluent)));
 	}
 
 	@Override
-	public void apply(Plan plan) {
-		change = new Change(plan, source, target);
+	public void apply(Solution solution) {
+		change = new Change(solution.working(), source, target);
 		if (fluent != null) {
 			if (!source.eff.meets(fluent) || !target.pre.meets(fluent)) {
 				revert();
 				throw new IllegalArgumentException(
 						"Impossible to create lying link.");
 			} else {
-				CausalLink link = plan.addEdge(source, target);
-				plan.addEdge(link.add(fluent));
+				CausalLink link = solution.working().addEdge(source, target);
+				solution.working().addEdge(link.add(fluent));
 			}
 
 		}

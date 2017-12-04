@@ -14,6 +14,7 @@ import io.genn.color.planning.domain.State;
 import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.planning.problem.Plan;
+import io.genn.color.planning.problem.Solution;
 import java.util.Collection;
 import static me.grea.antoine.utils.collection.Collections.list;
 
@@ -47,25 +48,25 @@ public class Cut<F extends Fluent<F, ?>> implements Resolver<F> {
 	}
 
 	@Override
-	public boolean appliable(Plan plan) {
-		return (plan.containsEdge(source, target) || (plan.
+	public boolean appliable(Solution solution) {
+		return (solution.working().containsEdge(source, target) || (solution.working().
 				containsVertex(source) && target == null));
 	}
 
 	@Override
-	public void apply(Plan plan) {
-		change = new Change(plan, source, target);
+	public void apply(Solution solution) {
+		change = new Change(solution.working(), source, target);
 		if (target == null) {
 //				orphans = plan.incomingEdgesOf(source);
-			plan.removeVertex(source);
+			solution.working().removeVertex(source);
 			return;
 		}
-		CausalLink link = plan.edge(source, target);
-		plan.removeEdge(link);
+		CausalLink link = solution.working().edge(source, target);
+		solution.working().removeEdge(link);
 		if (link != null && fluent != null) {
 			link = link.remove(fluent);
 			if (!link.causes.isEmpty()) {
-				plan.addEdge(link);
+				solution.working().addEdge(link);
 			}
 		}
 	}

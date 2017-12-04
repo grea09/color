@@ -24,7 +24,6 @@ public abstract class Planner {
 	public boolean solve() {
 		Log.i(problem);
 		if (problem.goal.pre.isEmpty()) {
-			problem.solution.working().addEdge(problem.initial, problem.goal);
 			Log.i("Goal is empty !");
 			return true;
 		}

@@ -10,6 +10,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.domain.fluents.FluentControl;
+import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.planning.problem.Plan;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -162,21 +163,35 @@ public class Action<F extends Fluent<F, E>, E> {
 		List<E> newParameters = parameterize(unify);
 		if (newParameters == null) {
 			return parameters == null ? this : null;
-		} else if (newParameters.equals(parameters)) {
+		} else if (newParameters.equals(parameters) && !initial() && !goal()) {
 			return this;
 		}
-		State newEff = eff.instanciate(unify);
-		State newPre = pre.instanciate(unify);
-		State newConstr = constr.instanciate(unify);
+		State<F> newEff = eff.instanciate(unify);
+		State<F> newPre = pre.instanciate(unify);
+		State<F> newConstr = constr.instanciate(unify);
 		if (!newConstr.coherent()) {
 			return null;
 		}
 		E newImage = control.instanciate(this, newParameters);
-		//FIXME parameterize method
+		Plan newMethod = null;
+		if (method != null) {
+			newMethod = new Plan();
+			for (CausalLink link : method.edgeSet()) {
+				Action<F, E> source = link.source().instanciate(unify);
+				Action<F, E> target = link.target().instanciate(unify);
+				State<F> causes = link.causes.instanciate(unify);
+				if (source == null || target == null ||
+						(causes == null && link.causes != null)) {
+					return null;
+				}
+				CausalLink newLink = new CausalLink(source, target, causes);
+				newMethod.addEdge(newLink);
+			}
+		}
 		return new Action<>(name, newParameters,
 							newPre, newEff, newConstr,
 							flag, newImage,
-							method, this, control);
+							newMethod, this, control);
 	}
 
 	public Collection<Action<F, E>> asked(F asked) {
@@ -196,7 +211,7 @@ public class Action<F extends Fluent<F, E>, E> {
 	}
 
 	public boolean special() {
-		return flag.special();
+		return flag.special() && parameters == null;
 	}
 
 	public boolean initial() {

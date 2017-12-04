@@ -6,13 +6,13 @@
 package io.genn.color.pop;
 
 import io.genn.color.planning.algorithm.Success;
-import java.util.Deque;
 import io.genn.color.planning.algorithm.Planner;
 import io.genn.color.planning.algorithm.Agenda;
 import io.genn.color.planning.algorithm.Flaw;
 import io.genn.color.planning.algorithm.Resolver;
+import io.genn.color.planning.algorithm.Solver;
 import io.genn.color.planning.problem.Problem;
-import io.genn.color.pop.problem.PopSolution;
+import io.genn.color.pop.problem.SimpleSolution;
 import me.grea.antoine.utils.log.Log;
 
 /**
@@ -23,7 +23,11 @@ public class Pop extends Planner {
 
 	public Pop(Problem problem) {
 		super(problem);
-		problem.solution = new PopSolution();
+		init();
+	}
+
+	protected void init() {
+		problem.solution = new SimpleSolution();
 		problem.solution.working().addEdge(problem.initial, problem.goal);
 		agenda = new PopAgenda(problem);
 	}
@@ -38,19 +42,18 @@ public class Pop extends Planner {
 		Flaw flaw = agenda.choose();
 		Log.i("Resolving " + flaw);
 
-		Deque<Resolver> resolvers = flaw.resolvers();
+		Solver resolvers = solve(flaw);
 		Log.d("Resolvers " + resolvers);
 
 		for (Resolver resolver : resolvers) {
 			Log.i("Trying with " + resolver);
-			if (resolver.appliable(problem.solution.working())) {
-				resolver.apply(problem.solution.working());
+			if (resolver.appliable(problem.solution)) {
+				resolver.apply(problem.solution);
 			} else {
 				Log.w(resolver + " isn't appliable !");
 				continue;
 			}
-			Agenda oldAgenda = new PopAgenda(agenda);
-			agenda.related(resolver);
+			Agenda oldAgenda = update(resolver);
 			refine(); // Return means failure
 			Log.i("Reverting the application of " + resolver);
 			resolver.revert();
@@ -60,6 +63,19 @@ public class Pop extends Planner {
 		agenda.add(flaw);
 		Log.w("No suitable resolver for " + flaw);
 		return flaw;
+	}
+	
+	
+
+	protected Solver solve(Flaw flaw) {
+		Solver resolvers = new PopSolver(flaw, problem);
+		return resolvers;
+	}
+
+	protected Agenda update(Resolver resolver) {
+		Agenda oldAgenda = new PopAgenda(agenda);
+		agenda.update(resolver);
+		return oldAgenda;
 	}
 
 }
