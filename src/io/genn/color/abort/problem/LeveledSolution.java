@@ -17,14 +17,14 @@ import java.util.Set;
  *
  * @author antoine
  */
-public class AbstractSolution implements Solution {
+public class LeveledSolution implements Solution {
 	
 	public final Plan[] plans;
 	private Boolean success;
 	protected int level;
 	public final Set<Flaw>[] nextFlaws;
 	
-	public AbstractSolution(int level) {
+	public LeveledSolution(int level) {
 		this.level = level;
 		this.plans = new Plan[level + 1];
 		plans[level] = new Plan();
@@ -34,25 +34,25 @@ public class AbstractSolution implements Solution {
 	}
 	
 	public Plan next() {
-		if (AbstractSolution.this.level() > 0) {
-			if(plans[AbstractSolution.this.level()-1] == null)
-				plans[AbstractSolution.this.level()-1] = new Plan(working());
+		if (LeveledSolution.this.level() > 0) {
+			if(plans[LeveledSolution.this.level()-1] == null)
+				plans[LeveledSolution.this.level()-1] = new Plan(working());
 		} else {
 			throw new IllegalAccessError(
 					"Can't access next plan when on level 0 !");
 		}
-		return plans[AbstractSolution.this.level()-1];
+		return plans[LeveledSolution.this.level()-1];
 	}
 	
 	@Override
 	public Plan working() {
-		return plans[AbstractSolution.this.level()];
+		return plans[LeveledSolution.this.level()];
 	}
 	
 	@Override
 	public Plan plan() {
-		if (success == null && plans.length > AbstractSolution.this.level() + 1) {
-			return plans[AbstractSolution.this.level() + 1];
+		if (success == null && plans.length > LeveledSolution.this.level() + 1) {
+			return plans[LeveledSolution.this.level() + 1];
 		}
 		if (success) {
 			return working();
@@ -67,7 +67,7 @@ public class AbstractSolution implements Solution {
 	
 	@Override
 	public String toString() {
-		return "@" + AbstractSolution.this.level() + " " + working();
+		return "@" + LeveledSolution.this.level() + " " + working();
 	}
 	
 	@Override

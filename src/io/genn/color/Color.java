@@ -6,15 +6,13 @@
 package io.genn.color;
 
 import io.genn.color.abort.Abort;
-import io.genn.color.pop.Pop;
-import io.genn.color.planning.domain.Action;
-import io.genn.color.planning.domain.Domain;
-import io.genn.color.world.WorldFluent;
+import io.genn.color.hipop.HiPop;
+import io.genn.color.planning.algorithm.Planner;
 import io.genn.color.world.WorldControl;
 import io.genn.color.planning.problem.Problem;
+import io.genn.color.pop.Pop;
 import io.genn.world.CompilationException;
 import io.genn.world.World;
-import io.genn.world.data.Entity;
 import java.io.FileNotFoundException;
 import me.grea.antoine.utils.log.Log;
 
@@ -30,18 +28,32 @@ public class Color {
 	public static void main(String[] args) {
 		try {
 			Log.i("Opening the world...");
-			World world = new World("data/kitchen_multi.w");
+			World world = new World("data/kitchen_tea.w");
 			Log.i("Compiling...");
 			Log.LEVEL = Log.Level.INFO;
 			world.compile(false);
-			Log.LEVEL = Log.Level.VERB;
+			Log.LEVEL = Log.Level.DEBUG;
 //			Log.CONTEXTUALIZED = true;
-			Log.i("It begins !");
+			Log.i("Parsing...");
 			WorldControl control = new WorldControl(world.flow);
 			Problem problem = control.problem();
-			Abort planner = new Abort(problem);
+			Log.i("Running...");
+//			Log.ENABLED = false;
+//			
+			Planner planner;
+//			for (int i = 0; i < 100; i++) {
+//				planner = new Pop(problem);
+//				planner.solve();
+//			}
+			
+//			problem = control.problem();
+			planner = new Abort(problem);
 			planner.solve();
 			Log.i(problem.solution);
+			
+//			problem = control.problem();
+//			planner = new HiPop(problem);
+//			planner.solve();
 		} catch (FileNotFoundException | CompilationException ex) {
 			Log.f(ex);
 		}

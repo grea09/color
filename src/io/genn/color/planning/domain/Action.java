@@ -14,6 +14,7 @@ import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.planning.problem.Plan;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,6 +69,8 @@ public class Action<F extends Fluent<F, E>, E> {
 	public final FluentControl<F, E> control;
 	public final int level;
 
+	private static Map<Action, Map<List, Action>> instances = new HashMap<>();
+
 	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
 			State<F> constr, Flag flag, E image, Action<F, E> instanceOf,
 			FluentControl<F, E> control) {
@@ -86,7 +89,7 @@ public class Action<F extends Fluent<F, E>, E> {
 		this.name = name;
 		this.parameters = parameters;
 		this.method = method;
-		this.instanceOf = instanceOf;
+		this.instanceOf = instanceOf == null ? this : instanceOf;
 		this.control = control;
 		int maxLevel = 0;
 		if (method != null) {
@@ -98,6 +101,13 @@ public class Action<F extends Fluent<F, E>, E> {
 			maxLevel++;
 		}
 		this.level = maxLevel;
+		if (instances.containsKey(instanceOf)) {
+			instances.get(instanceOf).put(parameters, this);
+		} else {
+			Map<List, Action> instanceMap = new HashMap<List, Action>();
+			instanceMap.put(parameters, this);
+			instances.put(instanceOf, instanceMap);
+		}
 	}
 
 	public Action(Action<F, E> other) {
@@ -165,6 +175,9 @@ public class Action<F extends Fluent<F, E>, E> {
 			return parameters == null ? this : null;
 		} else if (newParameters.equals(parameters) && !initial() && !goal()) {
 			return this;
+		}
+		if(instances.containsKey(instanceOf) && instances.get(instanceOf).containsKey(newParameters)){
+			return instances.get(instanceOf).get(newParameters);
 		}
 		State<F> newEff = eff.instanciate(unify);
 		State<F> newPre = pre.instanciate(unify);

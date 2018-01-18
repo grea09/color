@@ -1,17 +1,18 @@
 ---
-title: "ABORT : Abstract Building Operating in Real Time as a refinement strategy for hierarchical partial order planning (Draft)"
-author: Antoine Gréa
+title: "RABAIS: Real-time Abstract Building As a refInement Strategy for hierarchical partial order planning (Draft)"
+author: 
+	- Antoine Gréa
+	- Laetitia Matignon
+	- Samir Aknine
 tags: [POP, Partial Order Planning, PSP Plan-Space Planning, POCL, Partial Order Causal Link, automated planning, planning, partial plan]
 
 style: article
- 
 ---
 
 # Introduction {-}
 
 
-The domain of automated planning is considered a basis of artificial intelligence. As such it must adapt to suit very different needs. Some works might require a fast real time scheduling process to build a path in complex environments. Other works will require flexibility for cooperation or competition with other agents. That is the reason behind the diversity of the planning comunity approach wise. 
-
+The domain of automated planning is considered a basis of artificial intelligence. As such it must adapt to suit very different needs. Some works might require a fast real time scheduling process to build a path in complex environments. Other works will require flexibility for cooperation or competition with other agents. That is the reason behind the diversity of the planning comunity approach wise.
 
 Our research aims at a totally separated domain : intent recognition and robotics. In the recent years several works extended what is known in psycology as the *theory of mind*. That theory suposes that to recognise other's intents and goals we often use to transpose our own. That is like saying "*what would **I** do ?*" when observing actions of another person. This leads to new ways to use *invert planning* as an inference tool.
 
@@ -27,170 +28,303 @@ Obviously these work hypothesis are in direct contradiction : the harder the pr
 
 Our interest was on the following question : what happens when one *can't* find the solution to the problem ? What if the problem can't be solved ? What if we ran out of time ? This question has been partially threated in [@gobelbecker_coming_2010] where "excuses" are being investigated as response to unsolvability.
 
-![A potential logo.](graphics/abort.simple.svg){#fig:logo}
+**FIXME : Speak about POP and HTN**
 
-**SPECULATION :**
-In our approach we show that abstract solutions are often enough if not better suited for human interaction. The key is in better domain description and use. Using Hierarchical Task Networks (HTN) and Partial Order Planning (POP) we can build iteratively better and more complete plans while being able to provide abstract plans whenever it is needed. The last interest of this work is in perspective shifting or how a robot can resume a job started by a human with different capabilities.
+**TODO : Introducing our work**
 
 # Definitions
 
-We aim to define all necessary notions in order to make a framework in which we build our planner. This framework is based on reusability and recursive notions. Such properties make further definition simpler and factorize the work as we only need to define future notions for a reduced set of cases.
+In this paper, we use the notation defined in @tbl:symbols. Our notations are adapted from the ones used in [@ghallab_automated_2004] and [@gobelbecker_coming_2010]. We also use graph theory notations. The symbol $\pm$ is used to signify that the notation is signed. All related notions will be defined later.
 
-## Notations
+**Symbol**                      **Description**
+----------                      ---------------
+$pre(a)$, $eff(a)$              Preconditions and effects of the action $a$.
+$methods(a)$                    Methods of the action $a$.
+$\mathcal{D}, \mathcal{P}$      Planning domain and problem.
+$lv(a), lv(\mathcal{D})$        Abstraction level of the action or domain.
+$\phi^\pm(l)$                   Signed incidence function for partial order plans.
+                                $\phi^-$ gives the source and $\phi^+$ the target step of $l$.
+                                No sign gives a pair corresponding to link $l$.
+$causes(l)$                     Gives the causes of causal link $l$.
+$a_a \succ a_s$                 Step $a_a$ is anterior to successor step $a_p$.
+$L^\pm(a)$                      Set of incoming ($L^-$) and outgoing ($L^+$) links of step $a$.
+                                No sign gives all adjacent links.
+$l \downarrow a$                Link $l$ participates in the partial support of step $a$.
+$\downarrowbarred_f a$          Fluent $f$ isn't supported in step $a$.
+$\pi \Downarrow a$              Plan $\pi$ fully supports $a$.
+                                If no left side it means just full support.
+$A_x$                           Proper actions set of $x$.
+$[exp]$                         Iverson bracket : $0$ if $exp=false$, $1$ otherwise.
 
-In this paper, we use the notation defined in @tbl:symbols. Our notation is adapted from the one used in [@ghallab_automated_2004].We use the symbol $\pm$ to signify that there is a notation for the positive and negative symbols but the current formula works regardless of the sign. All related notions will be defined later.
+: Most used symbols in the paper. {#tbl:symbols}
 
-**Symbol**                          **Description**
-----------                          ---------------
-$pre(o)$, $eff(o)$                  Preconditions and effects of the operator $o$
-$\mathcal{D}$                       Planning domain
-$\mathcal{P}$                       Planning problem
-$l_{\rightarrow}$, $l_{\leftarrow}$ Source and target of the causal link $l$
-$o_1 \succ o_2$                     Precedence operator ($o_1$ precedes $o_2$)
-$\mathcal{F}^\pm(\pi)$              Set of flaws in $\pi$
-$r(f)$                              Resolvers of the flaw $f$
-$f.n$                               Needer of the flaw $f$
-$f(\pi)$                            Application of the flaw $f$ on plan $\pi$
-$\Downarrow \pi$                    Full support of $\pi$
-$\pi \models \mathcal{P}$           The partial plan $\pi$ is a valid solution of $\mathcal{P}$
+Planners often work in two times : first we input the planning domain then we give the planner an instance of a planning problem to solve.
 
-: Most used symbols in the paper. **TODO: Update that** {#tbl:symbols}
+## Domain
 
-## Logic description
+The domain is the context of the planner. It specifies the allowed operators that can be used to plan and all the fluents they use for preconditions and effects.
 
-Before the planning specific definition, we must introduce the elements of our fluent representation. To simplify, it is first order logic mixed into RDF representation.
+::: {.definition name="Domain"} :::
+A domain $\mathcal{D} = \langle C_\mathcal{D} , R, F, O \rangle$ is a tuple where :
 
-::: {.definition #def:entity name="Entity"}
-An entity $e$ is an abstract object with a few attributes :
+* $C_\mathcal{D}$ is the set of **domain constants**.
+* $R$ is the set of **relations** (also called *properties*) of the domain. These relations are similar to quantified predicates in first order logic.
+* $F$ is the set of **fluents** used in the domain to describe operators.
+* $O$ is the set of **operators** which are fully lifted *actions*.
+:::::::::::::::::::::::::::::::::::
 
-* a **name** that may be empty,
-* a **type** that caracterize its nature.
+*Example*: The domain in @lst:domain we use as example is inspired from the kitchen domain of [@ramirez_probabilistic_2010] modified to suit our needs.
 
-Some entities have additional attributes in function of their type :
+~~~~ {#lst:domain}
+boil(liquid) pre (~(boiled(liquid)));
+boil(liquid) eff (boiled(liquid));
+take(thing) pre (~(taken(thing)));
+take(thing) eff (taken(thing));
+infuse(brevage, cup) pre (~(ready(brevage)), boiled(water), water in cup, taken(brevage)); 
+infuse(brevage, cup) eff (ready(brevage), brevage in cup);
+pour(ingredient, container) pre (taken(container), taken(ingredient), ingredient ~(in) container);
+pour(ingredient, container) eff (ingredient in container);
+add :: Action; // Level 1
+make :: Action; // Level 2
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+: Domain file used in our planner. Composite actions have been truncated for lack of space. **FIXME: Show the whole domain or not and how ?**
 
-* **parameters** that is simply an ordered group of entities,
-* a **value** that is intrisic to the given entity and that can eventually change.
-::::::::::::::::::::::::::::::::::::::::::::
+A domain contains the definitions of all fluents that can be used in the operators.
 
-In our representation, contrarily to standard RDF, everything is entity : types are entities, groups are entities, statements are entities, the language itself is an entity.
+::: {.definition name="Fluent"} :::
+A fluent is a parameterized relation $f=r(arg_1, arg_2, … , arg_n)$ where :
 
-That means that we can represent *metastatements* a.k.a. statements about statements.
+* $r$ is the relation of the fluent under the form of a boolean predicate.
+* $arg_i | i \in [1,n]$ are the arguments (possibly quantified).
+* $n = |r|$ is the arity of $r$.
 
-In this context, a fluent is a statement about the world. It can use parameters (in the scope of the current or host statement) and enventually quantifiers. 
+Fluents are signed. Negative fluents are noted $\neg f$ and behave as a logical complement. Quantifiers are affected by the sign of the fluents. We don't use the closed world hypothesis : fluents are not satisfied until provided whatever their sign. 
+:::::::::::::::::::::::::::::::::::
 
-**TODO Reformulate this**
+*Example*: The precondition of operator $take(thing)$ is simply a single negative fluent noted $\neg taken(thing)$ ensuring the variable $thing$ isn't already taken.
 
-* $T$ is the set of **types** used in the domain for variables and constants. We provide types with a relation of **subsumption** noted $t_1 \prec t_2$ with $t_1, t_2 \in T$ meaning that all instances of $t_1$ are also instances of $t_2$.
-* $C_\mathcal{D}$ is the set of typed **domain specific constants**.
-* $R$ is the set of **relations** (also called properties). They are used to express aspects and properties of the world. We note them as a tuple $r= \langle name, r_s, r_t\rangle$ with $name$ as the relation's name, $r_s$ and $r_t$ as the source and target type and arity (ex.: $Object^2$ signify a pair of objects). When a relation is instanciated it is called a *fluent* and binds an object to $n$ subjet(s) ($n$ being the arity of the relation).
-* $F$ is the set of possible **fluents**. An additional unary relation is needed on the fluents : $\neg f$ is used to signify that the fluent is negative. We also add special behavior to sets of fluents. For exemple we note $F^\pm$ the set of positive/negative fluent present in $F$. A set of fluents can be either seen as a *state*, *effects* or *preconditions* :
-    * *Preconditions* have a predicate of validity noted $s \models p : \left[ ( p^+ \in s ) \land ( p^- \notin s ) \right]$, meaning that all positive fluents must be present and all negative fluents absent in the state $s$ for the precondition $p$ to be valid.
-    * *Effects* have an application operation noted $s+e = ( s \smallsetminus e^- ) \cup e^+$. The values erasive, meaning that if a fluent is present with different target value the value in the state $s$ is erased by the value in $e$ except if the target arrity of the relation of the fluent is infinite. **TODO: example to explain maybe + open/closed world hypothesis**
+The central notion of planning is operators. Instanciated operators are called *actions*. In our framework, actions can be partially instanciated and therefore we consider operators as a special case of actions.
 
-## Domain definitions
+::: {.definition #def:action name="Action"} :::
+An action $a$ is an instanciated operator of the domain. It can have instanciation parameters. We note it $a=\langle name, pre, eff, methods \rangle$ where :
 
-::: {.definition #def:domain name="Domain"}
-Our domain definition takes into acount some modifications necessary to achieve the type of planning we aim for. A domain is a tuple $\mathcal{D} = \langle T, C_\mathcal{D}, R, F, O \rangle$ where
+* $name$ is the **name** of the action.
+* $pre$ and $eff$ are sets of fluents that are respectively the **preconditions and effects** of the action.
+* $methods$ is a set of **methods** (partial order plans) that can realize the action.
+::::::::::::::::::::::::::::::::::::::::::::::::::
 
-* $F$ is the set of **fluents** as described earlier. **TODO action in their dedicated section**
-* $O$ is the set of **operators**. An operator is a tuple $o = \langle name, pre, eff, methods, lv \rangle$ with $name$ as the operator's name, $pre$ as the set of fluent coresponding to a conjonction that must be met to apply the operator using the set of fluent that represents the effect : $eff$. We note $methods$ is the set of *methods* of the operator that contains a partial plan to realise the operator. The set can be empty in witch case the operator is said to be *atomic*. $l$ is the abstraction level of the operator.
-::::::::::::::::::::::::::::::::::::::::::
+*Example*: In the kitchen the action $take(thing)$ has a precondition of the parameter not being taken and an effect of the parameter being taken.
 
-This definition lays some important bases of our framework. Our operators are **composite** meaning that a *method* must be chosen and instanciated as a partial plan in order to complete any plan containing an instanciation of this operator.
+*Composite* actions are represented using methods. Each method is a partial order plan used in Partial Order Planning (POP). An action without methods is called *atomic*.
 
-We note $lv_{max}(\mathcal{D})$ the maximum abstraction level of a given domain.
+::: {.definition name="Plan"} :::
+A partially ordered plan is an acyclic directed graph $\pi = (S, L)$ with :
 
-## Partial plan definitions
+* $S$ the set of **steps** of the plan as vertices. A step is an action belonging in the plan.
+* $L$ the set of **causal links** of the plan as edges.
+We note $l : a_s \xrightarrow{c} a_t$ the link between its source $a_s$ and target $a_t$ caused by $c$. 
+:::::::::::::::::::::::::::::::::
 
-::: {.definition name="Partial Plan"}
-We define a partial plan as a tuple $\langle S, L, B\rangle$ with :
+In our representation *ordering constraints* are defined as the transitive cover of causal links over the set of steps. We note ordering constraints like this : $a_a \succ a_s$ with $a_a$ being *anterior* to its *successor* $a_s$. Ordering constraints can't form cycles meaning that the steps must be different and that the successor can't be also anterior to its anterior steps :
+$a_a \neq a_s \land a_s \not \succ a_a$.
 
-* $S$ the set of **steps**. A step is a partially or fully instantiated operators also called *actions*. It has two unary relations : 
-    - $lv_i(a)$ whitch affects to each step an interval of integers that corresponds to the **abstraction levels of the step**.
-    - $dummy(a)$ is a predicate that gives true iff the step is a **dummy action**. Dummy actions are always linked to their parent via a *hierarchical causal link* and cannot be removed without removing the parent action.
-* $L$ the set of **causal links**.
-* $B$ the set of **binding constraints**.
+If we need to enforce order we simply add a causal link without cause. This graph representation along with the implicit ordering constraints makes for a simplified framework that still retain classical properties needed for POP.
+
+**TODO speak about preconditions and effect inference**
+
+## Problem
+
+The other part of the input of most planners is the problem instance. This problem is often most simply described by two components : the initial state and the goal of the problem.
+
+::: {.definition name="Problem"} :::
+The planning problem is defined as a tuple $\mathcal{P} = \langle \mathcal{D}, C_\mathcal{P} , \Omega\rangle$ where :
+
+* $\mathcal{D}$ is a planning domain.
+* $C_\mathcal{P}$ is the set of **problem constants** disjoint from the domain constants.
+* $\Omega$ is the problem's **root operator** which methods are solutions of the problem.
+
+The root operator contains the initial state and goal (noted respectively $I$ and $G$ ) of the problem.
+::::::::::::::::::::::::::::::::::::
+
+*Example*: We use a simple problem for our example domain. The initial state provides that nothing is ready, taken or boiled and all containers are empty (all using quantifiers). The goal is to have tea ready and with sugar. For reference, here is the problem as stated in our file :
+
+~~~~{#lst:problem}
+init eff (ready(~), taken(~), boiled(~), * ~(in) *);
+goal pre (ready(tea), sugar in cup);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+: One problem instance used as an example for this paper.
+
+In all cases, the root operator is initialized at $\Omega = \langle "", s_0, s^*, 
+\lbrace \pi \rbrace\rangle$ with $s_0$ being the initial state and $s^*$ the goal specifications.
+
+The method $\pi$ is a partial order plan with only the initial and goal steps linked together. Partial order plans are at the heart of Partial Order Planning (POP).
+
+*Example*: The initial partial order plan is $\pi = (\lbrace I,G \rbrace, \lbrace I \rightarrow G \rbrace)$ with :
+
+* $I = \langle "init", \emptyset, s_0, \emptyset\rangle$ and 
+* $G = \langle "goal", \emptyset, s^*, \emptyset\rangle$.
+
+The goal of the planner is to refine the plan $\pi$ until it becomes solution of the problem.
+
+## Partial Order Planning
+
+At the base of our method is the classical POP algorithm. It works by refining a partial plan until no more flaws are present and therefore it becomes a solution of the planning problem.
+
+::: {.definition name="Flaws"} :::
+A flaw in a partial plan is a contradiction with its validity. Flaws have a *proper fluent* $f$ and a related step often called the *needer* $a_n$. There exist two types of classical flaws :
+
+* **Subgoals** are *open conditions* that are yet to be supported by another step $a_n$ often called *provider*.
+* **Threats** are caused by steps that can break a causal link with their effects. They are called *breakers* of the threatened link. A step $a_b$ is threatenning a causal link $a_p \xrightarrow{f} a_n$ if and only if $\neg f \in eff(a_b) \land a_p \succ a_b \succ a_n$. Said otherwise, the breaker can cancel an effect of a providing step before it gets used by its needer.
+::::::::::::::::::::::::::::::::::
+
+*Example*: In our initial plan, there are two unsupported subgoals : one to make the tea ready and another to put sugar in it. In this case the needer is the goal step and the proper fluents are each of its preconditions.
+
+These flaws need fixing before the plan can become a solution. In POP it is done by finding resolvers.
+
+::: {.definition name="Resolvers"} :::
+Classical resolvers are additional causal links. It is a kind of mirror image of flaws.
+
+* For subgoals, the resolvers are a set of potential causal links containing the proper fluent $f$ in their causes while having the needer step $s_n$ as their target.
+* For threats, their are usually only  two resolvers : *demotion* and *promotion* of the breaker relative to the threatened link.
 ::::::::::::::::::::::::::::::::::::::
 
-Partial plans can be seen as a simple form of planning graphs. It is a directed acyclic graph with action as vertices and causal links as edges. In the case of HTN we add another dimensionality to the planning graph with *abstraction levels*. On the highest level we use the most generic composite operators. The last level is for atomic actions belonging to the most specific composite operators. Each level can be seen as a plan by itself. We introduce the set of **hierarchical causal links** that is a subset of $L_H \subset L$. These links are not to be acounted for support (see @def:support). Another propriety of these levels is that $lv(o) <= lv_i(a)$ with $a$ being an instanciation of $o$. We can also extract regular partial plans from leveled partial plans at any level. $\pi_n$ is a restriction of the leveled partial plan $\pi$ at level $n$.
+*Example*: the subgoal for sugar in our example can be solved by using the action $pour(sugar,cup)$ as the source of a causal link carying the proper fluent as its only cause.
 
-We note $l : a_s \xrightarrow{c} a_t$ the **causal link** $l$ that binds the *source step* $a_s$ to the *target step* $a_t$ using the *cause* $c$. A cause is a simple set of fluents that is provided by the source to the target.
+A plan cannot be solution until all of the flaws are fixed. Sometimes, that cannot be achieved because of constraints in the plan. Sometimes it is because the side effects of the resolver application causes incompatible flaws.
 
-::: {.definition #def:support name="Support"}
-We define support as a property of preconditions, steps and partial plans. A partial plan $\pi$ is fully supported if each of its steps $o \in S$ is fully supported. A step is fully supported if each of its preconditions $f \in pre(o)$ is supported. A precondition is fully supported if there exists a causal link $l$ that provides it. We note full support of a partial plan as :
-$$\pi\Downarrow \equiv
-\begin{array}{l}
-    \forall a \in S \thickspace \forall f \in pre(a) \thickspace \exists l \in L_\pi^-(a) \smallsetminus L_H: \\
-        \left(f \in l \land \not \exists t \in S (l_{\rightarrow} \succ t \succ a \land \lnot f \in eff(t))\right)
-\end{array}$$
-with $L_\pi^-(a)$ being the incoming causal links of $a$ in $\pi$ and $l_{\rightarrow}$ being the source of the link.
+::: {.definition name="Side effects"} :::
+Flaws that arise because of the application of a resolver are called *related flaws*. They are inserted in the *agenda* (a set of flaws supporting flaw selection) whith each application of a resolver :
+
+* *Related subgoals* are all the new open conditions inserted by new steps.
+* *Related threats* are the causal links threatened by the insertion of a new step or deletion of a guarding link.
+
+Flaws can also become irrelevant when a resolver is applied. It is always the case of the targeted flaw but can also affect other flaws. Those *invalidated flaws* are removed from the agenda upon detection :
+
+* *Invalidated subgoals* are subgoals satisfied by the new causal links or removal of needer.
+* *Invalidated threats* happen when the breaker no longer threaten the causal link because order got guaranteed or the causal link or breaker have been removed.
+:::::::::::::::::::::::::::::::::::::::::
+
+*Example*: adding the action $pour(sugar, cup)$ causes another subgoal with each of the action's preconditions which are that the cup and the sugar must be taken and sugar not already in the cup.
+
+In that last definition we mentioned effects that aren't present in classical POP, namely *negative effects*. All classical resolvers only add elements to the partial plan. Our method needs to ocasionally remove steps so we plan ahead acordingly.
+
+Our version of the POP algorithm is based on [@ghallab_automated_2004, section 5.4.2]. In @alg:pop we present our generic version of POP.
+
+::: {.algorithm #alg:pop name="Partial Order Planner" startLine="1"}
+\Function{pop}{Agenda $a$, Problem $\mathcal{P}$}
+    \If{$a = \emptyset$} \Comment{Populated agenda of flaws needs to be provided}
+        \State \Return Success \Comment{Stops all recursion}
+    \EndIf
+    \State Flaw $f \gets$ \Call{choose}{$a$} \label{line:flawselection}
+    \Comment{Chosen flaw removed from agenda}
+    \State Resolvers $R \gets$ \Call{solve}{$f$, $\mathcal{P}$}
+    \ForAll{$r \in R$} \Comment{Non deterministic choice operator}
+        \State \Call{apply}{$r$, $\pi$} \label{line:resolverapplication} 
+		\Comment{Apply resolver to partial plan}
+        \State Agenda $a' \gets$ \Call{update}{$a$} \label{line:updateagenda}
+        \If{\protect\Call{pop}{$a'$, $\mathcal{P}$} = Success} \Comment{Refining recursively}
+            \State \Return Success
+        \EndIf
+        \State \Call{revert}{$r$, $\pi$} \Comment{Failure, undo resolver application}
+    \EndFor
+    \State $a \gets a \cup \{f\}$ \Comment{Flaw wasn't resolved}
+    \State \Return Failure \Comment{Revert to last non deterministic choice of resolver}
+\EndFunction
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+# Approach
+
+We aim to demonstrate the uses of abstraction in refinement based planners. In order to do this we need to explain a few additional notions regarding abstraction and then explain our algorithm in more details.
+
+## Abstraction in POP
+
+In order to handle abstraction with POP there are a couple of ways. The most straight forward way is illustrated in an other planner called Duet [@gerevini_combining_2008] by simply managing hierarchical actions separately from a regular planner. We chose another way strongly inspired from the works of Bechon *et al.* on a planner called HiPOP [@bechon_hipop_2014]. This planner is adapting HTN notions for POP by extending it and modifying its behaviour. It does this by adding new flaws and resolvers.
+
+::: {.definition name="Abstraction flaw"} :::
+An abstraction flaw is when the partial plan conatins a step with a non zero level. This step is the needer of the flaw.
+
+* *Resolvers* : An abstraction flaw is solved with an **expansion resolver**. The resolver will replace the needer with one of its instanciated methods in the plan. This is done by linking all causal links to the initial and goal step of the method as such : 
+$L^-(I_m) = L^-(s_n) \land L^+(G_m) = L^+(s_n)$ with $m \in methods(s_n)$. This means that all incoming links will be redirected to the initial step of the method and all outgoing links will be linked from the goal of the method.
+* *Side effects* : An abstraction flaw can be related to the introduction of a composite action in the plan by any resolvers and invalidated by its removal.
 :::::::::::::::::::::::::::::::::::::::::::::
 
-This means that in order to be fully supported a partial plan needs to have all its step's precondition supplied with causal links without possible order that allows a step to threaten another link. We add the notation $\pi\downarrow$ for partial support, meaning that some preconditions might not be supported. Obviously preconditions cannot be partially supported.
+![Example of an expansion of a composite action $a$ using one of its methods $m$. The elements with dashed lines are removed after the expansion.](graphics/expansion.svg){#fig:expansion}
 
-A specificity of our definition is that the ordering constraints are part of causal links. When an ordering constraint doesn't have a cause we use a **bare causal links** (mostly used for threats). We also introduce the **precedence operator** noted $a_i \succ a_j$ with $a_i, a_j \in S$ iff there is a path of causal links that connects $a_i$ to $a_j$. We call $a_i$ *anterior* to $a_j$.
+*Example*: When adding the step $make(tea)$ in the plan to solve the subgoal that needs tea being made, we also introduce an abstraction flaw that will need the step replaced by its method using an expansion resolver.
 
-The notion of support can be extended to a single level $\pi \Downarrow^n$
+One of the main focus of HiPOP is to handle the issues caused by hierarchical domains when solved with POP. These issues are mostly linked to the way the expansion resolver might introduce new flaws and the optimal order in which solving these issues. One way this is handled is by always chosing to solve the abstraction flaws first. While this may arguably make the full resolution faster it also lose oportunities to obtain abstract plans in the process.
 
-## We have a problem
+## Abstract plans
 
-::: {.definition #def:problem name="Problem"}
-The planning problem is defined as a tuple $\mathcal{P} = \langle \mathcal{D}, C_\mathcal{P}, \Omega \rangle$, where
+The main focus of our work is toward obtaining **abstract plans** which are plans that are completed while still containing abstract actions. These plans are refined from the original partial plan by layers. The algorithm delays the expansion of composite actions until it remain only abstraction flaws to solve. The plan is saved, the expansion is applied and the process starts over on the next next layer. 
 
-* $\mathcal{D}$ is a planning domain,
-* $C_\mathcal{P}$ is the set of **problem constants** disjoint from the domain constants,
-* $\Omega$ is the **root operator** which methods correspond to the solution of the problem. Its level is set to $lv_{max}(\mathcal{D}) + 1$.
-:::::::::::::::::::::::::::::::::::::::::::::
+This allows the planner to do an approximative form of anytime execution. At anytime the planner is abble to return a fully supported plan. At the first layer, the plan returned is the following $I \xrightarrow{s_0} \Omega \xrightarrow{s^*} G$. We use the root operator to indicate that no layers have been completed. However how poor the quality of this first plan, some algorithms can already derive an approximate solution for various problems.
 
-The root operator contains the **initial state and goal** (noted respectively $I$ and $G$) of the problem. In the context of multiple planning, this operator may have several methods that corresponds to several result plans.
+![Layers of the expansion in our example. The plan is extended so all atomic actions remain on the lower layer when expanding. Some details have been omited in order to be concise.](graphics/layers.svg){#fig:layers}
 
-## Plan refinement definitions
+*Example*: In our case using the method of intent recognition explained in [@sohrabi_plan_2016], we can already use this plan to find a likely goal explaning an observation (a set of temporally ordered fluents). That can give an early assesment of the probability of each goals of the recognition problem.
 
-Partial Order Planning fixes flaws in a partial plan to refine it into a valid plan that is a solution to the given problem. Since we work with a HTN approach the classical flaws must be adapted [@bechon_hipop:_2014]. Therefore, we present the updated flaws for our version of POP.
+Once the next layer is completed, it is stored to be returned as a result if the search is aborted. This is a very likely ocurrence in real time environments with big domains and problems. The idea behind this is that it is much easier to compute an abstract plan than a complete solution to the problem.
 
-::: {.definition #def:subgoal name="Subgoal"}
-A flaw in a partial plan, called subgoal, is a missing causal link required to support a precondition of a step. We can note a subgoal as $a_n\not\Downarrow_s$
-with $s$ being **proper fluent** of the subgoal (also called *open condition*) and also a unsuported precondition of the action $a_n$ called the **needer** of the subgoal.
-:::::::::::::::::::::::::::::::::::::::::::::
+Of course, these plans are not solutions to the problem. A problem is only considered solved once there isn't any flaws in the solution. That may happen at any layer but by convention we decide to number that solution layer $0$.
 
-It is to be noted that hierarchical causal links does not account for support and therefore doesn't solve subgoals. Also flaws can only be applied at a given abstraction level.
+# Properties
 
-::: {.definition name="Threat"}
-A flaw in a partial plan called threat consists of having an effect of a step that can be inserted between two actions with a causal link that is threatened by the said effect.
-We say that a step $a_b$ is threatening a causal link $a_p \xrightarrow{t} a_n$ iff
-$a_b \neq a_p \neq a_n \land \neg t \in eff(a_b) \land a_p \succ a_b \succ a_n$
-with $a_b$ being the **breaker**, $a_n$ the *needer* and $a_p$ a *provider* of the *proper fluent* $t$.
-:::::::::::::::::::::::::::::::
+First we need to prove that our approach conserve the properties of classical POP when given enough time to complete.
 
-Flaws are fixed via the application of a resolver to the plan. A flaw can have several resolvers that match its needs.
+## Soundness
 
-::: {.definition #def:resolver name="Resolvers"}
-A resolver is a potential causal link defined as a tuple $r = \langle a_s, a_t, f\rangle$ with:
+For an algorithm to be sound, it needs to provide only *valid* solutions. Our approach can provide invalid plans but that happens only on interuptions and is clearly stated in the returned data. In order to prove soundness we first need to define the notion of support.
 
-* $a_s, a_t \in S$ being the source and the target of the resolver,
-* $f$ being the considered fluent.
-:::::::::::::::::::::::::::::::::::::::::::::::::
+::: {.definition name="Support"} :::
+An open condition $f$ of a step $a$ is supported in a partial order plan $\pi$ if and only if $\exists l \in L^-_\pi(a) \land \nexists a_b \in S_\pi :
+f \in causes(l) \land \left ( \phi^-(l) \succ a_b \succ a \land \neg f \in eff(a_b) \right )$. This means that the fluent is provided by a causal link and isn't threatened by another step. We note this $\pi \downarrow_f a$. 
 
-For classical flaws, the resolvers are simple to find. For a *subgoal* the resolvers are sets of the potential causal links between a possible provider (along allowed operators or steps) of the proper fluent and the needer. To solve a *threat* there are mainly two resolvers: a causal link between the needer and the breaker called **demotion** or a causal link between the breaker and the provider called **promotion**.
+**Full support** of a step is achieved when all its preconditions are supported : $\pi \Downarrow a\equiv \forall f \in pre(a) : \pi \downarrow_f a$.
+::::::::::::::::::::::::::::::::::::
 
-Once the resolver is applied, the algorithm needs to take into account **side effects** of that application.
+In order to simplify further expressions we define two other notions :
 
-::: {.definition #def:sideeffect name="Side effects"}
-Flaws that arise because of the application of a resolver on the partial plan are called causal side effects or *related flaws*.
-:::::::::::::::::::::::::::::::::::::::::::::::::::::
+* **Proper actions** are actions that are "contained" within an entity :
+	+ For a *domain* or a *problem* it is $A_{\mathcal{D}|\mathcal{P}} = O$.
+	+ For an *action* it is $A_a = \bigcup_{m \in methods(a)} S_m$.
+	+ For a *plan* it is $A_\pi = S_\pi$.
+* **Abstraction level** is a measure of the maximum amount of abstraction an entity can hold : 
+$$lv(x) = \left ( \max_{a \in A_x}(lv(a)) + 1 \right ) [A_x \neq \emptyset]$$ 
+(we use Iverson brackets here, see notations in @tbl:symbols).
 
-We can derive this definition for subgoals and threats:
+*Example*: The abstraction level of any atomic action is $0$ while it is $2$ for the composite action $make(drink)$. The example domain has an abstraction level of $3$.
 
-* **Related Subgoals** are all the new open conditions inserted by new steps.
-* **Related Threats** are the causal links threatened by the insertion of a new step or deletion of a causal link.
+We also need to define validity in order to derive all the equivalences of it :
 
-# Algorithm {#sec:algorithm}
+::: {.definition name="Validity"} :::
+A plan $\pi$ is a valid solution of a problem $\mathcal{P}$ if and only if $\forall a \in S_\pi : \pi \Downarrow a \land lv(a) = 0$.
+:::::::::::::::::::::::::::::::::::::
 
-# Properties of ABORT {#sec:properties}
+It is reminded that $G \in S_\pi$ by definition and that it is an atomic action.
+
+We can now start to prove the soundness of our approach. We base this proof upon the one done in [@erol_umcp_1994]. It states that for classical POP, if a plan doesn't contain any flaws it is fully supported. Our main difference being with abstraction flaws we need to prove that its resolution doesn't leave classical flaws unsolved in the resulting plan.
+
+::: {.lemma name="Expansion with an empty method"} :::
+If a composite action $a$ is replaced by an empty method $m = \left ( \lbrace I_m, G_m \rbrace, \lbrace I_m \rightarrow G_m \rbrace \right )$, replace $a$ with $I_m$ in all needers of existing flaws and we add all open conditions of $G_m$ as subgoals the resulting plan will not have any undiscovered flaws.
+:::::::::::::::::::::::::::::::::::::::::::
+
+::: proof :::
+The initial and goal step of a method are *transparent* ($pre(a) = eff(a)$). 
+$$L^-(I_m) = L^-(a) \land pre(I_m) = pre(a) \implies \left ( \pi \Downarrow a \equiv \pi \Downarrow I_m \right )$$
+If we do as stated, all subgoals are populated for $I_m$ and $G_m$. For the threats, the order constraints are preserved and therefore can't cause another threat (the link between $I_m$ and $G_m$ is causeless).
+:::::::::::::
+
+
+
+## Completeness
+
+## Computational profile
+
 
 # Results {#sec:results}
 
-# Conclusions {- #sec:conclusions}
+# Conclusions {-}
 
 # References {-}
 

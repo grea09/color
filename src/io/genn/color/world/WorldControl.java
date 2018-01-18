@@ -105,8 +105,9 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 	public final Entity EQUALITY;
 	public final Entity SOLVE;
 
-	public static final Multimap<String, Action<WorldFluent, Entity>> cache =
+	public static final Multimap<String, Action<WorldFluent, Entity>> actions =
 			HashMultimap.create();
+	public static final Map<Entity, Plan> methods = new HashMap<>();
 
 	public WorldControl(Flow flow) {
 		this.flow = flow; //TODO get rid of flow
@@ -246,7 +247,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 			State eff, State constr, Plan method) {
 		String name = s.name(action);
 		List<Entity> parameters = s.signature(action);
-		Collection<Action<WorldFluent, Entity>> cached = cache.get(name);
+		Collection<Action<WorldFluent, Entity>> cached = actions.get(name);
 		for (Action existing : cached) {
 			if (existing.parameters == parameters ||
 					(existing.parameters != null &&
@@ -254,7 +255,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 				return existing;
 			}
 		}
-
+		
 		Action<WorldFluent, Entity> result =
 				new Action(name,
 						   parameters,
@@ -265,12 +266,36 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 						   (name.equals("goal") ? Action.Flag.GOAL :
 							Action.Flag.NORMAL),
 						   action, method, null, this);
-		cache.put(name, result);
+		actions.put(name, result);
 		return result;
 	}
 
 	public Action<WorldFluent, Entity> action(Entity action) throws CompilationException {
-		return action(action, null);
+		String name = s.name(action);
+		List<Entity> parameters = s.signature(action);
+		Collection<Action<WorldFluent, Entity>> cached = actions.get(name);
+		for (Action existing : cached) {
+			if (existing.parameters == parameters ||
+					(existing.parameters != null &&
+					existing.parameters.equals(parameters))) {
+				return existing;
+			}
+		}
+		Set<Entity> methods = new HashSet<>();
+		for (Entity statement : s.querry(action, METHOD)) {
+			methods.add(s.object(statement));
+		}
+		for (Entity method : methods) {
+			//Parse method
+			Plan plan = method(method);
+			return action(action, plan);
+		}
+		
+		Entity pre = s.object(first(s.querry(action, PRE)));
+		Entity eff = s.object(first(s.querry(action, EFF)));
+		Entity constr = s.object(first(s.querry(action, CONSTR)));
+
+		return action(action, pre, eff,constr);
 	}
 
 	public Action<WorldFluent, Entity> action(Entity action, Plan method) throws CompilationException {
@@ -329,6 +354,11 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 	}
 
 	private Plan method(Entity composite) throws CompilationException {
+		if(methods.containsKey(composite))
+		{
+			return methods.get(composite);
+		}
+		
 		Plan method = new Plan();
 		Action init = null, goal = null;
 		for (Entity link : (List<Entity>) s.value(composite)) {
@@ -369,14 +399,18 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		}
 		Problem problem = new Problem(init, goal, new Domain());
 		problem.solution = new SimpleSolution(method);
+		boolean ENABLED = Log.ENABLED;
 		Log.ENABLED = false;
 		boolean success = new Pop(problem).solve();
-		Log.ENABLED = true;
+		Log.ENABLED = ENABLED;
 		if(!success)
 			Log.w("Can't solve method of " + composite + " this might explain longer execution times.");
 		init.pre.addAll(init.eff);
 		goal.eff.addAll(goal.pre);
-		Log.v("Method parsed :" + method);
+		Log.d("Method parsed :" + method);
+		Log.d("Pre :" + init.eff);
+		Log.d("Eff :" + goal.pre);
+		methods.put(composite, method);
 		return method;
 	}
 

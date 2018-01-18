@@ -3,27 +3,31 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.abort;
+package io.genn.color.hipop;
 
+import io.genn.color.abort.Abort;
+import io.genn.color.abort.AbortAgenda;
+import io.genn.color.abort.AbortSolver;
 import io.genn.color.abort.problem.LeveledSolution;
+import io.genn.color.hipop.problem.CompositeSolution;
 import io.genn.color.planning.algorithm.Agenda;
 import io.genn.color.planning.algorithm.Flaw;
 import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.planning.algorithm.Solver;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.problem.Problem;
-import io.genn.color.pop.Pop;
+import io.genn.color.pop.problem.SimpleSolution;
 
 /**
  *
  * @author antoine
  */
-public class Abort extends Pop {
-
-	public Abort(Problem problem) {
+public class HiPop extends Abort {
+	
+	public HiPop(Problem problem) {
 		super(problem);
 	}
-
+	
 	@Override
 	protected void init() {
 		int level = 0;
@@ -32,9 +36,9 @@ public class Abort extends Pop {
 				level = action.level;
 			}
 		}
-		problem.solution = new LeveledSolution(level);
+		problem.solution = new CompositeSolution(level);
 		problem.solution.working().addEdge(problem.initial, problem.goal);
-		agenda = new AbortAgenda(problem);
+		agenda = new HiPopAgenda(problem);
 	}
 
 	@Override
@@ -44,9 +48,9 @@ public class Abort extends Pop {
 
 	@Override
 	protected Agenda update(Resolver resolver) {
-		Agenda oldAgenda = new AbortAgenda(agenda);
+		Agenda oldAgenda = new HiPopAgenda(agenda);
 		agenda.update(resolver);
 		return oldAgenda;
 	}
-
+	
 }

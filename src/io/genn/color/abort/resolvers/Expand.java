@@ -5,9 +5,10 @@
  */
 package io.genn.color.abort.resolvers;
 
-import io.genn.color.abort.problem.AbstractSolution;
+import io.genn.color.abort.problem.LeveledSolution;
 import io.genn.color.planning.algorithm.Change;
 import io.genn.color.planning.algorithm.Resolver;
+import io.genn.color.planning.algorithm.Success;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.domain.State;
 import io.genn.color.planning.domain.fluents.Fluent;
@@ -28,7 +29,7 @@ public class Expand<F extends Fluent<F, ?>> implements Resolver<F> {
 	public final Action<F, ?> composite;
 	public final boolean last;
 	protected final Set<Change> changes;
-	private AbstractSolution lastSolution;
+	private LeveledSolution lastSolution;
 
 	public Expand(
 			Action<F, ?> composite, boolean last) {
@@ -39,18 +40,23 @@ public class Expand<F extends Fluent<F, ?>> implements Resolver<F> {
 
 	@Override
 	public boolean appliable(Solution solution) {
-		if (solution instanceof AbstractSolution && composite.method != null &&
-				!composite.method.vertexSet().isEmpty()) {
-			return last ? ((AbstractSolution) solution).level() > 0 : true;
+		if (composite.method != null && !composite.method.vertexSet().isEmpty()) {
+			return last ? solution.level() > 0 : true;
 		}
 		return false;
 	}
 
 	@Override
 	public void apply(Solution solution) {
-		lastSolution = (AbstractSolution) solution;
-		Plan current = lastSolution.working();
-		Plan next = lastSolution.next();
+		
+		Plan next;
+		Plan current = solution.working();
+		if(solution instanceof LeveledSolution){
+			lastSolution = (LeveledSolution) solution;
+			next = lastSolution.next();
+		} else {
+			next = current;
+		}
 		Plan method = composite.method;
 		Action start = null, end = null;
 		for (Action action : method.vertexSet()) {
@@ -85,7 +91,7 @@ public class Expand<F extends Fluent<F, ?>> implements Resolver<F> {
 			next.addEdge(newOut);
 		}
 		next.removeVertex(composite);
-		if (this.last) {
+		if (this.last && lastSolution != null) {
 			Log.i("Next level !\n============================================");
 			lastSolution.level(lastSolution.level() - 1);
 		}
@@ -93,7 +99,7 @@ public class Expand<F extends Fluent<F, ?>> implements Resolver<F> {
 
 	@Override
 	public void revert() {
-		if (this.last) {
+		if (this.last && lastSolution != null) {
 			lastSolution.level(lastSolution.level() + 1);
 		}
 		for (Change change : changes) {
@@ -115,7 +121,5 @@ public class Expand<F extends Fluent<F, ?>> implements Resolver<F> {
 	public String toString() {
 		return "+" + composite;
 	}
-	
-	
 
 }
