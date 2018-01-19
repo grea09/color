@@ -170,45 +170,26 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 			}
 		}
 
-		Map<Entity, Entity> pres = new HashMap<>();
-		Map<Entity, Entity> effs = new HashMap<>();
-		Map<Entity, Entity> constrs = new HashMap<>();
+		Set<Entity> actions = new HashSet<>();
+
 		for (Entity statement : s.querry(null, PRE)) {
-			pres.put(s.subject(statement), s.object(statement));
+			actions.add(s.subject(statement));
 		}
 		for (Entity statement : s.querry(null, EFF)) {
-			effs.put(s.subject(statement), s.object(statement));
+			actions.add(s.subject(statement));
 		}
 		for (Entity statement : s.querry(null, CONSTR)) {
-			constrs.put(s.subject(statement), s.object(statement));
+			actions.add(s.subject(statement));
 		}
-		Set<Entity> actions = new HashSet<>();
-		for (Entity action : union(pres.keySet(), effs.keySet())) {
-			if (s.parameters(action) == null ||
-					!s.scope(action).isEmpty()) {
-				actions.add(action);
-			}
-		}
+
 		Domain domain = new Domain();
 		for (Entity action : actions) {
-			domain.add(action(action, pres.get(action), effs.get(action),
-							  constrs.get(action)));
+			domain.add(action(action));
 		}
 
-		pres.clear();
-		effs.clear();
-		constrs.clear();
-		Map<Entity, Entity> methods = new HashMap<>();
+		actions.clear();
 		for (Entity statement : s.querry(null, METHOD)) {
-			methods.put(s.subject(statement), s.object(statement));
-		}
-		for (Map.Entry<Entity, Entity> entry : methods.entrySet()) {
-			Entity action = entry.getKey();
-			Entity method = entry.getValue();
-			//Parse method
-			Plan plan = method(method);
-
-			domain.add(action(action, plan));
+			domain.add(action(s.subject(statement)));
 		}
 
 		return domain;
@@ -221,6 +202,9 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 				State<WorldFluent> state = new State<>();
 				for (Entity fluent : fluents) {
 //					assert (STATEMENT.equals(s.type(fluent)));
+					if (s.general(fluent).equals(SOLVE)) {
+						continue;
+					}
 					WorldFluent f = null;
 					f = new WorldFluent(fluent, flow, this);
 //					if (!state.contradicts(f)) {
@@ -233,18 +217,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		return new State<>();
 	}
 
-	public Action<WorldFluent, Entity> action(Entity action, Entity pre,
-			Entity eff, Entity constr) {
-		return action(action, state(pre), state(eff), state(constr));
-	}
-
-	public Action<WorldFluent, Entity> action(Entity action, State pre,
-			State eff, State constr) {
-		return action(action, pre, eff, constr, null);
-	}
-
-	public Action<WorldFluent, Entity> action(Entity action, State pre,
-			State eff, State constr, Plan method) {
+	public Action<WorldFluent, Entity> action(Entity action) throws CompilationException {
 		String name = s.name(action);
 		List<Entity> parameters = s.signature(action);
 		Collection<Action<WorldFluent, Entity>> cached = actions.get(name);
@@ -253,9 +226,32 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 					(existing.parameters != null &&
 					existing.parameters.equals(parameters))) {
 				return existing;
+			} else if (!existing.initial() && !existing.goal()) {
+				Map unify = s.unify(parameters, existing.parameters);
+				if (unify != null && !unify.isEmpty()) {
+					Action result = existing.instanciate(unify);
+					actions.put(name, result);
+					return result;
+				}
 			}
 		}
-		
+
+		State pre = state(s.object(first(s.querry(action, PRE))));
+		State eff = state(s.object(first(s.querry(action, EFF))));
+		State constr = state(s.object(first(s.querry(action, CONSTR))));
+		Plan method = method(s.object(first(s.querry(action, METHOD))));//FIXME multiple methods later
+
+		if (method != null) {
+			for (Action step : method.vertexSet()) {
+				if (step.initial()) {
+					pre.addAll(step.eff);
+				}
+				if (step.goal()) {
+					eff.addAll(step.pre);
+				}
+			}
+		}
+
 		Action<WorldFluent, Entity> result =
 				new Action(name,
 						   parameters,
@@ -268,77 +264,6 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 						   action, method, null, this);
 		actions.put(name, result);
 		return result;
-	}
-
-	public Action<WorldFluent, Entity> action(Entity action) throws CompilationException {
-		String name = s.name(action);
-		List<Entity> parameters = s.signature(action);
-		Collection<Action<WorldFluent, Entity>> cached = actions.get(name);
-		for (Action existing : cached) {
-			if (existing.parameters == parameters ||
-					(existing.parameters != null &&
-					existing.parameters.equals(parameters))) {
-				return existing;
-			}
-		}
-		Set<Entity> methods = new HashSet<>();
-		for (Entity statement : s.querry(action, METHOD)) {
-			methods.add(s.object(statement));
-		}
-		for (Entity method : methods) {
-			//Parse method
-			Plan plan = method(method);
-			return action(action, plan);
-		}
-		
-		Entity pre = s.object(first(s.querry(action, PRE)));
-		Entity eff = s.object(first(s.querry(action, EFF)));
-		Entity constr = s.object(first(s.querry(action, CONSTR)));
-
-		return action(action, pre, eff,constr);
-	}
-
-	public Action<WorldFluent, Entity> action(Entity action, Plan method) throws CompilationException {
-		Set<Entity> pres = new HashSet<>(), effs = new HashSet<>(), constrs =
-				new HashSet<>();
-		for (Entity statement : s.querry(action, PRE)) {
-			pres.add(s.object(statement));
-		}
-		for (Entity statement : s.querry(action, EFF)) {
-			effs.add(s.object(statement));
-		}
-		for (Entity statement : s.querry(action, CONSTR)) {
-			constrs.add(s.object(statement));
-		}
-
-		State pre = new State(), eff = new State(), constr = new State();
-		if (!pres.isEmpty()) {
-			for (Entity precondition : pres) {
-				pre.addAll(state(precondition));
-			}
-		}
-		if (!effs.isEmpty()) {
-			for (Entity effect : effs) {
-				eff.addAll(state(effect));
-			}
-		}
-		if (!constrs.isEmpty()) {
-			for (Entity constraint : constrs) {
-				constr.addAll(state(constraint));
-			}
-		}
-		if (method != null) {
-			for (Action step : method.vertexSet()) {
-				if (step.initial()) {
-					pre.addAll(step.eff);
-				}
-				if (step.goal()) {
-					eff.addAll(step.pre);
-				}
-			}
-		}
-
-		return action(action, pre, eff, constr, method);
 	}
 
 	@Override
@@ -354,11 +279,14 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 	}
 
 	private Plan method(Entity composite) throws CompilationException {
-		if(methods.containsKey(composite))
-		{
+		if (composite == null) {
+			return null;
+
+		}
+		if (methods.containsKey(composite)) {
 			return methods.get(composite);
 		}
-		
+
 		Plan method = new Plan();
 		Action init = null, goal = null;
 		for (Entity link : (List<Entity>) s.value(composite)) {
@@ -403,13 +331,12 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		Log.ENABLED = false;
 		boolean success = new Pop(problem).solve();
 		Log.ENABLED = ENABLED;
-		if(!success)
-			Log.w("Can't solve method of " + composite + " this might explain longer execution times.");
+		if (!success) {
+			Log.w("Can't solve method of " + composite +
+					" this might explain longer execution times.");
+		}
 		init.pre.addAll(init.eff);
 		goal.eff.addAll(goal.pre);
-		Log.d("Method parsed :" + method);
-		Log.d("Pre :" + init.eff);
-		Log.d("Eff :" + goal.pre);
 		methods.put(composite, method);
 		return method;
 	}

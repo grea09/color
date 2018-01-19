@@ -99,8 +99,9 @@ public class PopAgenda extends Agenda {
 	protected <F extends Fluent<F, ?>> Set<Threat<F>> threats(CausalLink fragile,
 			Action<F, ?> breaker) {
 		Set<Threat<F>> related = new HashSet<>();
-		if(fragile.target().equals(breaker) || fragile.source().equals(breaker))
+		if (fragile.target().equals(breaker) || fragile.source().equals(breaker)) {
 			return related;
+		}
 		for (F cause : (State<F>) fragile.causes) {
 			if (breaker.eff.contradicts(cause) && breaker != fragile.
 					source() &&
@@ -166,6 +167,9 @@ public class PopAgenda extends Agenda {
 							invalidated.add(subgoal);
 						}
 					}
+				} else if (!problem.solution.working().containsVertex(
+						subgoal.needer)) {
+					invalidated.add(subgoal);
 				}
 			}
 			if (flaw instanceof Threat) {
@@ -180,6 +184,10 @@ public class PopAgenda extends Agenda {
 						problem.solution.working().reachable(change.target,
 															 threat.threatened.
 																	 source()))) {
+					invalidated.add(flaw);
+				} else if (!problem.solution.working().containsEdge(
+						threat.threatened) || !problem.solution.working().
+								containsVertex(threat.breaker)) {
 					invalidated.add(flaw);
 				}
 			}

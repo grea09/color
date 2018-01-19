@@ -40,6 +40,50 @@ public class Expand<F extends Fluent<F, ?>> implements Resolver<F> {
 
 	@Override
 	public boolean appliable(Solution solution) {
+
+		Plan next;
+		Plan current = solution.working();
+		if (solution instanceof LeveledSolution) {
+			lastSolution = (LeveledSolution) solution;
+			next = lastSolution.next();
+		} else {
+			next = current;
+		}
+		Plan test = new Plan(next);
+
+		Action start = null, end = null;
+		for (Action action : composite.method.vertexSet()) {
+			if (action.initial()) {
+				start = action;
+			}
+			if (action.goal()) {
+				end = action;
+			}
+		}
+		if (start == null || end == null) {
+			return false;
+		}
+
+		try {
+			for (CausalLink link : composite.method.edgeSet()) {
+				test.addEdge(link);
+			}
+			for (CausalLink in : test.incomingEdgesOf(composite)) {
+				CausalLink newIn =
+						new CausalLink(in.source(), start, in.causes);
+				test.addEdge(newIn);
+			}
+			for (CausalLink out : test.outgoingEdgesOf(composite)) {
+				CausalLink newOut =
+						new CausalLink(end, out.target(), out.causes);
+				test.addEdge(newOut);
+			}
+		} catch (IllegalStateException e) {
+			Log.v(e);
+			Log.w("Cycle predicted, expansion cancelled !");
+			return false;
+		}
+
 		if (composite.method != null && !composite.method.vertexSet().isEmpty()) {
 			return last ? solution.level() > 0 : true;
 		}
@@ -48,10 +92,10 @@ public class Expand<F extends Fluent<F, ?>> implements Resolver<F> {
 
 	@Override
 	public void apply(Solution solution) {
-		
+
 		Plan next;
 		Plan current = solution.working();
-		if(solution instanceof LeveledSolution){
+		if (solution instanceof LeveledSolution) {
 			lastSolution = (LeveledSolution) solution;
 			next = lastSolution.next();
 		} else {

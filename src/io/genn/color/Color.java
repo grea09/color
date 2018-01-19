@@ -8,6 +8,7 @@ package io.genn.color;
 import io.genn.color.abort.Abort;
 import io.genn.color.hipop.HiPop;
 import io.genn.color.planning.algorithm.Planner;
+import io.genn.color.planning.domain.Action;
 import io.genn.color.world.WorldControl;
 import io.genn.color.planning.problem.Problem;
 import io.genn.color.pop.Pop;
@@ -37,6 +38,14 @@ public class Color {
 			Log.i("Parsing...");
 			WorldControl control = new WorldControl(world.flow);
 			Problem problem = control.problem();
+			for (Action action : problem.domain) {
+				Log.d(action.name + action.parameters + "@" + action.level + " :\n" +
+						"\t pre: " + action.pre + "\n" +
+						"\t eff :" + action.eff + "\n" +
+						"\t constr: " + action.constr + "\n" +
+						"\t method: " + action.method
+				);
+			}
 			Log.i("Running...");
 //			Log.ENABLED = false;
 //			

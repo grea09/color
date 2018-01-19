@@ -42,6 +42,7 @@ public class Instanciation<F extends Fluent<F, E>, E> {
 	public boolean search() {
 		Deque<Action<F, E>> open = queue(origin);
 		Deque<Action<F, E>> closed = queue();
+		Plan projection = new Plan(plan);
 		while (!open.isEmpty()) {
 			Action<F, E> current = open.pop();
 			closed.push(current);
@@ -64,9 +65,21 @@ public class Instanciation<F extends Fluent<F, E>, E> {
 							target != link.target() ||
 							causes != link.causes) {
 						del.add(link);
-						add.add(new CausalLink(source, target, causes));
+						CausalLink newLink =
+								new CausalLink(source, target, causes);
+						add.add(newLink);
 						open.add(link.source());
 						open.add(link.target());
+						projection.removeEdge(link);
+						try {
+							projection.addEdge(newLink);
+						} catch (IllegalStateException e)
+						{
+							Log.v(e);
+							Log.v("Potential cycle detected, search is cancelled.");
+							return false;
+						}
+						
 					}
 				}
 			}

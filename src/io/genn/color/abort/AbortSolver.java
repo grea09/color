@@ -6,6 +6,7 @@
 package io.genn.color.abort;
 
 import io.genn.color.abort.flaws.Abstraction;
+import io.genn.color.abort.heuristics.ProviderHeuristic;
 import io.genn.color.abort.resolvers.Expand;
 import io.genn.color.planning.algorithm.Flaw;
 import io.genn.color.planning.algorithm.Resolver;
@@ -43,10 +44,8 @@ public class AbortSolver extends PopSolver {
 	@Override
 	protected <F extends Flaw> Deque<Resolver> solve(F flaw) {
 		if (flaw instanceof SubGoal) {
-			Comparator<Resolver> level = (r1, r2) -> -Integer.compare(
-					((Bind)r1).source.level, ((Bind)r2).source.level);
 			List<Resolver> solve = new ArrayList<>(super.solve((SubGoal) flaw));
-			Collections.sort(solve,level);
+			Collections.sort(solve,new ProviderHeuristic());
 			return new ArrayDeque<>(solve);
 		} else if (flaw instanceof Threat) {
 			return super.solve((Threat) flaw);
