@@ -56,7 +56,7 @@ public class Color {
 //			}
 			
 //			problem = control.problem();
-			planner = new Abort(problem);
+			planner = new HiPop(problem);
 			planner.solve();
 			Log.i(problem.solution);
 			

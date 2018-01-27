@@ -9,6 +9,7 @@ import io.genn.color.abort.flaws.Abstraction;
 import io.genn.color.planning.algorithm.Agenda;
 import io.genn.color.planning.algorithm.Change;
 import io.genn.color.planning.algorithm.Flaw;
+import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.problem.Problem;
 import io.genn.color.pop.PopAgenda;
 import java.util.Set;
@@ -70,6 +71,16 @@ public class HiPopAgenda extends PopAgenda{
 			}
 		}
 		return super.choose();
+	}
+	
+	@Override
+	protected void populate() {
+		super.populate();
+		for (Action action : problem.solution.working().vertexSet()) {
+			if (action.level != 0) {
+				add(new Abstraction(action));
+			}
+		}
 	}
 	
 }

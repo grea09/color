@@ -6,7 +6,9 @@
 package io.genn.color.planning.domain.fluents;
 
 import io.genn.color.planning.domain.Action;
+import io.genn.world.data.Entity;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -15,6 +17,8 @@ import java.util.List;
 public interface FluentControl<F extends Fluent<F, E>, E> {
 
 	public E instanciate(Action<F, E> lifted, List<E> parameters);
+
+	public E instanciate(E entity, Map<E, E> unify);
 
 	public boolean discard(F fluent);
 }

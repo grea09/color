@@ -94,6 +94,15 @@ public class IntFluent implements Fluent<IntFluent, Integer> {
 			public boolean discard(IntFluent fluent) {
 				return fluent.value == 0;
 			}
+
+			@Override
+			public Integer instanciate(Integer entity,
+					Map<Integer, Integer> unify) {
+				if (unify.containsKey(entity)) {
+					return unify.get(entity);
+				}
+				return entity;
+			}
 		};
 	}
 

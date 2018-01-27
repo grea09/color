@@ -20,7 +20,7 @@ pour(stuff,into) eff (stuff in into);
 put(ustensil) pre (~(placed(ustensil)), taken(ustensil));
 put(ustensil) eff (placed(ustensil), ~(taken(ustensil)));
 
-
+infuse :: Action;
 infuse(extract,liquid,container) method (
 	init(infuse(extract,liquid,container)) -> take(extract),
 	init(infuse(extract,liquid,container)) -> take(liquid),
@@ -32,6 +32,7 @@ infuse(extract,liquid,container) method (
 	heat(liquid) -> goal(infuse(extract,liquid,container))
 );
 
+make :: Action;
 make(drink) method (
 	init(make(drink)) -> take(spoon),
 	take(spoon) -> put(spoon),

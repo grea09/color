@@ -8,10 +8,13 @@
         <group name="gennio">
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/world/WorldControl.java</file>
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/Color.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/abort/resolvers/Expand.java</file>
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/domain/Action.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/problem/Problem.java</file>
             <file>file:/home/antoine/Projets/gennio/color/data/kitchen_tea.w</file>
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/pop/resolvers/InstanciatedBind.java</file>
-            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/world/WorldFluent.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/planning/domain/fluents/FluentControl.java</file>
+            <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/pop/PopSolver.java</file>
             <file>file:/home/antoine/Projets/gennio/color/src/io/genn/color/abort/AbortSolver.java</file>
         </group>
     </open-files>

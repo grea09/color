@@ -58,7 +58,7 @@ public class AbortSolver extends PopSolver {
 
 	protected Deque<Resolver> solve(Abstraction flaw) {
 		Deque<Resolver> resolvers = new ArrayDeque<>();
-		resolvers.add(new Expand(flaw.needer, last));
+		resolvers.add(new Expand(flaw.needer, last, problem));
 		return resolvers;
 	}
 

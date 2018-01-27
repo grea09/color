@@ -136,19 +136,13 @@ public class Action<F extends Fluent<F, E>, E> {
 			return parameters;
 		}
 		List<E> newParameters = new ArrayList<>();
-		boolean changed = false;
 		for (E parameter : parameters) {
-			if (unify.containsKey(parameter)) {
-				newParameters.add(unify.get(parameter));
-				changed = true;
-			} else {
-				newParameters.add(parameter);
-			}
+			newParameters.add(control.instanciate(parameter, unify));
 		}
-		if (changed) { //TODO here that we do the stuff
-			return newParameters;
+		if (newParameters.equals(parameters)) { //TODO here that we do the stuff
+			return parameters;
 		}
-		return parameters;
+		return newParameters;
 	}
 
 	public Collection<Action<F, E>> instanciate(

@@ -5,6 +5,7 @@
  */
 package io.genn.color.abort.resolvers;
 
+import io.genn.color.Benchmark;
 import io.genn.color.abort.problem.LeveledSolution;
 import io.genn.color.planning.algorithm.Change;
 import io.genn.color.planning.algorithm.Resolver;
@@ -14,6 +15,7 @@ import io.genn.color.planning.domain.State;
 import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.planning.problem.Plan;
+import io.genn.color.planning.problem.Problem;
 import io.genn.color.planning.problem.Solution;
 import java.util.Collection;
 import java.util.HashSet;
@@ -30,12 +32,14 @@ public class Expand<F extends Fluent<F, ?>> implements Resolver<F> {
 	public final boolean last;
 	protected final Set<Change> changes;
 	private LeveledSolution lastSolution;
+	private Problem problem; //FIXME remove after Benchmarks
 
 	public Expand(
-			Action<F, ?> composite, boolean last) {
+			Action<F, ?> composite, boolean last, Problem problem) {
 		this.composite = composite;
 		this.last = last;
 		this.changes = new HashSet<>();
+		this.problem = problem;
 	}
 
 	@Override
@@ -138,6 +142,7 @@ public class Expand<F extends Fluent<F, ?>> implements Resolver<F> {
 		if (this.last && lastSolution != null) {
 			Log.i("Next level !\n============================================");
 			lastSolution.level(lastSolution.level() - 1);
+			Benchmark.stops.put(problem, System.nanoTime());//FIXME remove after Benchmarks
 		}
 	}
 

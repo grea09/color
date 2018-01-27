@@ -5,6 +5,7 @@
  */
 package io.genn.color.world;
 
+import com.google.common.collect.BiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.genn.color.planning.domain.Action;
@@ -19,12 +20,9 @@ import io.genn.color.pop.Pop;
 import io.genn.color.pop.problem.SimpleSolution;
 import io.genn.world.CompilationException;
 import io.genn.world.Flow;
-import io.genn.world.World;
 import io.genn.world.data.Entity;
 import io.genn.world.data.Store;
 import static io.genn.world.lang.Types.GROUP;
-import static io.genn.world.lang.Types.STATEMENT;
-import io.genn.world.inferer.InferenceException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -173,23 +171,41 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		Set<Entity> actions = new HashSet<>();
 
 		for (Entity statement : s.querry(null, PRE)) {
-			actions.add(s.subject(statement));
+			if (s.isGlobal(statement)) {
+				actions.add(s.subject(statement));
+			}
 		}
 		for (Entity statement : s.querry(null, EFF)) {
-			actions.add(s.subject(statement));
+			if (s.isGlobal(statement)) {
+				actions.add(s.subject(statement));
+			}
 		}
 		for (Entity statement : s.querry(null, CONSTR)) {
-			actions.add(s.subject(statement));
+			if (s.isGlobal(statement)) {
+				actions.add(s.subject(statement));
+			}
 		}
 
 		Domain domain = new Domain();
 		for (Entity action : actions) {
+//			Entity parameters = s.parameters(action);
+//			if (parameters != null) {
+//				boolean proper = true;
+//				for (Entity parameter : (List<Entity>) s.value(parameters)) {
+//					proper &= s.scopeOf(parameter).contains(action);
+//				}
+//				if (!proper) {
+//					continue;
+//				}
+//			}
 			domain.add(action(action));
 		}
 
 		actions.clear();
 		for (Entity statement : s.querry(null, METHOD)) {
-			domain.add(action(s.subject(statement)));
+			if (s.isGlobal(statement)) {
+				domain.add(action(s.subject(statement)));
+			}
 		}
 
 		return domain;
@@ -271,6 +287,35 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 			Action<WorldFluent, Entity> lifted, List<Entity> parameters) {
 		Entity action = s.parameterize(lifted.image, parameters);
 		return action;
+	}
+
+	@Override
+	public Entity instanciate(
+			Entity entity, Map<Entity, Entity> unify) {
+		List<Entity> parameters = (List<Entity>) s.value(s.parameters(entity));
+		if (parameters == null || parameters.isEmpty()) {
+			return unify.containsKey(entity) ? unify.get(entity) : entity;
+		}
+		List<Entity> newParameters = new ArrayList<>();
+		for (Entity parameter : parameters) {
+			newParameters.add(instanciate(parameter, unify));
+		}
+		if (parameters.equals(newParameters)) {
+			return entity;
+		}
+		Entity general = s.general(entity);
+		if (general != null && s.instances(general) !=null && s.instances(general).containsKey(newParameters)) {
+			return s.instances(general).get(newParameters);
+		}
+
+		Entity newEntity;
+		try {
+			newEntity = flow.instanciate(entity, newParameters);
+		} catch (CompilationException ex) {
+			Log.e(ex);
+			return null;
+		}
+		return newEntity;
 	}
 
 	@Override
