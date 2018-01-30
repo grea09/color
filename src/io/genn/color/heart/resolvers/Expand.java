@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.abort.resolvers;
+package io.genn.color.heart.resolvers;
 
 import io.genn.color.Benchmark;
-import io.genn.color.abort.problem.LeveledSolution;
+import io.genn.color.heart.problem.LeveledSolution;
+import io.genn.color.hipop.problem.CompositeSolution;
 import io.genn.color.planning.algorithm.Change;
 import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.planning.algorithm.Success;
@@ -139,10 +140,19 @@ public class Expand<F extends Fluent<F, ?>> implements Resolver<F> {
 			next.addEdge(newOut);
 		}
 		next.removeVertex(composite);
-		if (this.last && lastSolution != null) {
-			Log.i("Next level !\n============================================");
-			lastSolution.level(lastSolution.level() - 1);
-			Benchmark.stops.put(problem, System.nanoTime());//FIXME remove after Benchmarks
+		if (this.last) {
+			if (lastSolution != null) {
+				Log.
+						i("Next level !\n============================================");
+				lastSolution.level(lastSolution.level() - 1);
+				Benchmark.stops.put(problem, System.nanoTime());//FIXME remove after Benchmarks
+			} else if (solution instanceof CompositeSolution) {
+				CompositeSolution compositeSolution =
+						(CompositeSolution) solution;
+				compositeSolution.level(Integer.max(0,
+													compositeSolution.level() -
+													1));
+			}
 		}
 	}
 

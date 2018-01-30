@@ -2,10 +2,9 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment/>
-<entry key="org.netbeans.modules.profiler.v2.features.MethodsFeature_SelectedMethodsMode_SELECTION_FLAG">io.genn.color.abort.Abort,solve,(Lio/genn/color/planning/algorithm/Flaw;)Lio/genn/color/planning/algorithm/Solver; io.genn.color.hipop.HiPop,solve,(Lio/genn/color/planning/algorithm/Flaw;)Lio/genn/color/planning/algorithm/Solver; </entry>
+<entry key="org.netbeans.modules.profiler.v2.features.MethodsFeature_SelectedMethodsMode_SELECTION_FLAG">io.genn.color.pop.Pop,refine,()Lio/genn/color/planning/algorithm/Flaw; </entry>
 <entry key="ACTIVATED_FEATURES">#org.netbeans.modules.profiler.v2.features.MonitorFeature@#org.netbeans.modules.profiler.v2.features.MethodsFeature@</entry>
-<entry key="org.netbeans.modules.profiler.v2.features.MethodsFeature_MODE_FLAG">SelectedMethodsMode</entry>
+<entry key="org.netbeans.modules.profiler.v2.features.MethodsFeature_MODE_FLAG">ProjectClassesMode</entry>
 <entry key="org.netbeans.modules.profiler.v2.features.MethodsFeature_SETTINGS_FLAG">true</entry>
-<entry key="org.netbeans.modules.profiler.v2.features.MethodsFeature_ProjectClassesMode_PROJECTS_FLAG">/home/antoine/Projets/gennio/world:/home/antoine/Projets/gennio/color:</entry>
 <entry key="SINGLE_FEATURE">false</entry>
 </properties>

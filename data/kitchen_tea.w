@@ -17,8 +17,8 @@ heat(thing) eff (hot(thing));
 pour(stuff,into) pre (stuff ~(in) into, taken(stuff));
 pour(stuff,into) eff (stuff in into);
 
-put(ustensil) pre (~(placed(ustensil)), taken(ustensil));
-put(ustensil) eff (placed(ustensil), ~(taken(ustensil)));
+put(utensil) pre (~(placed(utensil)), taken(utensil));
+put(utensil) eff (placed(utensil), ~(taken(utensil)));
 
 infuse :: Action;
 infuse(extract,liquid,container) method (

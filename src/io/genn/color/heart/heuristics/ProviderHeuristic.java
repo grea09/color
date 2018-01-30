@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.abort.heuristics;
+package io.genn.color.heart.heuristics;
 
 import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.pop.resolvers.Bind;

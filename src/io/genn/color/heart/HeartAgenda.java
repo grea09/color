@@ -4,11 +4,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.abort;
+package io.genn.color.heart;
 
-import io.genn.color.abort.flaws.Abstraction;
-import io.genn.color.abort.problem.LeveledSolution;
-import io.genn.color.abort.resolvers.Expand;
+import io.genn.color.heart.flaws.Abstraction;
+import io.genn.color.heart.problem.LeveledSolution;
+import io.genn.color.heart.resolvers.Expand;
 import io.genn.color.planning.algorithm.Agenda;
 import io.genn.color.planning.algorithm.Change;
 import io.genn.color.planning.algorithm.Flaw;
@@ -25,13 +25,13 @@ import me.grea.antoine.utils.log.Log;
  *
  * @author antoine
  */
-public class AbortAgenda extends PopAgenda {
+public class HeartAgenda extends PopAgenda {
 
-	public AbortAgenda(Agenda other) {
+	public HeartAgenda(Agenda other) {
 		super(other);
 	}
 
-	public AbortAgenda(Problem problem) {
+	public HeartAgenda(Problem problem) {
 		super(problem);
 	}
 

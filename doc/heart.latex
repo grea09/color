@@ -1,0 +1,1055 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+%
+\documentclass[10pt,twocolumn,]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+ %%%%% PANCAKE
+	\usepackage{amsthm}
+	\usepackage{mfirstuc}
+	\theoremstyle{plain}
+		\newtheorem{theorem}{\capitalisewords{theorem}}[]
+			\newtheorem*{lemma}{\capitalisewords{lemma}}
+		\newtheorem*{proposition}{\capitalisewords{proposition}}
+		\newtheorem*{corollary}{\capitalisewords{corollary}}
+		\theoremstyle{definition}
+		\newtheorem{definition}{\capitalisewords{definition}}[]
+		\newtheorem{conjecture}{\capitalisewords{conjecture}}[]
+		\newtheorem{example}{\capitalisewords{example}}[]
+		\newtheorem{postulate}{\capitalisewords{postulate}}[]
+		\newtheorem{problem}{\capitalisewords{problem}}[]
+			\theoremstyle{remark}
+		\newtheorem{case}{\capitalisewords{case}}[]
+			\newtheorem*{remark}{\capitalisewords{remark}}
+		\newtheorem*{note}{\capitalisewords{note}}
+	
+ %%%%% PANCAKE
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+%%%%%% for algorithms
+\errorcontextlines\maxdimen
+\makeatletter
+\algrenewcommand\ALG@beginalgorithmic{\footnotesize}
+\algrenewcommand\alglinenumber[1]{\color{solarized-base0} #1}
+\renewcommand{\algorithmiccomment}[1]{{\hfill\(\smalltriangleright\) \emph{#1}}}
+
+
+% begin vertical rule patch for algorithmicx (http://tex.stackexchange.com/questions/144840/vertical-loop-block-lines-in-algorithmicx-with-noend-option)
+\makeatletter
+% start with some helper code
+% This is the vertical rule that is inserted
+    \newcommand*{\algrule}[1][\algorithmicindent]{\makebox[#1][l]{\color{solarized-base0}\hspace*{.5em}\thealgruleextra\vrule height \thealgruleheight depth \thealgruledepth}}%
+% its height and depth need to be adjustable
+\newcommand*{\thealgruleextra}{}
+\newcommand*{\thealgruleheight}{.95\baselineskip}
+\newcommand*{\thealgruledepth}{.25\baselineskip}
+
+\newcount\ALG@printindent@tempcnta
+\def\ALG@printindent{%
+    \ifnum \theALG@nested>0% is there anything to print
+        \ifx\ALG@text\ALG@x@notext% is this an end group without any text?
+            % do nothing
+        \else
+            \unskip
+            \addvspace{-1pt}% FUDGE to make the rules line up
+            % draw a rule for each indent level
+            \ALG@printindent@tempcnta=1
+            \loop
+                \algrule[\csname ALG@ind@\the\ALG@printindent@tempcnta\endcsname]%
+                \advance \ALG@printindent@tempcnta 1
+            \ifnum \ALG@printindent@tempcnta<\numexpr\theALG@nested+1\relax% can't do <=, so add one to RHS and use < instead
+            \repeat
+        \fi
+    \fi
+    }%
+\usepackage{etoolbox}
+% the following line injects our new indent handling code in place of the default spacing
+\patchcmd{\ALG@doentity}{\noindent\hskip\ALG@tlm}{\ALG@printindent}{}{\errmessage{failed to patch}}
+\makeatother
+
+% the required height and depth are set by measuring the content to be shown
+% this means that the content is processed twice
+\newbox\statebox
+\newcommand{\myState}[1]{%
+    \setbox\statebox=\vbox{#1}%
+    \edef\thealgruleheight{\dimexpr \the\ht\statebox+1pt\relax}%
+    \edef\thealgruledepth{\dimexpr \the\dp\statebox+1pt\relax}%
+    \ifdim\thealgruleheight<.75\baselineskip
+        \def\thealgruleheight{\dimexpr .75\baselineskip+1pt\relax}%
+    \fi
+    \ifdim\thealgruledepth<.25\baselineskip
+        \def\thealgruledepth{\dimexpr .25\baselineskip+1pt\relax}%
+    \fi
+    %\showboxdepth=100
+    %\showboxbreadth=100
+    %\showbox\statebox
+    \State #1%
+    %\State \usebox\statebox
+    %\State \unvbox\statebox
+    %reset in case the next command is not wrapped in \myState
+    \def\thealgruleheight{\dimexpr .75\baselineskip+1pt\relax}%
+    \def\thealgruledepth{\dimexpr .25\baselineskip+1pt\relax}%
+}
+% end vertical rule patch for algorithmicx
+
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+    \setmainfont[]{Nimbus Roman No9 L}
+    \usepackage{titling}
+    \newfontfamily\headingfont[]{Nimbus Roman No9 L}
+    \renewcommand{\maketitlehooka}{\headingfont}
+  \setmathfont[]{STIX Two Math}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+
+\IfFileExists{xcolor-solarized.sty}{\usepackage{xcolor-solarized}} {
+% We now define the sixteen \solarized{} colors.
+\definecolor{solarized-base03} {RGB}{000, 043, 054}
+\definecolor{solarized-base02} {RGB}{007, 054, 066}
+\definecolor{solarized-base01} {RGB}{088, 110, 117}
+\definecolor{solarized-base00} {RGB}{101, 123, 131}
+\definecolor{solarized-base0}  {RGB}{131, 148, 150}
+\definecolor{solarized-base1}  {RGB}{147, 161, 161}
+\definecolor{solarized-base2}  {RGB}{238, 232, 213}
+\definecolor{solarized-base3}  {RGB}{253, 246, 227}
+\definecolor{solarized-yellow} {RGB}{181, 137, 000}
+\definecolor{solarized-orange} {RGB}{203, 075, 022}
+\definecolor{solarized-red}    {RGB}{220, 050, 047}
+\definecolor{solarized-magenta}{RGB}{211, 054, 130}
+\definecolor{solarized-violet} {RGB}{108, 113, 196}
+\definecolor{solarized-blue}   {RGB}{038, 139, 210}
+\definecolor{solarized-cyan}   {RGB}{042, 161, 152}
+\definecolor{solarized-green}  {RGB}{133, 153, 000}
+}
+\usepackage[unicode=true]{hyperref}
+\hypersetup{
+            pdftitle={HEART: HiErarchical Abstraction for Real-Time partial order planning},
+            pdfauthor={Antoine Gréa; Laetitia Matignon; Samir Aknine},
+            colorlinks=true,
+            linkcolor=solarized-cyan,
+            citecolor=solarized-base1,
+            urlcolor=solarized-blue,
+            filecolor=solarized-magenta,
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\VerbatimFootnotes % allows verbatim text in footnotes
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+%\renewcommand\lstlistingname{\bfseries Listing} % Make listings caption title bold.
+%\makeatletter
+%\def\fnum@lstlisting{%
+%  \lstlistingname
+%  \ifx\lst@@caption\@empty\else~\thelstlisting\normalfont\fi}%
+%\makeatother
+\lstset{
+    language=java,
+    keywords={pre, eff, method, Action},
+    numbers=left,
+    stepnumber=1,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    keepspaces=true,
+    showtabs=true,
+    tabsize=1,
+    extendedchars=true,
+    captionpos=b,
+    breaklines=true,
+    breakatwhitespace=true,
+    breakautoindent=true,
+%    framexrightmargin=-2mm,
+    xleftmargin=5mm,
+    framexleftmargin=5mm}
+
+ %%%%% PANCAKE
+
+%%%% For listings (code blocks)
+\lstset{
+    basicstyle={\color{solarized-base02}\footnotesize\ttfamily},
+    backgroundcolor=\color{solarized-base3},
+    keywordstyle=\color{solarized-orange}\bfseries,
+    identifierstyle=\color{solarized-base01},
+    stringstyle=\color{solarized-green},
+    commentstyle=\color{solarized-base1}\itshape,
+    numberstyle=\footnotesize\color{solarized-base0}
+}
+
+
+\usepackage{longtable,booktabs}
+% Fix footnotes in tables (requires footnote package)
+\IfFileExists{footnote.sty}{\usepackage{footnote}\makesavenoteenv{longtable}}{}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{.panzer/template/latex/ijcai}
+\makeatletter
+\@ifpackageloaded{subfig}{}{\usepackage{subfig}}
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\captionsetup[subfloat]{margin=0.5em}
+\AtBeginDocument{%
+\renewcommand*\figurename{Figure}
+\renewcommand*\tablename{Table}
+}
+\AtBeginDocument{%
+\renewcommand*\listfigurename{List of Figures}
+\renewcommand*\listtablename{List of Tables}
+}
+\newcommand*\listoflistings\lstlistoflistings
+\AtBeginDocument{%
+\renewcommand*{\lstlistlistingname}{List of Listings}
+}
+\@ifpackageloaded{cleveref}{}{\usepackage{cleveref}}
+\crefname{figure}{figure}{figures}
+\Crefname{figure}{Figure}{Figures}
+\crefname{table}{table}{tables}
+\Crefname{table}{Table}{Tables}
+\crefname{equation}{equation}{equations}
+\Crefname{equation}{Equation}{Equations}
+\crefname{listing}{listing}{listings}
+\Crefname{listing}{Listing}{Listings}
+\crefname{section}{section}{sections}
+\Crefname{section}{Section}{Sections}
+\makeatother
+
+\title{HEART: HiErarchical Abstraction for Real-Time partial order planning}
+\author{Antoine Gréa \and Laetitia Matignon \and Samir Aknine}
+\date{}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+When asked about the biggest issues with automated planning, the answer
+often consists of speed, quality, and expressivity. However, certain
+applications need a mix of these criteria. Most existing solutions focus
+on one area while not addressing address the others. We aim to present a
+new method to compromise on these aspects in respect to demanding
+domains like assistive robotics and real-time computations. The HEART
+planner is an anytime planner based on a hierarchical version of Partial
+Order Planning (POP). Its principle is to retain a partial plan at each
+abstraction level in the hierarchy of actions. While the intermediary
+plans are not solutions, they meet criteria for usages ranging from
+explanation to goal inference. This paper also evaluates the variations
+of speed/quality combinations of the abstract plan in relation to the
+complete planning process.
+\end{abstract}
+
+\hypertarget{introduction}{%
+\section*{Introduction}\label{introduction}}
+\addcontentsline{toc}{section}{Introduction}
+
+The domain of automated planning is considered a basis of artificial
+intelligence. As such it must adapt to suit very different needs. Some
+works might require a fast real time scheduling process to build a path
+in complex environments. Other works will require flexibility for
+cooperation or competition with other agents. That is the reason behind
+the diversity of the planning comunity approach wise.
+
+Our research aims at a totally separated domain : intent recognition and
+robotics. In the recent years several works extended what is known in
+psycology as the \emph{theory of mind}. That theory suposes that to
+recognise other's intents and goals we often use to transpose our own.
+That is like saying ``\emph{what would \textbf{I} do~?}'' when observing
+actions of another person. This leads to new ways to use \emph{invert
+planning} as an inference tool.
+
+One of the first to propose that idea was Baker et al. {[}Baker,
+Tenenbaum, \& Saxe, \protect\hyperlink{ref-baker_goal_2007}{2007}{]}
+that uses bayesian planning to infer intentions. Another one was Ramirez
+et al. {[}Ramirez \& Geffner,
+\protect\hyperlink{ref-ramirez_plan_2009}{2009}{]} that found an elegant
+way to transform a plan recognition problem into classical planning.
+This is done simply by encoding observation constraints into the
+planning domain {[}Baioletti, Marcugini, \& Milani,
+\protect\hyperlink{ref-baioletti_encoding_1998}{1998}{]} to ensure the
+selection of actions in the order that they were observed. A cost
+comparison will then give us a probability of the goal being pursued
+given the observations. Some works extended this with multi-goal
+recognition {[}J. Chen, Chen, Xu, Huang, \& Chen,
+\protect\hyperlink{ref-chen_planning_2013}{2013}{]} and robotic
+applications {[}Talamadupula, Briggs, Chakraborti, Scheutz, \&
+Kambhampati,
+\protect\hyperlink{ref-talamadupula_coordination_2014}{2014}{]}.
+
+Very recently, another paper extended this approach significantly. The
+method proposed by Sohrabi et al. {[}Sohrabi, Riabov, \& Udrea,
+\protect\hyperlink{ref-sohrabi_plan_2016}{2016}{]} make the recognition
+at the fluent level instead of actions. It assign costs to missing or
+noisy observed fluents by using soft constraints (often called user
+preferences). This method also uses a meta-goal that combine each
+possible goal and is realised when at least one of them is reached.
+
+Sohrabi et al.~states that the quality of the recognition is directly
+linked to the quality of the generated plans. This is why guided diverse
+planning was prefered along with the posibilities to infer several
+possible goals at once.
+
+Since our applicative domain also include robotics, we wish to account
+also for the real time aspect of the prediction. Indeed, a prediction is
+only useful \emph{before} it happens. The human aspect of our context
+also asks for high level description and extensive domains.
+
+Obviously these work hypothesis are in direct contradiction~: the harder
+the problem, the longer the resolution. And this is especially true in
+automated planning as it has been proven to be a P-SPACE problem if not
+harder. A big and complex domain is intractable on limited embeded
+robotics.
+
+Our interest was on the following question : what happens when one
+\emph{can't} find the solution to the problem~? What if the problem
+can't be solved~? What if we ran out of time~? This question has been
+partially threated in {[}Göbelbecker, Keller, Eyerich, Brenner, \&
+Nebel, \protect\hyperlink{ref-gobelbecker_coming_2010}{2010}{]} where
+``excuses'' are being investigated as response to unsolvability.
+
+\textbf{FIXME : Speak about POP and HTN}
+
+\textbf{TODO : Introducing our work}
+
+\hypertarget{definitions}{%
+\section{Definitions}\label{definitions}}
+
+In this paper, we use the notation defined in \cref{tbl:symbols}. Our
+notations are adapted from the ones used in {[}Ghallab, Nau, \&
+Traverso, \protect\hyperlink{ref-ghallab_automated_2004}{2004}{]} and
+{[}Göbelbecker et al.,
+\protect\hyperlink{ref-gobelbecker_coming_2010}{2010}{]}. We also use
+graph theory notations. The symbol \(\pm\) is used to signify that the
+notation is signed. All related notions will be defined later.
+
+\hypertarget{tbl:symbols}{}
+\begin{table}\footnotesize
+\centering
+
+\caption{\label{tbl:symbols}Most used symbols in the paper.}
+
+\begin{tabular}{@{}ll@{}}
+\toprule
+
+\textbf{Symbol} & \textbf{Description} \\\midrule
+
+\(pre(a)\), \(eff(a)\) & Preconditions and effects of the action
+\(a\). \\
+\(methods(a)\) & Methods of the action \(a\). \\
+\(\mathcal{D}, \mathcal{P}\) & Planning domain and problem. \\
+\(lv(a), lv(\mathcal{D})\) & Abstraction level of the action or
+domain. \\
+\(\phi^\pm(l)\) & Signed incidence function for partial order plans. \\
+ & \(\phi^-\) gives the source and \(\phi^+\) the target step of
+\(l\). \\
+ & No sign gives a pair corresponding to link \(l\). \\
+\(causes(l)\) & Gives the causes of causal link \(l\). \\
+\(a_a \succ a_s\) & Step \(a_a\) is anterior to successor step
+\(a_p\). \\
+\(L^\pm(a)\) & Set of incoming (\(L^-\)) and outgoing (\(L^+\)) links of
+step \(a\). \\
+ & No sign gives all adjacent links. \\
+\(l \downarrow a\) & Link \(l\) participates in the partial support of
+step \(a\). \\
+\(\downarrowbarred_f a\) & Fluent \(f\) isn't supported in step
+\(a\). \\
+\(\pi \Downarrow a\) & Plan \(\pi\) fully supports \(a\). \\
+ & If no left side it means just full support. \\
+\(A_x\) & Proper actions set of \(x\). \\
+\([exp]\) & Iverson bracket : \(0\) if \(exp=false\), \(1\)
+otherwise. \\
+
+\bottomrule
+\end{tabular}
+
+\end{table}
+
+Planners often work in two times : first we input the planning domain
+then we give the planner an instance of a planning problem to solve.
+
+\hypertarget{domain}{%
+\subsection{Domain}\label{domain}}
+
+The domain is the context of the planner. It specifies the allowed
+operators that can be used to plan and all the fluents they use for
+preconditions and effects.
+
+\begin{definition}[Domain]
+
+A domain \(\mathcal{D} = \langle C_\mathcal{D} , R, F, O \rangle\) is a
+tuple where :
+
+\begin{itemize}
+\tightlist
+\item
+  \(C_\mathcal{D}\) is the set of \textbf{domain constants}.
+\item
+  \(R\) is the set of \textbf{relations} (also called \emph{properties})
+  of the domain. These relations are similar to quantified predicates in
+  first order logic.
+\item
+  \(F\) is the set of \textbf{fluents} used in the domain to describe
+  operators.
+\item
+  \(O\) is the set of \textbf{operators} which are fully lifted
+  \emph{actions}.
+\end{itemize}
+
+\end{definition}
+
+\emph{Example}: The domain in \cref{lst:domain} we use as example is
+inspired from the kitchen domain of {[}Ramirez \& Geffner,
+\protect\hyperlink{ref-ramirez_probabilistic_2010}{2010}{]} modified to
+suit our needs.
+
+\begin{lstlisting}[caption={Domain file used in our planner. Composite actions have been truncated for lack of space. FIXME: Show the whole domain or not and how ?}, label=lst:domain]
+boil(liquid) pre (~(boiled(liquid)));
+boil(liquid) eff (boiled(liquid));
+take(thing) pre (~(taken(thing)));
+take(thing) eff (taken(thing));
+infuse(brevage, cup) pre (~(ready(brevage)), boiled(water), water in cup, taken(brevage)); 
+infuse(brevage, cup) eff (ready(brevage), brevage in cup);
+pour(ingredient, container) pre (taken(container), taken(ingredient), ingredient ~(in) container);
+pour(ingredient, container) eff (ingredient in container);
+add :: Action; // Level 1
+make :: Action; // Level 2
+\end{lstlisting}
+
+A domain contains the definitions of all fluents that can be used in the
+operators.
+
+\begin{definition}[Fluent]
+
+A fluent is a parameterized relation \(f=r(arg_1, arg_2, … , arg_n)\)
+where :
+
+\begin{itemize}
+\tightlist
+\item
+  \(r\) is the relation of the fluent under the form of a boolean
+  predicate.
+\item
+  \(arg_i | i \in [1,n]\) are the arguments (possibly quantified).
+\item
+  \(n = |r|\) is the arity of \(r\).
+\end{itemize}
+
+Fluents are signed. Negative fluents are noted \(\neg f\) and behave as
+a logical complement. Quantifiers are affected by the sign of the
+fluents. We don't use the closed world hypothesis : fluents are not
+satisfied until provided whatever their sign.
+
+\end{definition}
+
+\emph{Example}: The precondition of operator \(take(thing)\) is simply a
+single negative fluent noted \(\neg taken(thing)\) ensuring the variable
+\(thing\) isn't already taken.
+
+The central notion of planning is operators. Instanciated operators are
+called \emph{actions}. In our framework, actions can be partially
+instanciated and therefore we consider operators as a special case of
+actions.
+
+\begin{definition}[Action]\label{def:action}
+
+An action \(a\) is an instanciated operator of the domain. It can have
+instanciation parameters. We note it
+\(a=\langle name, pre, eff, methods \rangle\) where :
+
+\begin{itemize}
+\tightlist
+\item
+  \(name\) is the \textbf{name} of the action.
+\item
+  \(pre\) and \(eff\) are sets of fluents that are respectively the
+  \textbf{preconditions and effects} of the action.
+\item
+  \(methods\) is a set of \textbf{methods} (partial order plans) that
+  can realize the action.
+\end{itemize}
+
+\end{definition}
+
+\emph{Example}: In the kitchen the action \(take(thing)\) has a
+precondition of the parameter not being taken and an effect of the
+parameter being taken.
+
+\emph{Composite} actions are represented using methods. Each method is a
+partial order plan used in Partial Order Planning (POP). An action
+without methods is called \emph{atomic}.
+
+\begin{definition}[Plan]
+
+A partially ordered plan is an acyclic directed graph \(\pi = (S, L)\)
+with :
+
+\begin{itemize}
+\tightlist
+\item
+  \(S\) the set of \textbf{steps} of the plan as vertices. A step is an
+  action belonging in the plan.
+\item
+  \(L\) the set of \textbf{causal links} of the plan as edges. We note
+  \(l : a_s \xrightarrow{c} a_t\) the link between its source \(a_s\)
+  and target \(a_t\) caused by \(c\).
+\end{itemize}
+
+\end{definition}
+
+In our representation \emph{ordering constraints} are defined as the
+transitive cover of causal links over the set of steps. We note ordering
+constraints like this : \(a_a \succ a_s\) with \(a_a\) being
+\emph{anterior} to its \emph{successor} \(a_s\). Ordering constraints
+can't form cycles meaning that the steps must be different and that the
+successor can't be also anterior to its anterior steps :
+\(a_a \neq a_s \land a_s \not \succ a_a\).
+
+If we need to enforce order we simply add a causal link without cause.
+This graph representation along with the implicit ordering constraints
+makes for a simplified framework that still retain classical properties
+needed for POP.
+
+\textbf{TODO speak about preconditions and effect inference}
+
+\hypertarget{problem}{%
+\subsection{Problem}\label{problem}}
+
+The other part of the input of most planners is the problem instance.
+This problem is often most simply described by two components : the
+initial state and the goal of the problem.
+
+\begin{definition}[Problem]
+
+The planning problem is defined as a tuple
+\(\mathcal{P} = \langle \mathcal{D}, C_\mathcal{P} , \Omega\rangle\)
+where :
+
+\begin{itemize}
+\tightlist
+\item
+  \(\mathcal{D}\) is a planning domain.
+\item
+  \(C_\mathcal{P}\) is the set of \textbf{problem constants} disjoint
+  from the domain constants.
+\item
+  \(\Omega\) is the problem's \textbf{root operator} which methods are
+  solutions of the problem.
+\end{itemize}
+
+The root operator contains the initial state and goal (noted
+respectively \(I\) and \(G\) ) of the problem.
+
+\end{definition}
+
+\emph{Example}: We use a simple problem for our example domain. The
+initial state provides that nothing is ready, taken or boiled and all
+containers are empty (all using quantifiers). The goal is to have tea
+ready and with sugar. For reference, here is the problem as stated in
+our file :
+
+\begin{lstlisting}[caption={One problem instance used as an example for this paper.}, label=lst:problem]
+init eff (ready(~), taken(~), boiled(~), * ~(in) *);
+goal pre (ready(tea), sugar in cup);
+\end{lstlisting}
+
+In all cases, the root operator is initialized at
+\(\Omega = \langle "", s_0, s^*, \lbrace \pi \rbrace\rangle\) with
+\(s_0\) being the initial state and \(s^*\) the goal specifications.
+
+The method \(\pi\) is a partial order plan with only the initial and
+goal steps linked together. Partial order plans are at the heart of
+Partial Order Planning (POP).
+
+\emph{Example}: The initial partial order plan is
+\(\pi = (\lbrace I,G \rbrace, \lbrace I \rightarrow G \rbrace)\) with :
+
+\begin{itemize}
+\tightlist
+\item
+  \(I = \langle "init", \emptyset, s_0, \emptyset\rangle\) and
+\item
+  \(G = \langle "goal", \emptyset, s^*, \emptyset\rangle\).
+\end{itemize}
+
+The goal of the planner is to refine the plan \(\pi\) until it becomes
+solution of the problem.
+
+\hypertarget{partial-order-planning}{%
+\subsection{Partial Order Planning}\label{partial-order-planning}}
+
+At the base of our method is the classical POP algorithm. It works by
+refining a partial plan until no more flaws are present and therefore it
+becomes a solution of the planning problem.
+
+\begin{definition}[Flaws]
+
+A flaw in a partial plan is a contradiction with its validity. Flaws
+have a \emph{proper fluent} \(f\) and a related step often called the
+\emph{needer} \(a_n\). There exist two types of classical flaws :
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Subgoals} are \emph{open conditions} that are yet to be
+  supported by another step \(a_n\) often called \emph{provider}.
+\item
+  \textbf{Threats} are caused by steps that can break a causal link with
+  their effects. They are called \emph{breakers} of the threatened link.
+  A step \(a_b\) is threatenning a causal link
+  \(a_p \xrightarrow{f} a_n\) if and only if
+  \(\neg f \in eff(a_b) \land a_p \succ a_b \succ a_n\). Said otherwise,
+  the breaker can cancel an effect of a providing step before it gets
+  used by its needer.
+\end{itemize}
+
+\end{definition}
+
+\emph{Example}: In our initial plan, there are two unsupported subgoals
+: one to make the tea ready and another to put sugar in it. In this case
+the needer is the goal step and the proper fluents are each of its
+preconditions.
+
+These flaws need fixing before the plan can become a solution. In POP it
+is done by finding resolvers.
+
+\begin{definition}[Resolvers]
+
+Classical resolvers are additional causal links. It is a kind of mirror
+image of flaws.
+
+\begin{itemize}
+\tightlist
+\item
+  For subgoals, the resolvers are a set of potential causal links
+  containing the proper fluent \(f\) in their causes while having the
+  needer step \(s_n\) as their target.
+\item
+  For threats, their are usually only two resolvers : \emph{demotion}
+  and \emph{promotion} of the breaker relative to the threatened link.
+\end{itemize}
+
+\end{definition}
+
+\emph{Example}: the subgoal for sugar in our example can be solved by
+using the action \(pour(sugar,cup)\) as the source of a causal link
+carying the proper fluent as its only cause.
+
+A plan cannot be solution until all of the flaws are fixed. Sometimes,
+that cannot be achieved because of constraints in the plan. Sometimes it
+is because the side effects of the resolver application causes
+incompatible flaws.
+
+\begin{definition}[Side effects]
+
+Flaws that arise because of the application of a resolver are called
+\emph{related flaws}. They are inserted in the \emph{agenda} (a set of
+flaws supporting flaw selection) whith each application of a resolver :
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Related subgoals} are all the new open conditions inserted by
+  new steps.
+\item
+  \emph{Related threats} are the causal links threatened by the
+  insertion of a new step or deletion of a guarding link.
+\end{itemize}
+
+Flaws can also become irrelevant when a resolver is applied. It is
+always the case of the targeted flaw but can also affect other flaws.
+Those \emph{invalidated flaws} are removed from the agenda upon
+detection :
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Invalidated subgoals} are subgoals satisfied by the new causal
+  links or removal of needer.
+\item
+  \emph{Invalidated threats} happen when the breaker no longer threaten
+  the causal link because order got guaranteed or the causal link or
+  breaker have been removed.
+\end{itemize}
+
+\end{definition}
+
+\emph{Example}: adding the action \(pour(sugar, cup)\) causes another
+subgoal with each of the action's preconditions which are that the cup
+and the sugar must be taken and sugar not already in the cup.
+
+In that last definition we mentioned effects that aren't present in
+classical POP, namely \emph{negative effects}. All classical resolvers
+only add elements to the partial plan. Our method needs to ocasionally
+remove steps so we plan ahead acordingly.
+
+Our version of the POP algorithm is based on {[}Ghallab et al.,
+\protect\hyperlink{ref-ghallab_automated_2004}{2004}, sec. 5.4.2{]}. In
+\cref{alg:pop} we present our generic version of POP.
+
+\begin{algorithm}\caption{Partial Order Planner}\label{alg:pop}\begin{algorithmic}[1]\Function{pop}{Agenda $a$, Problem $\mathcal{P}$}\If{$a = \emptyset$} \Comment{Populated agenda of flaws needs to be provided}
+    \State \Return Success \Comment{Stops all recursion}
+\EndIf
+\State Flaw $f \gets$ \Call{choose}{$a$} \label{line:flawselection}
+\Comment{Chosen flaw removed from agenda}
+\State Resolvers $R \gets$ \Call{solve}{$f$, $\mathcal{P}$}
+\ForAll{$r \in R$} \Comment{Non deterministic choice operator}
+    \State \Call{apply}{$r$, $\pi$} \label{line:resolverapplication} 
+    \Comment{Apply resolver to partial plan}
+    \State Agenda $a' \gets$ \Call{update}{$a$} \label{line:updateagenda}
+    \If{\protect\Call{pop}{$a'$, $\mathcal{P}$} = Success} \Comment{Refining recursively}
+        \State \Return Success
+    \EndIf
+    \State \Call{revert}{$r$, $\pi$} \Comment{Failure, undo resolver application}
+\EndFor
+\State $a \gets a \cup \{f\}$ \Comment{Flaw wasn't resolved}
+\State \Return Failure \Comment{Revert to last non deterministic choice of resolver}\EndFunction\end{algorithmic}\end{algorithm}
+
+\hypertarget{approach}{%
+\section{Approach}\label{approach}}
+
+We aim to demonstrate the uses of abstraction in refinement based
+planners. In order to do this we need to explain a few additional
+notions regarding abstraction and then explain our algorithm in more
+details.
+
+\hypertarget{abstraction-in-pop}{%
+\subsection{Abstraction in POP}\label{abstraction-in-pop}}
+
+In order to handle abstraction with POP there are a couple of ways. The
+most straight forward way is illustrated in an other planner called Duet
+{[}Gerevini, Kuter, Nau, Saetti, \& Waisbrot,
+\protect\hyperlink{ref-gerevini_combining_2008}{2008}{]} by simply
+managing hierarchical actions separately from a regular planner. We
+chose another way strongly inspired from the works of Bechon \emph{et
+al.} on a planner called HiPOP {[}Bechon, Barbier, Infantes, Lesire, \&
+Vidal, \protect\hyperlink{ref-bechon_hipop_2014}{2014}{]}. This planner
+is adapting HTN notions for POP by extending it and modifying its
+behaviour. It does this by adding new flaws and resolvers.
+
+\begin{definition}[Abstraction flaw]
+
+An abstraction flaw is when the partial plan conatins a step with a non
+zero level. This step is the needer of the flaw.
+
+\begin{itemize}
+\tightlist
+\item
+  \emph{Resolvers} : An abstraction flaw is solved with an
+  \textbf{expansion resolver}. The resolver will replace the needer with
+  one of its instanciated methods in the plan. This is done by linking
+  all causal links to the initial and goal step of the method as such :
+  \(L^-(I_m) = L^-(s_n) \land L^+(G_m) = L^+(s_n)\) with
+  \(m \in methods(s_n)\). This means that all incoming links will be
+  redirected to the initial step of the method and all outgoing links
+  will be linked from the goal of the method.
+\item
+  \emph{Side effects} : An abstraction flaw can be related to the
+  introduction of a composite action in the plan by any resolvers and
+  invalidated by its removal.
+\end{itemize}
+
+\end{definition}
+
+\hypertarget{fig:expansion}{%
+\begin{figure}
+\centering
+\includegraphics{graphics/expansion.svg}
+\caption{Example of an expansion of a composite action \(a\) using one
+of its methods \(m\). The elements with dashed lines are removed after
+the expansion.}\label{fig:expansion}
+\end{figure}
+}
+
+\emph{Example}: When adding the step \(make(tea)\) in the plan to solve
+the subgoal that needs tea being made, we also introduce an abstraction
+flaw that will need the step replaced by its method using an expansion
+resolver.
+
+One of the main focus of HiPOP is to handle the issues caused by
+hierarchical domains when solved with POP. These issues are mostly
+linked to the way the expansion resolver might introduce new flaws and
+the optimal order in which solving these issues. One way this is handled
+is by always chosing to solve the abstraction flaws first. While this
+may arguably make the full resolution faster it also lose oportunities
+to obtain abstract plans in the process.
+
+\hypertarget{abstract-plans}{%
+\subsection{Abstract plans}\label{abstract-plans}}
+
+The main focus of our work is toward obtaining \textbf{abstract plans}
+which are plans that are completed while still containing abstract
+actions. These plans are refined from the original partial plan by
+layers. The algorithm delays the expansion of composite actions until it
+remain only abstraction flaws to solve. The plan is saved, the expansion
+is applied and the process starts over on the next next layer.
+
+This allows the planner to do an approximative form of anytime
+execution. At anytime the planner is abble to return a fully supported
+plan. At the first layer, the plan returned is the following
+\(I \xrightarrow{s_0} \Omega \xrightarrow{s^*} G\). We use the root
+operator to indicate that no layers have been completed. However how
+poor the quality of this first plan, some algorithms can already derive
+an approximate solution for various problems.
+
+\hypertarget{fig:layers}{%
+\begin{figure*}
+\centering
+\includegraphics{graphics/layers.svg}
+\caption{Layers of the expansion in our example. The plan is extended so all atomic actions remain on the lower layer when expanding. Some details have been omited in order to be concise.}\label{fig:layers}
+\end{figure*}
+}
+
+\emph{Example}: In our case using the method of intent recognition
+explained in {[}Sohrabi et al.,
+\protect\hyperlink{ref-sohrabi_plan_2016}{2016}{]}, we can already use
+this plan to find a likely goal explaning an observation (a set of
+temporally ordered fluents). That can give an early assesment of the
+probability of each goals of the recognition problem.
+
+Once the next layer is completed, it is stored to be returned as a
+result if the search is aborted. This is a very likely ocurrence in real
+time environments with big domains and problems. The idea behind this is
+that it is much easier to compute an abstract plan than a complete
+solution to the problem.
+
+Of course, these plans are not solutions to the problem. A problem is
+only considered solved once there isn't any flaws in the solution. That
+may happen at any layer but by convention we decide to number that
+solution layer \(0\).
+
+\hypertarget{properties}{%
+\section{Properties}\label{properties}}
+
+First we need to prove that our approach conserve the properties of
+classical POP when given enough time to complete.
+
+\hypertarget{soundness}{%
+\subsection{Soundness}\label{soundness}}
+
+For an algorithm to be sound, it needs to provide only \emph{valid}
+solutions. Our approach can provide invalid plans but that happens only
+on interuptions and is clearly stated in the returned data. In order to
+prove soundness we first need to define the notion of support.
+
+\begin{definition}[Support]
+
+An open condition \(f\) of a step \(a\) is supported in a partial order
+plan \(\pi\) if and only if
+\(\exists l \in L^-_\pi(a) \land \nexists a_b \in S_\pi : f \in causes(l) \land \left ( \phi^-(l) \succ a_b \succ a \land \neg f \in eff(a_b) \right )\).
+This means that the fluent is provided by a causal link and isn't
+threatened by another step. We note this \(\pi \downarrow_f a\).
+
+\textbf{Full support} of a step is achieved when all its preconditions
+are supported :
+\(\pi \Downarrow a\equiv \forall f \in pre(a) : \pi \downarrow_f a\).
+
+\end{definition}
+
+In order to simplify further expressions we define two other notions :
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Proper actions} are actions that are ``contained'' within an
+  entity :
+
+  \begin{itemize}
+  \tightlist
+  \item
+    For a \emph{domain} or a \emph{problem} it is
+    \(A_{\mathcal{D}|\mathcal{P}} = O\).
+  \item
+    For an \emph{action} it is \(A_a = \bigcup_{m \in methods(a)} S_m\).
+  \item
+    For a \emph{plan} it is \(A_\pi = S_\pi\).
+  \end{itemize}
+\item
+  \textbf{Abstraction level} is a measure of the maximum amount of
+  abstraction an entity can hold :
+  \[lv(x) = \left ( \max_{a \in A_x}(lv(a)) + 1 \right ) [A_x \neq \emptyset]\]
+  (we use Iverson brackets here, see notations in \cref{tbl:symbols}).
+\end{itemize}
+
+\emph{Example}: The abstraction level of any atomic action is \(0\)
+while it is \(2\) for the composite action \(make(drink)\). The example
+domain has an abstraction level of \(3\).
+
+We also need to define validity in order to derive all the equivalences
+of it :
+
+\begin{definition}[Validity]
+
+A plan \(\pi\) is a valid solution of a problem \(\mathcal{P}\) if and
+only if \(\forall a \in S_\pi : \pi \Downarrow a \land lv(a) = 0\).
+
+\end{definition}
+
+It is reminded that \(G \in S_\pi\) by definition and that it is an
+atomic action.
+
+We can now start to prove the soundness of our approach. We base this
+proof upon the one done in {[}Erol, Hendler, \& Nau,
+\protect\hyperlink{ref-erol_umcp_1994}{1994}{]}. It states that for
+classical POP, if a plan doesn't contain any flaws it is fully
+supported. Our main difference being with abstraction flaws we need to
+prove that its resolution doesn't leave classical flaws unsolved in the
+resulting plan.
+
+\begin{lemma}[Expansion with an empty method]
+
+If a composite action \(a\) is replaced by an empty method
+\(m = \left ( \lbrace I_m, G_m \rbrace, \lbrace I_m \rightarrow G_m \rbrace \right )\),
+replace \(a\) with \(I_m\) in all needers of existing flaws and we add
+all open conditions of \(G_m\) as subgoals the resulting plan will not
+have any undiscovered flaws.
+
+\end{lemma}
+
+\begin{proof}
+
+The initial and goal step of a method are \emph{transparent}
+(\(pre(a) = eff(a)\)).
+\[L^-(I_m) = L^-(a) \land pre(I_m) = pre(a) \implies \left ( \pi \Downarrow a \equiv \pi \Downarrow I_m \right )\]
+If we do as stated, all subgoals are populated for \(I_m\) and \(G_m\).
+For the threats, the order constraints are preserved and therefore can't
+cause another threat (the link between \(I_m\) and \(G_m\) is
+causeless).
+
+\end{proof}
+
+\hypertarget{completeness}{%
+\subsection{Completeness}\label{completeness}}
+
+\hypertarget{computational-profile}{%
+\subsection{Computational profile}\label{computational-profile}}
+
+\hypertarget{sec:results}{%
+\section{Results}\label{sec:results}}
+
+\hypertarget{fig:quality}{%
+\begin{figure}
+\centering
+\includegraphics{graphics/quality-speed.svg}
+\caption{Evolution of the quality with computation
+time.}\label{fig:quality}
+\end{figure}
+}
+
+\hypertarget{fig:spread}{%
+\begin{figure}
+\centering
+\includegraphics{graphics/level-spread.svg}
+\caption{Impact of domain shape on the computation time by
+level.}\label{fig:spread}
+\end{figure}
+}
+
+\hypertarget{conclusions}{%
+\section*{Conclusions}\label{conclusions}}
+\addcontentsline{toc}{section}{Conclusions}
+
+\hypertarget{references}{%
+\section*{References}\label{references}}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\leavevmode\hypertarget{ref-baioletti_encoding_1998}{}%
+Baioletti, M., Marcugini, S., \& Milani, A. (1998). Encoding planning
+constraints into partial order planning domains. In \emph{KR} (pp.
+608--616). MORGAN KAUFMANN PUBLISHERS.
+
+\leavevmode\hypertarget{ref-baker_goal_2007}{}%
+Baker, C. L., Tenenbaum, J. B., \& Saxe, R. R. (2007). Goal inference as
+inverse planning. In \emph{CogSci}.
+
+\leavevmode\hypertarget{ref-bechon_hipop_2014}{}%
+Bechon, P., Barbier, M., Infantes, G., Lesire, C., \& Vidal, V. (2014).
+HiPOP: Hierarchical Partial-Order Planning. In \emph{STAIRS} (Vol. 264,
+p. 51). IOS Press.
+
+\leavevmode\hypertarget{ref-chen_planning_2013}{}%
+Chen, J., Chen, Y., Xu, Y., Huang, R., \& Chen, Z. (2013). A Planning
+Approach to the Recognition of Multiple Goals. \emph{IJIS},
+\emph{28}(3), 203--216.
+
+\leavevmode\hypertarget{ref-erol_umcp_1994}{}%
+Erol, K., Hendler, J. A., \& Nau, D. S. (1994). UMCP: A Sound and
+Complete Procedure for Hierarchical Task-network Planning. In
+\emph{AIPS} (Vol. 94, pp. 249--254).
+
+\leavevmode\hypertarget{ref-gerevini_combining_2008}{}%
+Gerevini, A., Kuter, U., Nau, D. S., Saetti, A., \& Waisbrot, N. (2008).
+Combining Domain-Independent Planning and HTN Planning: The Duet
+Planner. In \emph{ECAI} (pp. 573--577).
+
+\leavevmode\hypertarget{ref-ghallab_automated_2004}{}%
+Ghallab, M., Nau, D., \& Traverso, P. (2004). \emph{Automated planning:
+Theory \& practice}. Elsevier.
+
+\leavevmode\hypertarget{ref-gobelbecker_coming_2010}{}%
+Göbelbecker, M., Keller, T., Eyerich, P., Brenner, M., \& Nebel, B.
+(2010). Coming Up With Good Excuses: What to do When no Plan Can be
+Found. In \emph{ICAPS} (pp. 81--88).
+
+\leavevmode\hypertarget{ref-ramirez_plan_2009}{}%
+Ramirez, M., \& Geffner, H. (2009). Plan recognition as planning. In
+\emph{IJCAI} (pp. 1778--1783).
+
+\leavevmode\hypertarget{ref-ramirez_probabilistic_2010}{}%
+Ramirez, M., \& Geffner, H. (2010). Probabilistic plan recognition using
+off-the-shelf classical planners. In \emph{Proceedings of the Conference
+of the Association for the Advancement of Artificial Intelligence (AAAI
+2010)}.
+
+\leavevmode\hypertarget{ref-sohrabi_plan_2016}{}%
+Sohrabi, S., Riabov, A. V., \& Udrea, O. (2016). Plan Recognition as
+Planning Revisited. In \emph{IJCAI}.
+
+\leavevmode\hypertarget{ref-talamadupula_coordination_2014}{}%
+Talamadupula, K., Briggs, G., Chakraborti, T., Scheutz, M., \&
+Kambhampati, S. (2014). Coordination in human-robot teams using mental
+modeling and plan recognition. In \emph{IRoS} (pp. 2957--2962). IEEE.
+
+\end{document}

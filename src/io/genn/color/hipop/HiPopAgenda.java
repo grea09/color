@@ -5,7 +5,7 @@
  */
 package io.genn.color.hipop;
 
-import io.genn.color.abort.flaws.Abstraction;
+import io.genn.color.heart.flaws.Abstraction;
 import io.genn.color.planning.algorithm.Agenda;
 import io.genn.color.planning.algorithm.Change;
 import io.genn.color.planning.algorithm.Flaw;

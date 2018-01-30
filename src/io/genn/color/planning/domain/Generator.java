@@ -5,7 +5,7 @@
  */
 package io.genn.color.planning.domain;
 
-import io.genn.color.abort.Abort;
+import io.genn.color.heart.Heart;
 import io.genn.color.planning.algorithm.Planner;
 import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.planning.problem.Plan;

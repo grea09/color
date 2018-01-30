@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.abort.problem;
+package io.genn.color.heart.problem;
 
 import io.genn.color.planning.algorithm.Flaw;
 import io.genn.color.planning.problem.Plan;

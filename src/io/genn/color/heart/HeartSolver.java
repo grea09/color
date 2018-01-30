@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.abort;
+package io.genn.color.heart;
 
-import io.genn.color.abort.flaws.Abstraction;
-import io.genn.color.abort.heuristics.ProviderHeuristic;
-import io.genn.color.abort.resolvers.Expand;
+import io.genn.color.heart.flaws.Abstraction;
+import io.genn.color.heart.heuristics.ProviderHeuristic;
+import io.genn.color.heart.resolvers.Expand;
 import io.genn.color.planning.algorithm.Flaw;
 import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.planning.problem.Problem;
@@ -26,16 +26,16 @@ import java.util.List;
  *
  * @author antoine
  */
-public class AbortSolver extends PopSolver {
+public class HeartSolver extends PopSolver {
 
 	private final boolean last;
 	
-	protected AbortSolver(Problem problem, boolean last){
+	protected HeartSolver(Problem problem, boolean last){
 		super(problem);
 		this.last = last;
 	}
 
-	public AbortSolver(Flaw flaw, Problem problem, boolean last) {
+	public HeartSolver(Flaw flaw, Problem problem, boolean last) {
 		super(problem);
 		this.last = last;
 		addAll(solve(flaw));

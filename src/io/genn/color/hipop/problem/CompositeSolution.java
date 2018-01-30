@@ -14,7 +14,7 @@ import io.genn.color.pop.problem.SimpleSolution;
  */
 public class CompositeSolution extends SimpleSolution{
 	
-	private final int level;
+	private int level;
 	
 	public CompositeSolution(Plan plan, int level) {
 		super(plan);
@@ -28,6 +28,10 @@ public class CompositeSolution extends SimpleSolution{
 	@Override
 	public int level() {
 		return level;
+	}
+	
+	public void level(int level) {
+		this.level = level;
 	}
 	
 	

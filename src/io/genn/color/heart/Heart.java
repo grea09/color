@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package io.genn.color.abort;
+package io.genn.color.heart;
 
-import io.genn.color.abort.problem.LeveledSolution;
+import io.genn.color.heart.problem.LeveledSolution;
 import io.genn.color.planning.algorithm.Agenda;
 import io.genn.color.planning.algorithm.Flaw;
 import io.genn.color.planning.algorithm.Resolver;
@@ -18,9 +18,9 @@ import io.genn.color.pop.Pop;
  *
  * @author antoine
  */
-public class Abort extends Pop {
+public class Heart extends Pop {
 
-	public Abort(Problem problem) {
+	public Heart(Problem problem) {
 		super(problem);
 	}
 
@@ -34,17 +34,17 @@ public class Abort extends Pop {
 		}
 		problem.solution = new LeveledSolution(level);
 		problem.solution.working().addEdge(problem.initial, problem.goal);
-		agenda = new AbortAgenda(problem);
+		agenda = new HeartAgenda(problem);
 	}
 
 	@Override
 	protected Solver solve(Flaw flaw) {
-		return new AbortSolver(flaw, problem,agenda.isEmpty());
+		return new HeartSolver(flaw, problem,agenda.isEmpty());
 	}
 
 	@Override
 	protected Agenda update(Resolver resolver) {
-		Agenda oldAgenda = new AbortAgenda(agenda);
+		Agenda oldAgenda = new HeartAgenda(agenda);
 		agenda.update(resolver);
 		return oldAgenda;
 	}

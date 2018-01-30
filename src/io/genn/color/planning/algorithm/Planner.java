@@ -30,10 +30,12 @@ public abstract class Planner {
 
 		try {
 			Flaw fail = refine();
+			problem.solution.end(false);
 			Log.e("Failure : flaw " + fail + " is unsolvable !");
 			return false;
 		} catch (Success ex) {
 			Log.i("Success !");
+			problem.solution.end(true);
 			return true;
 		}
 	}

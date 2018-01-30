@@ -2,10 +2,12 @@ package io.genn.color;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
-import io.genn.color.abort.Abort;
+import io.genn.color.heart.Heart;
+import io.genn.color.hipop.HiPop;
 import io.genn.color.planning.algorithm.Planner;
 import static io.genn.color.planning.domain.Generator.problem;
 import io.genn.color.planning.problem.Problem;
+import io.genn.color.pop.Pop;
 import io.genn.color.world.WorldControl;
 import io.genn.world.CompilationException;
 import io.genn.world.World;
@@ -34,19 +36,21 @@ public class Benchmark {
 			MultimapBuilder.treeKeys().arrayListValues().build();
 
 	public static void main(String[] args) throws CompilationException, IOException {
+		int spread = 4;
+		int level = 5;
+
 		String path =
 				"data/benchmarks/" + DateTimeFormatter.ISO_DATE_TIME.format(
-						LocalDateTime.now()) + ".csv";
+						LocalDateTime.now()) + "_lv" + level + "^" + spread + // + "pop" +
+				".csv";
 		new File("data/benchmarks/").mkdirs();
 		new File(path).createNewFile();
 		PrintWriter writer = new PrintWriter(path, "UTF-8");
-		writer.println("Max_Level;Spread;Level;Time");
+
+		writer.println("Level;Time");
 
 		Log.ENABLED = false;
 
-		int spread = 2;
-		int level = 6;
-		
 		Problem problem = problem(level, spread);
 //		Log.i("Opening the world...");
 //		World world = new World("data/kitchen_tea.w");
@@ -58,19 +62,19 @@ public class Benchmark {
 //		Log.i("Parsing...");
 //		WorldControl control = new WorldControl(world.flow);
 //		Problem problem = control.problem();
-		
+
 		for (int a = 0; a < 1; a++) {
-			Planner planner = new Abort(problem);
+			Planner planner = new Heart(problem);
 			stops.put(problem, System.nanoTime());
 			planner.solve();
-//			stops.put(problem, System.nanoTime());
+			stops.put(problem, System.nanoTime());
 			Log.ENABLED = true;
 			Log.i("#Interation : " + a);
 			List<Long> chrono = stops.get(problem);
 			Long start = first(chrono);
 
 			for (int i = 1; i < chrono.size(); i++) {
-				String line = "" + ";" + (level - i) +
+				String line = (level +1 - i) +
 						";" +
 						(chrono.get(i) - start);
 //				String line = "" + level + ";" + spread + ";" + (level - i) +

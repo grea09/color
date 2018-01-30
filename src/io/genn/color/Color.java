@@ -5,16 +5,20 @@
  */
 package io.genn.color;
 
-import io.genn.color.abort.Abort;
+import io.genn.color.heart.Heart;
 import io.genn.color.hipop.HiPop;
 import io.genn.color.planning.algorithm.Planner;
 import io.genn.color.planning.domain.Action;
+import io.genn.color.planning.domain.fluents.Fluent;
+import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.world.WorldControl;
 import io.genn.color.planning.problem.Problem;
 import io.genn.color.pop.Pop;
 import io.genn.world.CompilationException;
 import io.genn.world.World;
 import java.io.FileNotFoundException;
+import java.util.HashSet;
+import java.util.Set;
 import me.grea.antoine.utils.log.Log;
 
 /**
@@ -39,7 +43,8 @@ public class Color {
 			WorldControl control = new WorldControl(world.flow);
 			Problem problem = control.problem();
 			for (Action action : problem.domain) {
-				Log.d(action.name + action.parameters + "@" + action.level + " :\n" +
+				Log.d(action.name + action.parameters + "@" + action.level +
+						" :\n" +
 						"\t pre: " + action.pre + "\n" +
 						"\t eff :" + action.eff + "\n" +
 						"\t constr: " + action.constr + "\n" +
@@ -54,12 +59,12 @@ public class Color {
 //				planner = new Pop(problem);
 //				planner.solve();
 //			}
-			
+
 //			problem = control.problem();
-			planner = new HiPop(problem);
+			planner = new Heart(problem);
 			planner.solve();
 			Log.i(problem.solution);
-			
+
 //			problem = control.problem();
 //			planner = new HiPop(problem);
 //			planner.solve();
