@@ -54,7 +54,7 @@ public class LeveledSolution implements Solution {
 		if (success == null && plans.length > LeveledSolution.this.level() + 1) {
 			return plans[LeveledSolution.this.level() + 1];
 		}
-		if (success) {
+		if (success != null && success) {
 			return working();
 		}
 		return null;

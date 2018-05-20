@@ -33,7 +33,11 @@ public class Pop extends Planner {
 	}
 
 	@Override
-	public Flaw refine() throws Success {
+	public Flaw refine() throws Success, InterruptedException {
+		if (Thread.interrupted()) {
+			Log.e("Thread is interupted, aborting !");
+			throw new InterruptedException("Time to stop !");
+		}
 		if (agenda.isEmpty()) {
 			throw new Success();
 		}
@@ -64,8 +68,6 @@ public class Pop extends Planner {
 		Log.w("No suitable resolver for " + flaw);
 		return flaw;
 	}
-	
-	
 
 	protected Solver solve(Flaw flaw) {
 		Solver resolvers = new PopSolver(flaw, problem);

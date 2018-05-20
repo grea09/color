@@ -3,14 +3,10 @@ package io.genn.color;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import io.genn.color.heart.Heart;
-import io.genn.color.hipop.HiPop;
 import io.genn.color.planning.algorithm.Planner;
 import static io.genn.color.planning.domain.Generator.problem;
 import io.genn.color.planning.problem.Problem;
-import io.genn.color.pop.Pop;
-import io.genn.color.world.WorldControl;
 import io.genn.world.CompilationException;
-import io.genn.world.World;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,7 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import static me.grea.antoine.utils.collection.Collections.first;
 import me.grea.antoine.utils.log.Log;
-import me.grea.antoine.utils.text.Formater;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -35,7 +30,7 @@ public class Benchmark {
 	public static ListMultimap<Problem, Long> stops =
 			MultimapBuilder.treeKeys().arrayListValues().build();
 
-	public static void main(String[] args) throws CompilationException, IOException {
+	public static void main(String[] args) throws CompilationException, IOException, InterruptedException {
 		int spread = 4;
 		int level = 5;
 

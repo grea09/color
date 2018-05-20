@@ -30,6 +30,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static me.grea.antoine.utils.collection.Collections.*;
 import me.grea.antoine.utils.log.Log;
 
@@ -374,7 +376,12 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		problem.solution = new SimpleSolution(method);
 		boolean ENABLED = Log.ENABLED;
 		Log.ENABLED = false;
-		boolean success = new Pop(problem).solve();
+		boolean success = false;
+		try {
+			success = new Pop(problem).solve();
+		} catch (InterruptedException ex) {
+			Log.w(ex);
+		}
 		Log.ENABLED = ENABLED;
 		if (!success) {
 			Log.w("Can't solve method of " + composite +

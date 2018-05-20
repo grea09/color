@@ -21,7 +21,7 @@ public abstract class Planner {
 		this.problem = problem;
 	}
 
-	public boolean solve() {
+	public boolean solve() throws InterruptedException {
 		Log.i(problem);
 		if (problem.goal.pre.isEmpty()) {
 			Log.i("Goal is empty !");
@@ -40,6 +40,6 @@ public abstract class Planner {
 		}
 	}
 
-	public abstract Flaw refine() throws Success;
+	public abstract Flaw refine() throws Success, InterruptedException;
 
 }
