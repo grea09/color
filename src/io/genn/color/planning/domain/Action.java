@@ -5,9 +5,6 @@
  */
 package io.genn.color.planning.domain;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import io.genn.color.planning.domain.fluents.Fluent;
 import io.genn.color.planning.domain.fluents.FluentControl;
 import io.genn.color.planning.problem.CausalLink;
@@ -17,7 +14,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import static me.grea.antoine.utils.collection.Collections.*;
 
 /**
@@ -27,19 +23,14 @@ import static me.grea.antoine.utils.collection.Collections.*;
 public class Action<F extends Fluent<F, E>, E> {
 
 	public static enum Flag {
-		NORMAL('A'),
-		INIT('I') {
+		NORMAL('A') {
 			@Override
 			public boolean special() {
-				return true;
+				return false;
 			}
 		},
-		GOAL('G') {
-			@Override
-			public boolean special() {
-				return true;
-			}
-		};
+		INIT('I'),
+		GOAL('G');
 
 		private final Character symbol;
 
@@ -53,7 +44,7 @@ public class Action<F extends Fluent<F, E>, E> {
 		}
 
 		public boolean special() {
-			return false;
+			return true;
 		}
 	}
 
@@ -68,22 +59,27 @@ public class Action<F extends Fluent<F, E>, E> {
 	public final Action instanceOf;
 	public final FluentControl<F, E> control;
 	public final int level;
+	public final double cost;
+	public final double baseCost;
 
 	private static Map<Action, Map<List, Action>> instances = new HashMap<>();
 
 	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
-			State<F> constr, Flag flag, E image, Action<F, E> instanceOf,
-			FluentControl<F, E> control) {
-		this(name, parameters, pre, eff, constr, flag, image, null, instanceOf,
+			State<F> constr, double cost, Flag flag, E image,
+			Action<F, E> instanceOf, FluentControl<F, E> control) {
+		this(name, parameters, pre, eff, constr, cost, flag, image, null,
+			 instanceOf,
 			 control);
 	}
 
 	public Action(String name, List<E> parameters, State<F> pre, State<F> eff,
-			State<F> constr, Flag flag, E image, Plan method,
+			State<F> constr, double cost, Flag flag, E image, Plan method,
 			Action<F, E> instanceOf, FluentControl<F, E> control) {
 		this.pre = new State(pre);
 		this.eff = new State(eff);
 		this.constr = new State(constr);
+		this.baseCost = cost;
+		this.cost = cost;
 		this.flag = flag;
 		this.image = image;
 		this.name = name;
@@ -111,7 +107,7 @@ public class Action<F extends Fluent<F, E>, E> {
 	}
 
 	public Action(Action<F, E> other) {
-		this(other.name, other.parameters, other.pre, other.eff, other.constr,
+		this(other.name, other.parameters, other.pre, other.eff, other.constr, 1,
 			 other.flag, other.image, other.instanceOf, other.control);
 	}
 
@@ -170,7 +166,8 @@ public class Action<F extends Fluent<F, E>, E> {
 		} else if (newParameters.equals(parameters) && !initial() && !goal()) {
 			return this;
 		}
-		if(instances.containsKey(instanceOf) && instances.get(instanceOf).containsKey(newParameters)){
+		if (instances.containsKey(instanceOf) && instances.get(instanceOf).
+				containsKey(newParameters)) {
 			return instances.get(instanceOf).get(newParameters);
 		}
 		State<F> newEff = eff.instanciate(unify);
@@ -196,7 +193,7 @@ public class Action<F extends Fluent<F, E>, E> {
 			}
 		}
 		return new Action<>(name, newParameters,
-							newPre, newEff, newConstr,
+							newPre, newEff, newConstr, 1,
 							flag, newImage,
 							newMethod, this, control);
 	}

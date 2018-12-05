@@ -5,35 +5,29 @@
  */
 package io.genn.color.planning.algorithm;
 
-import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.problem.Problem;
-import io.genn.color.pop.resolvers.Bind;
-import io.genn.color.pop.resolvers.InstanciatedBind;
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-import static me.grea.antoine.utils.collection.Collections.queue;
-import static me.grea.antoine.utils.collection.Collections.set;
-import me.grea.antoine.utils.log.Log;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author antoine
  */
-public abstract class Solver extends ArrayDeque<Resolver> {
+public abstract class Solver extends ArrayList<Resolver> {
 
 	public final Problem problem;
+	public final Heuristic heuristic;
 	
-	protected Solver(Problem problem) {
+	protected Solver(Problem problem, Heuristic heuristic) {
 		this.problem = problem;
+		this.heuristic = heuristic;
 	}
 	
-	public Solver(Flaw flaw, Problem problem) {
+	public Solver(Flaw flaw, Problem problem, Heuristic heuristic) {
 		this.problem = problem;
+		this.heuristic = heuristic;
 		addAll(solve(flaw));
 	}
 	
-	protected abstract <F extends Flaw> Deque<Resolver> solve(F flaw);
+	protected abstract <F extends Flaw> List<Resolver> solve(F flaw);
 }

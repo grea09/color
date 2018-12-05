@@ -8,6 +8,7 @@ package io.genn.color.heart;
 import io.genn.color.heart.problem.LeveledSolution;
 import io.genn.color.planning.algorithm.Agenda;
 import io.genn.color.planning.algorithm.Flaw;
+import io.genn.color.planning.algorithm.Heuristic;
 import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.planning.algorithm.Solver;
 import io.genn.color.planning.domain.Action;
@@ -22,6 +23,10 @@ public class Heart extends Pop {
 
 	public Heart(Problem problem) {
 		super(problem);
+	}
+	
+	public Heart(Problem problem, Heuristic heuristic) {
+		super(problem, heuristic);
 	}
 
 	@Override
@@ -39,7 +44,7 @@ public class Heart extends Pop {
 
 	@Override
 	protected Solver solve(Flaw flaw) {
-		return new HeartSolver(flaw, problem,agenda.isEmpty());
+		return new HeartSolver(flaw, problem, heuristic, agenda.isEmpty());
 	}
 
 	@Override

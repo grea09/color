@@ -5,14 +5,17 @@
  */
 package io.genn.color.pop;
 
+import io.genn.color.pop.heuristics.SimpleHeuristic;
 import io.genn.color.planning.algorithm.Success;
 import io.genn.color.planning.algorithm.Planner;
 import io.genn.color.planning.algorithm.Agenda;
 import io.genn.color.planning.algorithm.Flaw;
+import io.genn.color.planning.algorithm.Heuristic;
 import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.planning.algorithm.Solver;
 import io.genn.color.planning.problem.Problem;
 import io.genn.color.pop.problem.SimpleSolution;
+import java.util.Collections;
 import me.grea.antoine.utils.log.Log;
 
 /**
@@ -22,7 +25,11 @@ import me.grea.antoine.utils.log.Log;
 public class Pop extends Planner {
 
 	public Pop(Problem problem) {
-		super(problem);
+		this(problem, new SimpleHeuristic());
+	}
+	
+	public Pop(Problem problem, Heuristic heuristic) {
+		super(problem, heuristic);
 		init();
 	}
 
@@ -70,7 +77,7 @@ public class Pop extends Planner {
 	}
 
 	protected Solver solve(Flaw flaw) {
-		Solver resolvers = new PopSolver(flaw, problem);
+		Solver resolvers = new PopSolver(flaw, problem, heuristic);
 		return resolvers;
 	}
 

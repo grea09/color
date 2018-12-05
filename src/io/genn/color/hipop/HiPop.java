@@ -6,17 +6,15 @@
 package io.genn.color.hipop;
 
 import io.genn.color.heart.Heart;
-import io.genn.color.heart.HeartAgenda;
 import io.genn.color.heart.HeartSolver;
-import io.genn.color.heart.problem.LeveledSolution;
 import io.genn.color.hipop.problem.CompositeSolution;
 import io.genn.color.planning.algorithm.Agenda;
 import io.genn.color.planning.algorithm.Flaw;
+import io.genn.color.planning.algorithm.Heuristic;
 import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.planning.algorithm.Solver;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.planning.problem.Problem;
-import io.genn.color.pop.problem.SimpleSolution;
 
 /**
  *
@@ -24,8 +22,14 @@ import io.genn.color.pop.problem.SimpleSolution;
  */
 public class HiPop extends Heart {
 	
+	
+	
 	public HiPop(Problem problem) {
-		super(problem);
+			super(problem);
+	}
+	
+	public HiPop(Problem problem, Heuristic heuristic) {
+		super(problem, heuristic);
 	}
 	
 	@Override
@@ -43,7 +47,7 @@ public class HiPop extends Heart {
 
 	@Override
 	protected Solver solve(Flaw flaw) {
-		return new HeartSolver(flaw, problem,true);//agenda.isEmpty());
+		return new HeartSolver(flaw, problem, heuristic, true);//agenda.isEmpty());
 	}
 
 	@Override

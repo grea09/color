@@ -1,5 +1,5 @@
 ---
-title: "HEART: HiErarchical Abstraction for Real-Time Partial Order Causal Link Planning"
+title: "HEART: Abstract plans as a guarantee of downward refinement"
 author: 
  - Antoine Gréa
  - Laetitia Matignon
@@ -9,50 +9,50 @@ thanks: Univ Lyon, Université Lyon 1, CNRS, LIRIS, UMR5205, F-69621, LYON, Fran
 tags: [Activity and Plan Recognition, Hierarchical planning, Planning Algorithms, Real-time Planning, Robot Planning, POCL, Partial Order Planning, POP, Partial Order Causal Link, POCL, HTN]
 abstract: In recent years the ubiquity of artificial intelligence raised concerns among the uninitiated. The misunderstanding is further increased since most advances do not have explainable results. For automated planning, the research often targets speed, quality, or expressivity. Most existing solutions focus on one criteria while not addressing the others. However, human-related applications require a complex combination of all those criteria at different levels. We present a new method to compromise on these aspects while staying explainable. We aim to leave the range of potential applications as wide as possible but our main targets are human intent recognition and assistive robotics. The HEART planner is a real-time decompositional planner based on a hierarchical version of Partial Order Causal Link (POCL). It cyclically explores the plan space while making sure that intermediary high level plans are valid and will return them as approximate solutions when interrupted. These plans are proven to be a guarantee of solvability. This paper aims to evaluate that process and its results compared to classical approaches in terms of efficiency and quality.
 bibliography: bibliography/heart.bib
-style: icaps
+style: article
 ---
 
 # Introduction {-}
 
-Since the early days of automated planning, a wide variety of approaches have been considered to solve diverse types of problems. They all range in expressivity, speed, and reliability but often aim to excel in one of these domains. This leads to a polarization of the solutions toward more specialized methods to tackle each problem. All of these approaches have been compared and discussed extensively in the books of Ghallab et al. [-@ghallab_automated_2004; -@ghallab_automated_2016].
+Since the early days of automated planning, a wide variety of approaches have been considered to solve diverse types of problems. They all range in expressivity, speed, and reliability but often aim to excel in one of these domains. This leads to a polarization of the solutions toward more specialized methods to tackle each problem. All of these approaches have been compared and discussed extensively in the books of Ghallab _et al._ [-@ghallab_automated_2004; -@ghallab_automated_2016].
 
 Partially ordered approaches are popular for their least commitment aspect, flexibility and ability to modify plans to use refinement operations [@weld_introduction_1994]. These approaches are often used in applications in robotics and multi-agent planning [@lemai_interleaving_2004; @dvorak_flexible_2014]. One of the most flexible partially ordered approaches is called *Partial Order Causal Link planning (POCL)* [@young_dpocl_1994]. It works by refining partial plans consisting of steps and causal links into a solution by solving all flaws compromising the validity of the plan.
 
-Another approach is *Hierarchical Task Networks (HTN)* [@sacerdoti_planning_1974] that is meant to tackle the problem using composite actions in order to define hierarchical tasks within the plan. Hierarchical domains are often considered easier to conceive and maintain by experts mainly because they seem closer to the way we think about these problems [@sacerdoti_nonlinear_1975].
+Another approach is *Hierarchical Task Networks (HTN)* [@sacerdoti_planning_1974] that is meant to tackle the problem using composite actions in order to define hierarchical tasks within the plan. Hierarchical domains are considered easier to conceive and maintain by experts mainly because they seem closer to the way we think about these problems [@sacerdoti_nonlinear_1975].
 
-In our work, we aim combining HTN planning and POCL planning in such a manner as to generate intermediary high level plans during the planning process. Combining these two approaches is not new [@young_dpocl_1994; @kambhampati_hybrid_1998; @biundo_abstract_2001]. Our work is based on *Hierarchical Partial Order Planning (HiPOP)* by @bechon_hipop_2014. The idea is to expand the classical POCL algorithm with new flaws in order to make it compatible with HTN problems and allowing the production of abstract plans. To do so, we present an upgraded planning framework that aims to simplify and factorize all notions to their minimal forms. We also propose some domain compilation techniques to reduce the work of the expert conceiving the domain.
+In our work, we aim to combine HTN planning and POCL planning in such a manner as to generate intermediary high-level plans during the planning process. Combining these two approaches is not new [@young_dpocl_1994; @kambhampati_hybrid_1998; @biundo_abstract_2001]. Our work is based on *Hierarchical Partial Order Planning (HiPOP)* by Bechon _et al._ [-@bechon_hipop_2014]. The idea is to expand the classical POCL algorithm with new flaws in order to make it compatible with HTN problems and allowing the production of abstract plans. To do so, we present an upgraded planning framework that aims to simplify and factorize all notions to their minimal forms. We also propose some domain compilation techniques to reduce the work of the expert conceiving the domain.
 
-In all these works, only the final solution to the input problem is considered. That is a good approach to classical planning except when no solutions can be found (or when none exists). Our work focuses on the case when the solution could not be found in time or when high level explanations are preferable to the complete implementation detail of the plan. This is done by focusing the planning effort toward finding intermediary abstract plans along the path to the complete solution.
+In all these works, only the final solution to the input problem is considered. That is a good approach to classical planning except when no solutions can be found (or when none exists). Our work focuses on the case when the solution could not be found in time or when high-level explanations are preferable to the complete implementation detail of the plan. This is done by focusing the planning effort toward finding intermediary abstract plans along the path to the complete solution.
 
 In the rest of the paper, we detail how the HiErarchical Abstraction for Real-Time (HEART) planner creates abstract intermediary plans that can be used for various applications. First, we discuss the motivations and related works to detail the choices behind our design process. Then we present the way we modeled an updated planning framework fitting our needs and then we explain our method and prove its properties to finally discuss the experimental results.
 
 # Motivations and Potential Applications
 
-Several reasons can cause a problem to be unsolvable. The most obvious case is that no solution exists that meets the requirements of the problem. This has already been addressed by @gobelbecker_coming_2010 where "excuses" are being investigated as potential explanations for when a problem has no solution.
+Several reasons can cause a problem to be unsolvable. The most obvious case is that no solution exists that meets the requirements of the problem. This has already been addressed by Göbelbecker _et al._ [-@gobelbecker_coming_2010] where "excuses" are being investigated as potential explanations for when a problem has no solution.
 
-Our approach deals with the cases of when the problem is too difficult to solve within tight time constraints. For example, in robotics, systems often need to be run within refresh rates of several Hertz giving the process only fractions of a second to give an updated result. Since planning is at least EXPSPACE-hard for HTN using complex representation [@erol_htn_1994], computing only the first plan level of a hierarchical domain is much easier in relation to the complete problem.
+Our approach deals with problems that are too difficult to solve within tight time constraints. For example, in robotics, systems often need to be run within refresh rates of several Hertz giving the process only fractions of a second to give an updated result. Since planning is at least EXPSPACE-hard for HTN using complex representation [@erol_htn_1994], computing only the first plan level of a hierarchical domain is much easier in relation to the complete problem.
 
 While abstract plans are not complete solutions, they still display a useful set of properties for various applications. The most immediate application is for explainable planning [@fox_explainable_2017; @seegebarth_making_2012]. Indeed a high-level plan is more concise and does not contain unnecessary implementation details that would confuse a non-expert.
 
 Another potential application for such plans is relative to domains that work with approximative data. Our main example here is intent recognition which is the original motivation for this work. Planners are not meant to solve intent recognition problems. However, several works extended what is called in psychology the *theory of mind*.
 That theory is the equivalent of asking "*what would **I** do if I was them ?*" when observing the behavior of other agents. This leads to new ways to use *inverted planning* as an inference tool.
-One of the first to propose that idea was @baker_goal_2007 that use Bayesian planning to infer intentions. @ramirez_plan_2009 found an elegant way to transform a plan recognition problem into classical planning. This is done simply by encoding temporal constraints in the planning domain in a similar way as @baioletti_encoding_1998 describe it to match the observed action sequence. A cost comparison will then give a probability of the goal to be pursued given the observations.
-@chen_planning_2013 extended this with multi-goal recognition. A new method, proposed by @sohrabi_plan_2016, makes the recognition fluent centric. It assigns costs to missing or noisy observed fluents, which allows finer details and less preprocessing work than action-based recognition. This method also uses a meta-goal that combines each possible goal and is realized when at least one of these goals is satisfied. Sohrabi *et al.* state that the quality of the recognition is directly linked to the quality and domain coverage of the generated plans. Thus guided diverse planning[^diverse] was preferred along with the ability to infer several probable goals at once.
+One of the first to propose that idea was Baker _et al._ [-@baker_goal_2007] that use Bayesian planning to infer intentions. Ramirez and Geffner [-@ramirez_plan_2009] found an elegant way to transform a plan recognition problem into classical planning. This is done simply by encoding temporal constraints in the planning domain in a similar way as Baioletti _et al._ [-@baioletti_encoding_1998] describe it to match the observed action sequence. A cost comparison will then give a probability of the goal to be pursued given the observations.
+Chen _et al._ [-@chen_planning_2013] extended this with multi-goal recognition. A new method, proposed by Sohrabi _et al._ [-@sohrabi_plan_2016], makes the recognition fluent centric. It assigns costs to missing or noisy observed fluents, which allows finer details and less preprocessing work than action-based recognition. This method also uses a meta-goal that combines each possible goal and is realized when at least one of these goals is satisfied. Sohrabi _et al._ state that the quality of the recognition is directly linked to the quality and domain coverage of the generated plans. Thus guided diverse planning[^diverse] was preferred along with the ability to infer several probable goals at once.
 
 [^diverse]: Diverse planning aims to find a set of $m$ plans that are distant of $d$ from one another.
 
 # Related Works
 
 HTN is often combined with classical approaches since it allows for a more natural expression of domains making expert knowledge easier to encode. These kinds of planners are named **decompositional planners** when no initial plan is provided [@fox_natural_1997].
-Most of the time the integration of HTN simply consists in calling another algorithm when introducing a composite operator during the planning process. In the case of the DUET planner by @gerevini_combining_2008, it is done by calling an instance of an HTN planner based on task insertion called SHOP2 [@nau_shop2_2003] to deal with composite actions.
-Some planners take the integration further by making the decomposition of composite actions into a special step in their refinement process. Such works include the discourse generation oriented DPOCL [@young_dpocl_1994] and the work of @kambhampati_hybrid_1998 generalizing the practice for decompositional planners.
+Most of the time the integration of HTN simply consists in calling another algorithm when introducing a composite operator during the planning process. The DUET planner by Gerevini _et al._ [-@gerevini_combining_2008] does so by calling an instance of a HTN planner based on task insertion called SHOP2 [@nau_shop2_2003] to decompose composite actions.
+Some planners take the integration further by making the decomposition of composite actions into a special step in their refinement process. Such works include the discourse generation oriented DPOCL [@young_dpocl_1994] and the work of Kambhampati _et al._ [-@kambhampati_hybrid_1998] generalizing the practice for decompositional planners.
 
-In our case, we chose a class of hierarchical planners based on Plan Space Planning (PSP) algorithms [@bechon_hipop_2014; @dvorak_flexible_2014; @bercher_hybrid_2014] as a reference approach. The main difference here is that the decomposition is integrated into the classical POCL algorithm by only adding new types of flaws. This allows to keep all the flexibility and properties of POCL while adding the expressivity and abstraction capabilities of HTN. We also made an improved planning framework based on the one used by HiPOP to reduce further the number of changes needed to handle composite actions and to increase the efficiency of the resulting implementation.
+In our case, we chose a class of hierarchical planners based on Plan-Space Planning (PSP) algorithms [@bechon_hipop_2014; @dvorak_flexible_2014; @bercher_hybrid_2014] as a reference approach. The main difference here is that the decomposition is integrated into the classical POCL algorithm by only adding new types of flaws. This allows keeping all the flexibility and properties of POCL while adding the expressivity and abstraction capabilities of HTN. We also made an improved planning framework based on the one used by HiPOP to reduce further the number of changes needed to handle composite actions and to increase the efficiency of the resulting implementation.
 
-As stated previously, our goal is to obtain intermediary abstract plans and to evaluate their properties. Another work has already been done on another aspect of those types of plans. The Angelic algorithm by @marthi_angelic_2007 exploited the usefulness of such plans in the planning process itself and used them as a heuristic guide. They also proved that, for a given fluent semantics, it is guaranteed that such abstract solutions can be refined into actual solutions. However, the Angelic planner does not address the inherent properties of such abstract plans as approximate solutions and uses a more restrictive totally ordered framework.
+As stated previously, our goal is to obtain intermediary abstract plans and to evaluate their properties. Another work has already been done on another aspect of those types of plans. The Angelic algorithm by Marthi _et al._ [-@marthi_angelic_2007] exploited such plans in the planning process itself and used them as a heuristic guide. They also proved that, for a given fluent semantics, it is guaranteed that such abstract solutions can be refined into actual solutions. However, the Angelic planner does not address the inherent properties of such abstract plans as approximate solutions and uses a more restrictive totally ordered framework.
 
 # Definitions
-In order to make the notations used in the paper more understandable we gathered them in @tbl:symbols. For domain and problem representation, we use a custom knowledge description language that is inspired from RDF Turtle [@beckett_turtle_2011] and is based on triples and propositional logic. In that language quantifiers are used to quantify variables `*(x)` (forall x) but can also be simplified with an implicit form : `lost(~)` meaning _"nothing is lost"_. For reference the *exclusive quantifier* we introduced (noted `~`) is used for the negation (e.g. `~(lost(_))` for _"something is not lost"_) as well as the symbol for nil. All symbols are defined as they are first used. If a symbol is used as a parameter and is referenced again in the same statement, it becomes a variable.
+In order to make the notations used in the paper more understandable, we gathered them in @tbl:symbols. For domain and problem representation, we use a custom knowledge description language that is inspired from RDF Turtle [@beckett_turtle_2011] and is based on triples and propositional logic. In that language quantifiers are used to quantify variables `*(x)` (forall x) but can also be simplified with an implicit form: `lost(~)` meaning _" nothing is lost"_. For reference, the *exclusive quantifier* we introduced (noted `~`) is used for the negation (e.g. `~(lost(_))` for _" something is not lost"_) as well as the symbol for nil. All symbols are defined as they are first used. If a symbol is used as a parameter and is referenced again in the same statement, it becomes a variable.
 
 **Symbol**                            **Description**
 ----------                            ---------------
@@ -79,7 +79,7 @@ $a \oplus^m$                          Decomposition of composite action $a$ usin
 $var : exp$                           The colon is a separator to be read as "such that".
 $[exp]$                               Iverson's brackets: $0$ if $exp=false$, $1$ otherwise.
 
-: Our notations are adapted from @ghallab_automated_2004. The symbol $\pm$ shows when the notation has signed variants. {#tbl:symbols}
+: Our notations are adapted from Ghallab _et al._ [-@ghallab_automated_2004]. The symbol $\pm$ shows when the notation has signed variants. {#tbl:symbols}
 
 ## Domain
 
@@ -87,12 +87,13 @@ The domain specifies the allowed operators that can be used to plan and all the 
 
 ::: {.definition name="Domain"} :::
 A domain is a triplet $\mathcal{D} = \langle E_\mathcal{D}, R, A_{\mathcal{D}} \rangle$ where:
+
 * $E_\mathcal{D}$ is the set of **domain entities**.
 * $R$ is the set of **relations** over $E_\mathcal{D}^n$. These relations are akin to n-ary predicates in first order logic.
 * $A_{\mathcal{D}}$ is the set of **operators** which are fully lifted *actions*.
 :::::::::::::::::::::::::::::::::::
 
-*Example*: The example domain in @lst:domain is inspired from the kitchen domain of @ramirez_probabilistic_2010.
+*Example*: The example domain in @lst:domain is inspired from the kitchen domain of Ramirez and Geffner [-@ramirez_probabilistic_2010].
 
 ~~~~ {#lst:domain}
 take(item) pre (taken(~), ?(item)); //?(item) is used to make item into a variable.
@@ -147,7 +148,7 @@ An action is a parametrized tuple $a(args)=\langle name, pre, \mathit{eff}, meth
 
 *Example*: The precondition of the operator $take(item)$ is simply a single negative fluent noted $\neg taken(item)$ ensuring the variable $item$ is not already taken.
 
-*Composite* actions are represented using methods. An action without methods is called *atomic*. It is of interest to note the divergence with classical HTN representation here since normally composite actions do not have preconditions nor effects. In our case we insert them into abstract plans.
+*Composite* actions are represented using methods. An action without methods is called *atomic*. It is of interest to note the divergence with classical HTN representation here since normally composite actions do not have preconditions nor effects. In our case, we insert them into abstract plans.
 
 ## Input control
 In order to verify the input of the domain, the causes of the causal links in the methods are optional. If omitted, the causes are inferred by unifying the preconditions and effects with the same mechanism as in the subgoal resolution in our POCL algorithm.
@@ -213,14 +214,14 @@ Flaws that are caused by the application of a resolver are called *related flaws
 Flaws can also become irrelevant when a resolver is applied. It is always the case for the targeted flaw, but this can also affect other flaws. Those *invalidated flaws* are removed from the agenda upon detection:
 
 * *Invalidated subgoals* are subgoals satisfied by the new causal links or the removal of their needer.
-* *Invalidated threats* happen when the breaker no longer threatens the causal link because the order guards the threatened causal link or either of them have been removed.
+* *Invalidated threats* happen when the breaker no longer threatens the causal link because the order guards the threatened causal link or either of them has been removed.
 :::::::::::::::::::::::::::::::::::::::::
 
 [^agenda]: An agenda is a flaw container used for the flaw selection of POCL.
 
 *Example*: Adding the action $pour(water, cup)$ causes a related subgoal for each of the preconditions of the action which are: the cup and the water must be taken and water must not already be in the cup.
 
-In @alg:pocl we present a generic version of POCL inspired by @ghallab_automated_2004 [section 5.4.2].
+In @alg:pocl we present a generic version of POCL inspired by Ghallab _et al._ [-@ghallab_automated_2004, section 5.4.2].
 
 ~~~ {.algorithm #alg:pocl name="Partial Order Planner" startLine="1"}
 \Function{POCL}{Agenda $a$, Problem $\mathcal{P}$}
@@ -247,9 +248,9 @@ In @alg:pocl we present a generic version of POCL inspired by @ghallab_automated
 For our version of POCL we follow a refinement procedure that works in several generic steps. 
 In @fig:refinement we detail the resolution of a subgoal as done in the @alg:pocl.
 
-The first is the search for resolver. It is often done in two separate steps : first select the candidates and then check each of them for validity. This is done using the polymorphic function `solve` at @line:resolverselection. 
+The first is the search for resolvers. It is often done in two separate steps: first, select the candidates and then check each of them for validity. This is done using the polymorphic function `solve` at @line:resolverselection. 
 
-In the case of subgoals, variable unification is performed to ensure the compatibility of the resolvers. Since this step is time consuming, the operator is instantiated accordingly at this step to factories the computational effort. Composite operators have also all their methods instantiated at this step if they are selected as a candidate. 
+In the case of subgoals, variable unification is performed to ensure the compatibility of the resolvers. Since this step is time-consuming, the operator is instantiated accordingly at this step to factories the computational effort. Composite operators have also all their methods instantiated at this step if they are selected as a candidate. 
 
 Then a resolver is picked non-deterministically for applications (this can be heuristically driven). At @line:resolverapplication the resolver is effectively applied to the current plan. All side effects and invalidations are handled during the update of the agenda at @line:updateagenda. If a problem occurs, @line:revert backtracks and tries other resolvers. If no resolver fits the flaw, the algorithm backtracks to previous resolver choices to explore all the possible plans and ensure completeness.
 
@@ -302,10 +303,10 @@ $$lv(x) = \left ( \max_{a \in A_x}(lv(a)) + 1 \right ) [A_x \neq \emptyset]$$
 
 ## Abstraction In POCL
 
-The most straightforward way to handle abstraction in regular planners is illustrated by Duet [@gerevini_combining_2008] by managing hierarchical actions separately from a task insertion planner. We chose to add abstraction in POCL in a manner inspired by the work of @bechon_hipop_2014 on a planner called HiPOP. The difference between the original HiPOP and our implementation of it is that we focus on the expressivity and the ways flaw selection can be exploited for partial resolution. Our version is lifted at runtime while the original is grounded for optimizations. All mechanisms we have implemented use POCL but with different management of flaws and resolvers. The original @alg:pocl is left untouched.
+The most straightforward way to handle abstraction in regular planners is illustrated by Duet [@gerevini_combining_2008] by managing hierarchical actions separately from a task insertion planner. We chose to add abstraction in POCL in a manner inspired by the work of Bechon _et al._ [-@bechon_hipop_2014] on a planner called HiPOP. The difference between the original HiPOP and our implementation of it is that we focus on the expressivity and the ways flaw selection can be exploited for partial resolution. Our version is lifted at runtime while the original is grounded for optimizations. All mechanisms we have implemented use POCL but with different management of flaws and resolvers. The original @alg:pocl is left untouched.
 
-One of those changes is that resolver selection needs to be altered for subgoals. Indeed, as stated by the authors of HiPOP : the planner must ensure the selection of high-level operators in order to benefit from the hierarchical aspect of the domain, otherwise, adding operators only increases the branching factor. 
-We also need to add a way to deal with composite actions once inserted in the plan to reduce them to their atomic steps.
+One of those changes is that resolver selection needs to be altered for subgoals. Indeed, as stated by the authors of HiPOP: the planner must ensure the selection of high-level operators in order to benefit from the hierarchical aspect of the domain. Otherwise, adding operators only increases the branching factor. 
+Composite actions are not usually meant to stay in a finished plan and must be decomposed into atomic steps from one of their methods.
 
 ::: {.definition name="Decomposition Flaws"} :::
 They occur when a partial plan contains a non-atomic step. This step is the needer $a_n$ of the flaw. We note its decomposition $a_n \oplus$.
@@ -318,7 +319,7 @@ $$\bigcup^{f \in \mathit{pre}(a_m)}_{a_m \in S_m} \pi' \downarrowbarred_f a_m\bi
 
 *Example*: When adding the step $make(tea)$ in the plan to solve the subgoal that needs tea being made, we also introduce a decomposition flaw that will need this composite step replaced by its method using a decomposition resolver. In order to decompose a composite action into a plan, all existing links are transposed to the initial and goal step of the selected method, while the composite action and its links are removed from the plan.
 The main differences between HiPOP and HEART in our implementations are the functions of flaw selection and the handling of the results (one plan for HiPOP and a plan per cycle for HEART).
-In HiPOP, the flaw selection is made by prioritizing the decomposition flaws. @bechon_hipop_2014 state that it makes the full resolution faster. However, it also loses opportunities to obtain abstract plans in the process.
+In HiPOP, the flaw selection is made by prioritizing the decomposition flaws. Bechon _et al._ [-@bechon_hipop_2014] state that it makes the full resolution faster. However, it also loses opportunities to obtain abstract plans in the process.
 
 ## Cycles
 
@@ -334,7 +335,7 @@ During a cycle all decomposition flaws are delayed. Once no more flaws other tha
 
 Abstract plans allow the planner to do an approximate form of anytime execution. At any given time the planner is able to return a fully supported plan. Before the first cycle, the plan returned is $\pi_{lv(a_0)}$.
 
-*Example*: In our case using the method of intent recognition of @sohrabi_plan_2016, we can already use $\pi_{lv(a_0)}$ to find a likely goal explaining an observation (a set of temporally ordered fluents). That can make an early assessment of the probability of each goal of the recognition problem.
+*Example*: In our case using the method of intent recognition of Sohrabi _et al._ @sohrabi_plan_2016, we can already use $\pi_{lv(a_0)}$ to find a likely goal explaining an observation (a set of temporally ordered fluents). That can make an early assessment of the probability of each goal of the recognition problem.
 
 For each cycle $c$, a new plan $\pi_{lv(c)}$ is created as a new method of the root operator $a_0$. These intermediary plans are not solutions of the problem, nor do they mean that the problem is solvable. In order to find a solution, the HEART planner needs to reach the final cycle $c_0$ with an abstraction level $lv(c_0) = 0$. However, these plans can be used to derive meaning from the potential solution of the current problem and give a good approximation of the final result before its completion.
 
@@ -344,9 +345,9 @@ For each cycle $c$, a new plan $\pi_{lv(c)}$ is created as a new method of the r
 
 ## Theoretical
 
-In this section, we prove several properties of our method and resulting plans : HEART is complete, sound and its abstract plans can always be decomposed into a valid solution.
+In this section, we prove several properties of our method and resulting plans: HEART is complete, sound and its abstract plans can always be decomposed into a valid solution.
 
-The completeness and soundness of POCL has been proven in [@penberthy_ucpop_1992]. An interesting property of POCL algorithms is that flaw selection strategies do not impact these properties. Since the only modification of the algorithm is the extension of the classical flaws with a decomposition flaw, all we need to explore, to update the proofs, is the impact of the new resolver. By definition, the resolvers of decomposition flaws will take into account all flaws introduced by its resolution into the refined plan. It can also revert its application properly.
+The completeness and soundness of POCL have been proven in [@penberthy_ucpop_1992]. An interesting property of POCL algorithms is that flaw selection strategies do not impact these properties. Since the only modification of the algorithm is the extension of the classical flaws with a decomposition flaw, all we need to explore, to update the proofs, is the impact of the new resolver. By definition, the resolvers of decomposition flaws will take into account all flaws introduced by its resolution into the refined plan. It can also revert its application properly.
 
 ::: {.lemma name="Decomposing preserves acyclicity"} :::
 The decomposition of a composite action with a valid method in an acyclic plan will result in an acyclic plan. Formely, 
@@ -395,7 +396,7 @@ In order to assess its capabilities, HEART was tested on two criteria: quality a
 ![Evolution of the quality with computation time.](graphics/quality-speed.svg){#fig:quality}
 
 @Fig:quality shows how the quality is affected by the abstraction in partial plans. The tests are made using our example domain (see @lst:domain). The quality is measured by counting the number of providing fluents in the plan $\left| \bigcup_{a \in S_\pi} \mathit{eff}(a) \right|$. This metric is actually used to approximate the probability of a goal given observations in intent recognition ($P(G|O)$ with noisy observations, see [@sohrabi_plan_2016]). The percentages are relative to the total number of unique fluents of the complete solution. 
-These results show that in some cases it may be more interesting to plan in a leveled fashion to solve HTN problems. For the first cycle of level $3$, the quality of the abstract plan is already of $60\%$. This is the quality of the exploitation of the plan *before any planning*. With almost three quarters of the final quality and less than half of the complete computation time, the result of the first cycle is a good quality/time compromise.
+These results show that in some cases it may be more interesting to plan in a leveled fashion to solve HTN problems. For the first cycle of level $3$, the quality of the abstract plan is already of $60\%$. This is the quality of the exploitation of the plan *before any planning*. With almost three-quarters of the final quality and less than half of the complete computation time, the result of the first cycle is a good quality/time compromise.
 
 ![Impact of domain shape on the computation time by levels. The scale of the vertical axis is logarithmic. Equations are the definition of the trend curves.](graphics/level-spread.svg){#fig:width}
 
@@ -412,5 +413,5 @@ We showed how HEART performs compared to complete planners in terms of speed and
 
 \setlength{\parindent}{0in}
 \setlength{\leftskip}{0in}
-
+\small
 \noindent

@@ -6,20 +6,15 @@
 package io.genn.color.heart;
 
 import io.genn.color.heart.flaws.Abstraction;
-import io.genn.color.heart.heuristics.ProviderHeuristic;
 import io.genn.color.heart.resolvers.Expand;
 import io.genn.color.planning.algorithm.Flaw;
+import io.genn.color.planning.algorithm.Heuristic;
 import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.planning.problem.Problem;
 import io.genn.color.pop.PopSolver;
 import io.genn.color.pop.flaws.SubGoal;
 import io.genn.color.pop.flaws.Threat;
-import io.genn.color.pop.resolvers.Bind;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Deque;
+import static me.grea.antoine.utils.collection.Collections.list;
 import java.util.List;
 
 /**
@@ -30,23 +25,21 @@ public class HeartSolver extends PopSolver {
 
 	private final boolean last;
 	
-	protected HeartSolver(Problem problem, boolean last){
-		super(problem);
+	protected HeartSolver(Problem problem, Heuristic heuristic, boolean last){
+		super(problem, heuristic);
 		this.last = last;
 	}
 
-	public HeartSolver(Flaw flaw, Problem problem, boolean last) {
-		super(problem);
+	public HeartSolver(Flaw flaw, Problem problem, Heuristic heuristic, boolean last) {
+		super(problem, heuristic);
 		this.last = last;
 		addAll(solve(flaw));
 	}
 
 	@Override
-	protected <F extends Flaw> Deque<Resolver> solve(F flaw) {
+	protected <F extends Flaw> List<Resolver> solve(F flaw) {
 		if (flaw instanceof SubGoal) {
-			List<Resolver> solve = new ArrayList<>(super.solve((SubGoal) flaw));
-			Collections.sort(solve,new ProviderHeuristic());
-			return new ArrayDeque<>(solve);
+			return super.solve((SubGoal) flaw);
 		} else if (flaw instanceof Threat) {
 			return super.solve((Threat) flaw);
 		} else if (flaw instanceof Abstraction) {
@@ -56,8 +49,8 @@ public class HeartSolver extends PopSolver {
 				flaw.getClass() + " is not handled by " + getClass());
 	}
 
-	protected Deque<Resolver> solve(Abstraction flaw) {
-		Deque<Resolver> resolvers = new ArrayDeque<>();
+	protected List<Resolver> solve(Abstraction flaw) {
+		List<Resolver> resolvers = list();
 		resolvers.add(new Expand(flaw.needer, last, problem));
 		return resolvers;
 	}

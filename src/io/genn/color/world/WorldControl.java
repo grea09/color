@@ -5,7 +5,6 @@
  */
 package io.genn.color.world;
 
-import com.google.common.collect.BiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import io.genn.color.planning.domain.Action;
@@ -13,7 +12,6 @@ import io.genn.color.planning.domain.Domain;
 import io.genn.color.planning.problem.Problem;
 import io.genn.color.planning.domain.fluents.FluentControl;
 import io.genn.color.planning.domain.State;
-import io.genn.color.world.WorldFluent;
 import io.genn.color.planning.problem.CausalLink;
 import io.genn.color.planning.problem.Plan;
 import io.genn.color.pop.Pop;
@@ -30,8 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import static me.grea.antoine.utils.collection.Collections.*;
 import me.grea.antoine.utils.log.Log;
 
@@ -101,6 +97,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 	private final Entity PRE;
 	private final Entity EFF;
 	private final Entity CONSTR;
+	private final Entity COST;
 	private final Entity METHOD;
 	public final Entity EQUALITY;
 	public final Entity SOLVE;
@@ -115,6 +112,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		this.PRE = flow.interpreter.named("pre");
 		this.EFF = flow.interpreter.named("eff");
 		this.CONSTR = flow.interpreter.named("constr");
+		this.COST = flow.interpreter.named("costs");
 		this.METHOD = flow.interpreter.named("method");
 		this.EQUALITY = flow.interpreter.named(":");
 		this.SOLVE = flow.interpreter.named("?");
@@ -257,6 +255,8 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 		State pre = state(s.object(first(s.querry(action, PRE))));
 		State eff = state(s.object(first(s.querry(action, EFF))));
 		State constr = state(s.object(first(s.querry(action, CONSTR))));
+		Entity costEntity = s.object(first(s.querry(action, COST)));
+		double cost = costEntity == null ? 1.0 : s.value(costEntity);
 		Plan method = method(s.object(first(s.querry(action, METHOD))));//FIXME multiple methods later
 
 		if (method != null) {
@@ -275,7 +275,7 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 						   parameters,
 						   pre,
 						   eff,
-						   constr,
+						   constr, cost,
 						   name.equals("init") ? Action.Flag.INIT :
 						   (name.equals("goal") ? Action.Flag.GOAL :
 							Action.Flag.NORMAL),
@@ -306,7 +306,8 @@ public class WorldControl implements FluentControl<WorldFluent, Entity> {
 			return entity;
 		}
 		Entity general = s.general(entity);
-		if (general != null && s.instances(general) !=null && s.instances(general).containsKey(newParameters)) {
+		if (general != null && s.instances(general) != null && s.instances(
+				general).containsKey(newParameters)) {
 			return s.instances(general).get(newParameters);
 		}
 

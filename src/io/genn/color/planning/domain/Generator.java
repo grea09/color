@@ -43,13 +43,13 @@ public class Generator {
 																 domain, world,
 																 control);
 			Action init = new Action("init", null, new State<>(), new State<>(),
-									 new State<>(),
+									 new State<>(), 1,
 									 Action.Flag.INIT, world.flow.create(
 											 "init"), null,
 									 control);
 			Action goal = new Action("goal", null, first(actions).eff,
 									 new State<>(),
-									 new State<>(),
+									 new State<>(), 1,
 									 Action.Flag.GOAL, world.flow.create(
 											 "goal"), null,
 									 control);
@@ -73,7 +73,7 @@ public class Generator {
 												 create("" + FLUENT + name),
 																	 world.flow,
 																	 control)),
-										 new State<>(),
+										 new State<>(), 1,
 										 Action.Flag.NORMAL, world.flow.create(
 												 name), null, control));
 			}
@@ -89,14 +89,14 @@ public class Generator {
 				State<WorldFluent> pre = first(steps).pre;
 				State<WorldFluent> eff = last(steps).eff;
 				Action init = new Action("init", list(action), pre, pre,
-										 new State<>(),
+										 new State<>(), 1,
 										 Action.Flag.INIT, world.flow.create(
 												 "init", world.flow.create(
 														 Types.GROUP, list(
 																 action))), null,
 										 control);
 				Action goal = new Action("goal", list(action), eff, eff,
-										 new State<>(),
+										 new State<>(), 1,
 										 Action.Flag.GOAL, world.flow.create(
 												 "goal", world.flow.create(
 														 Types.GROUP, list(
@@ -133,7 +133,7 @@ public class Generator {
 					source = target;
 				}
 
-				actions.add(new Action<>(name, null, pre, eff, new State<>(),
+				actions.add(new Action<>(name, null, pre, eff, new State<>(), 1,
 										 Action.Flag.NORMAL, action, method,
 										 null,
 										 control));

@@ -10,6 +10,7 @@ import io.genn.color.planning.algorithm.Planner;
 import io.genn.color.planning.domain.Action;
 import io.genn.color.world.WorldControl;
 import io.genn.color.planning.problem.Problem;
+import io.genn.color.pop.Pop;
 import io.genn.world.CompilationException;
 import io.genn.world.World;
 import java.io.FileNotFoundException;
@@ -27,7 +28,7 @@ public class Color {
 	public static void main(String[] args) throws InterruptedException {
 		try {
 			Log.i("Opening the world...");
-			World world = new World("data/kitchen_tea.w");
+			World world = new World("data/blocks.w");
 			Log.i("Compiling...");
 			Log.LEVEL = Log.Level.INFO;
 			world.compile(false);
@@ -55,7 +56,7 @@ public class Color {
 //			}
 
 //			problem = control.problem();
-			planner = new Heart(problem);
+			planner = new Pop(problem);
 			planner.solve();
 			Log.i(problem.solution);
 			

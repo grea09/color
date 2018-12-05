@@ -15,10 +15,12 @@ import me.grea.antoine.utils.log.Log;
 public abstract class Planner {
 
 	protected final Problem problem;
+	protected final Heuristic heuristic;
 	protected Agenda agenda;
 
-	public Planner(Problem problem) {
+	public Planner(Problem problem, Heuristic heuristic) {
 		this.problem = problem;
+		this.heuristic = heuristic;
 	}
 
 	public boolean solve() throws InterruptedException {

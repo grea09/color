@@ -5,7 +5,7 @@
 
 //on :: (!(Block) -> !(Block));
 
-(! on !, held(!), down(_)) :: Fluent;
+//(_ on _, held(!), down(*)) :: Fluent;
 
 pickUp(xu) pre (~ on xu, down(xu), held(~));
 pickUp(xu) eff (~(down(xu)), held(xu));
@@ -21,11 +21,9 @@ unstack(xn, yn) pre (held(~), xn on yn);
 unstack(xn, yn) eff (held(xn), ~ on yn);
 unstack(xn, yn) constr (xn ~(:) yn);
 
-(a,b,c,d) :: Block;
+(a,b) :: Block;
 
-init eff (~ on *,
-		down(a), down(b), down(c), down(d),
-		held(~));
+init eff (~ on *, down(*), held(~));
 
 //goal pre (d on c, c on b, b on a);
 

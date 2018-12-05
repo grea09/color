@@ -1,15 +1,15 @@
 ---
-title: "How explainable plans can make planning faster"
-author: "Paper #8"
-# - Antoine Gréa
-# - Laetitia Matignon
-# - Samir Aknine
-#institute: Univ Lyon, Université Lyon 1, CNRS, LIRIS UMR5205, F-69621, LYON, France (first.lastname@liris.cnrs.fr)
-#thanks: Univ Lyon, Université Lyon 1, CNRS, LIRIS, UMR5205, F-69621, LYON, France (first.lastname@liris.cnrs.fr)
+title: "HEART: HiErarchical Abstraction for Real-Time Partial Order Causal Link Planning"
+author: 
+ - Antoine Gréa
+ - Laetitia Matignon
+ - Samir Aknine
+institute: Univ Lyon, Université Lyon 1, CNRS, LIRIS UMR5205, F-69621, LYON, France (first.lastname@liris.cnrs.fr)
+thanks: Univ Lyon, Université Lyon 1, CNRS, LIRIS, UMR5205, F-69621, LYON, France (first.lastname@liris.cnrs.fr)
 tags: [Activity and Plan Recognition, Hierarchical planning, Planning Algorithms, Real-time Planning, Robot Planning, POCL, Partial Order Planning, POP, Partial Order Causal Link, POCL, HTN]
 abstract: In recent years the ubiquity of artificial intelligence raised concerns among the uninitiated. The misunderstanding is further increased since most advances do not have explainable results. For automated planning, the research often targets speed, quality, or expressivity. Most existing solutions focus on one criteria while not addressing the others. However, human-related applications require a complex combination of all those criteria at different levels. We present a new method to compromise on these aspects while staying explainable. We aim to leave the range of potential applications as wide as possible but our main targets are human intent recognition and assistive robotics. The HEART planner is a real-time decompositional planner based on a hierarchical version of Partial Order Causal Link (POCL). It cyclically explores the plan space while making sure that intermediary high level plans are valid and will return them as approximate solutions when interrupted. These plans are proven to be a guarantee of solvability. This paper aims to evaluate that process and its results compared to classical approaches in terms of efficiency and quality.
 bibliography: bibliography/heart.bib
-style: ijcai
+style: icaps
 ---
 
 # Introduction {-}
@@ -37,7 +37,7 @@ While abstract plans are not complete solutions, they still display a useful set
 Another potential application for such plans is relative to domains that work with approximative data. Our main example here is intent recognition which is the original motivation for this work. Planners are not meant to solve intent recognition problems. However, several works extended what is called in psychology the *theory of mind*.
 That theory is the equivalent of asking "*what would **I** do if I was them ?*" when observing the behavior of other agents. This leads to new ways to use *inverted planning* as an inference tool.
 One of the first to propose that idea was @baker_goal_2007 that use Bayesian planning to infer intentions. @ramirez_plan_2009 found an elegant way to transform a plan recognition problem into classical planning. This is done simply by encoding temporal constraints in the planning domain in a similar way as @baioletti_encoding_1998 describe it to match the observed action sequence. A cost comparison will then give a probability of the goal to be pursued given the observations.
-A new method, proposed by @sohrabi_plan_2016, makes the recognition fluent centric. It assigns costs to missing or noisy observed fluents, which allows finer details and less preprocessing work than action-based recognition. This method also uses a meta-goal that combines each possible goal and is realized when at least one of these goals is satisfied. Sohrabi *et al.* state that the quality of the recognition is directly linked to the quality and domain coverage of the generated plans. Thus guided diverse planning[^diverse] was preferred along with the ability to infer several probable goals at once.
+@chen_planning_2013 extended this with multi-goal recognition. A new method, proposed by @sohrabi_plan_2016, makes the recognition fluent centric. It assigns costs to missing or noisy observed fluents, which allows finer details and less preprocessing work than action-based recognition. This method also uses a meta-goal that combines each possible goal and is realized when at least one of these goals is satisfied. Sohrabi *et al.* state that the quality of the recognition is directly linked to the quality and domain coverage of the generated plans. Thus guided diverse planning[^diverse] was preferred along with the ability to infer several probable goals at once.
 
 [^diverse]: Diverse planning aims to find a set of $m$ plans that are distant of $d$ from one another.
 
@@ -49,22 +49,75 @@ Some planners take the integration further by making the decomposition of compos
 
 In our case, we chose a class of hierarchical planners based on Plan Space Planning (PSP) algorithms [@bechon_hipop_2014; @dvorak_flexible_2014; @bercher_hybrid_2014] as a reference approach. The main difference here is that the decomposition is integrated into the classical POCL algorithm by only adding new types of flaws. This allows to keep all the flexibility and properties of POCL while adding the expressivity and abstraction capabilities of HTN. We also made an improved planning framework based on the one used by HiPOP to reduce further the number of changes needed to handle composite actions and to increase the efficiency of the resulting implementation.
 
-Another work has already been done on another aspect of those types of abstract plans. The Angelic algorithm by @marthi_angelic_2007 exploited the usefulness of such plans in the planning process itself and used them as a heuristic guide. They also proved that, for a given fluent semantics, it is guaranteed that such abstract solutions can be refined into actual solutions. However, the Angelic planner does not address the inherent properties of such abstract plans as approximate solutions and uses a more restrictive totally ordered framework.
+As stated previously, our goal is to obtain intermediary abstract plans and to evaluate their properties. Another work has already been done on another aspect of those types of plans. The Angelic algorithm by @marthi_angelic_2007 exploited the usefulness of such plans in the planning process itself and used them as a heuristic guide. They also proved that, for a given fluent semantics, it is guaranteed that such abstract solutions can be refined into actual solutions. However, the Angelic planner does not address the inherent properties of such abstract plans as approximate solutions and uses a more restrictive totally ordered framework.
 
 # Definitions
+In order to make the notations used in the paper more understandable we gathered them in @tbl:symbols. For domain and problem representation, we use a custom knowledge description language that is inspired from RDF Turtle [@beckett_turtle_2011] and is based on triples and propositional logic. In that language quantifiers are used to quantify variables `*(x)` (forall x) but can also be simplified with an implicit form : `lost(~)` meaning _"nothing is lost"_. For reference the *exclusive quantifier* we introduced (noted `~`) is used for the negation (e.g. `~(lost(_))` for _"something is not lost"_) as well as the symbol for nil. All symbols are defined as they are first used. If a symbol is used as a parameter and is referenced again in the same statement, it becomes a variable.
+
+**Symbol**                            **Description**
+----------                            ---------------
+$\mathcal{D}, \mathcal{P}$            Planning domain and problem.
+$\mathit{pre}(a)$, $\mathit{eff}(a)$  Preconditions and effects of the action $a$.
+$\mathit{methods}(a)$                 Methods of the action $a$.
+$\phi^\pm(l)$                         Signed incidence function for partial order plans.
+                                      $\phi^-$ gives the source and $\phi^+$ the target step of $l$.
+                                      No sign gives a pair corresponding to link $l$.
+$L^\pm(a)$                            Set of incoming ($L^-$) and 
+                                      outgoing ($L^+$) links of step $a$.
+                                      No sign gives all adjacent links.
+$a_s \xrightarrow{c} a_t$             Link with source $a_s$, target $a_t$ and cause $c$.
+$\mathit{causes}(l)$                  Gives the causes of a causal link $l$.
+$a_a \succ a_s$                       A step $a_a$ is anterior to the step $a_s$.
+$A_x^n$                               Proper actions set of $x$ down $n$ levels.
+$lv(x)$                               Abstraction level of the entity $x$.
+$a \rhd^\pm a'$                       Transpose the links of action $a$ onto $a'$.
+$l \downarrow a$                      Link $l$ participates in the partial support of step $a$.
+$\pi \Downarrow a$                    Plan $\pi$ fully supports $a$.
+$\downarrowbarred_f a$                Subgoal : Fluent $f$ is not supported in step $a$.
+$a_b \olcross l$                      Threat : Breaker action $a_b$ threatens causal link $l$.
+$a \oplus^m$                          Decomposition of composite action $a$ using method $m$.
+$var : exp$                           The colon is a separator to be read as "such that".
+$[exp]$                               Iverson's brackets: $0$ if $exp=false$, $1$ otherwise.
+
+: Our notations are adapted from @ghallab_automated_2004. The symbol $\pm$ shows when the notation has signed variants. {#tbl:symbols}
 
 ## Domain
 
 The domain specifies the allowed operators that can be used to plan and all the fluents they use as preconditions and effects.
 
 ::: {.definition name="Domain"} :::
-A domain is a triplet $\mathcal{D} = \langle E_\mathcal{D}, R, A_{\mathcal{D}} \rangle$ where:
+A domain is a triplet $\mathcal{D} = \langle E_\mathcal{D}, R, A_{\mathcal{D}} \rangle$
+
 * $E_\mathcal{D}$ is the set of **domain entities**.
 * $R$ is the set of **relations** over $E_\mathcal{D}^n$. These relations are akin to n-ary predicates in first order logic.
 * $A_{\mathcal{D}}$ is the set of **operators** which are fully lifted *actions*.
 :::::::::::::::::::::::::::::::::::
 
-Fluents are signed first order logic n-ary predicates. Negative fluents are noted $\neg f$ and behave as a logical complement. We do not use the closed world hypothesis: fluents are only satisfied when another compatible fluent is provided.
+*Example*: The example domain in @lst:domain is inspired from the kitchen domain of @ramirez_probabilistic_2010.
+
+~~~~ {#lst:domain}
+take(item) pre (taken(~), ?(item)); //?(item) is used to make item into a variable.
+take(item) eff (taken(item));
+heat(thing) pre (~(hot(thing)), taken(thing));
+heat(thing) eff (hot(thing));
+pour(thing, into) pre (thing ~(in) into, taken(thing));
+pour(thing, into) eff (thing in into);
+put(utensil) pre (~(placed(utensil)), taken(utensil));
+put(utensil) eff (placed(utensil), ~(taken(utensil)));
+infuse(extract, liquid, container) :: Action; //Composite action of level 1
+make(drink) :: Action; // Level 2 containing infuse
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+: Domain file used in our planner. In order to be concise, the methods are omitted.
+
+::: {.definition name="Fluent"} :::
+A fluent $f$ is a parameterized statement $r(arg_1, arg_2, …, arg_n)$ where:
+
+* $r \in R$ is a relation/function holding a property of the world.
+* $arg_{i \in [1,n]} \in E_\mathcal{D}$ are the arguments (possibly quantified).
+* $n = |r|$ is the arity of $r$.
+
+Fluents are signed. Negative fluents are noted $\neg f$ and behave as a logical complement. The quantifiers are affected by the sign of the fluents. We do not use the closed world hypothesis: fluents are only satisfied when another compatible fluent is provided. Sets of fluents have a boolean value that equals the conjunction of all its fluents.
+:::::::::::::::::::::::::::::::::::
 
 *Example*: To describe an item not being held, we use the fluent $\neg taken(item)$. If the cup contains water, $in(water, cup)$ is true.
 
@@ -97,6 +150,7 @@ An action is a parametrized tuple $a(args)=\langle name, pre, \mathit{eff}, meth
 
 *Composite* actions are represented using methods. An action without methods is called *atomic*. It is of interest to note the divergence with classical HTN representation here since normally composite actions do not have preconditions nor effects. In our case we insert them into abstract plans.
 
+## Input control
 In order to verify the input of the domain, the causes of the causal links in the methods are optional. If omitted, the causes are inferred by unifying the preconditions and effects with the same mechanism as in the subgoal resolution in our POCL algorithm.
 Since we want to guarantee the validity of abstract plans, we need to ensure that user provided plans are solvable. We use the following formula to compute the final preconditions and effects of any composite action $a$: $\mathit{pre}(a) = \bigcup_{a_s \in L^+(a)} \mathit{causes}(a_s)$ and $\mathit{eff}(a) = \bigcup_{a_s \in L^-(a)} \mathit{causes}(a_s)$. An instance of the classical POCL algorithm is then run on the problem $\mathcal{P}_a = \langle \mathcal{D}, C_\mathcal{P} , a\rangle$ to ensure its coherence. The domain compilation fails if POCL cannot be completed. Since our decomposition hierarchy is acyclic ($a \notin A_a$, see @def:proper) nested methods cannot contain their parent action as a step.
 
@@ -112,7 +166,13 @@ The planning problem is defined as a tuple $\mathcal{P} = \langle \mathcal{D}, C
 * $a_0$ is the **root operator** of the problem which methods are potential solutions of the problem.
 ::::::::::::::::::::::::::::::::::::
 
-*Example*: We use a simple problem for our example domain. The initial state provides that nothing is ready, taken or hot and all containers are empty (all using quantifiers). The goal is to have tea made.
+*Example*: We use a simple problem for our example domain. The initial state provides that nothing is ready, taken or hot and all containers are empty (all using quantifiers). The goal is to have tea made. For reference, @lst:problem contains the problem instance we use as an example.
+
+~~~~{#lst:problem}
+init eff (hot(~), taken(~), placed(~), ~ in ~);
+goal pre (hot(water), tea in cup, water in cup, placed(spoon), placed(cup));
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+: Example of a problem instance for the kitchen domain.
 
 The root operator is initialized to $a_0 = \langle "", s_0, s^*, 
 \lbrace \pi_{lv(a_0)} \rbrace\rangle$, with $s_0$ being the initial state and $s^*$ the goal specification. The method $\pi_{lv(a_0)}$ is a partial order plan with the initial and goal steps linked together via $a_0$.
@@ -151,7 +211,7 @@ Flaws that are caused by the application of a resolver are called *related flaws
 * *Related subgoals* are all the new open conditions inserted by new steps.
 * *Related threats* are the causal links threatened by the insertion of a new step or the deletion of a guarding link.
 
-Flaws can also become irrelevant when a resolver is applied. Those *invalidated flaws* are removed from the agenda upon detection:
+Flaws can also become irrelevant when a resolver is applied. It is always the case for the targeted flaw, but this can also affect other flaws. Those *invalidated flaws* are removed from the agenda upon detection:
 
 * *Invalidated subgoals* are subgoals satisfied by the new causal links or the removal of their needer.
 * *Invalidated threats* happen when the breaker no longer threatens the causal link because the order guards the threatened causal link or either of them have been removed.
@@ -185,7 +245,16 @@ In @alg:pocl we present a generic version of POCL inspired by @ghallab_automated
 \EndFunction
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Resolvers are picked non-deterministically for applications (this can be heuristically driven). At @line:resolverapplication the resolver is effectively applied to the current plan. All side effects and invalidations are handled during the update of the agenda at @line:updateagenda. If a problem occurs, @line:revert backtracks and tries other resolvers. If no resolver fits the flaw, the algorithm backtracks to previous resolver choices to explore all the possible plans and ensure completeness.
+For our version of POCL we follow a refinement procedure that works in several generic steps. 
+In @fig:refinement we detail the resolution of a subgoal as done in the @alg:pocl.
+
+The first is the search for resolver. It is often done in two separate steps : first select the candidates and then check each of them for validity. This is done using the polymorphic function `solve` at @line:resolverselection. 
+
+In the case of subgoals, variable unification is performed to ensure the compatibility of the resolvers. Since this step is time consuming, the operator is instantiated accordingly at this step to factories the computational effort. Composite operators have also all their methods instantiated at this step if they are selected as a candidate. 
+
+Then a resolver is picked non-deterministically for applications (this can be heuristically driven). At @line:resolverapplication the resolver is effectively applied to the current plan. All side effects and invalidations are handled during the update of the agenda at @line:updateagenda. If a problem occurs, @line:revert backtracks and tries other resolvers. If no resolver fits the flaw, the algorithm backtracks to previous resolver choices to explore all the possible plans and ensure completeness.
+
+![Example of the refinement process for subgoal resolution](graphics/refinement.svg){#fig:refinement}
 
 In @def:side-effects, we mentioned effects that aren't present in classical POCL, namely *negative resolvers*. All classical resolvers only add steps and causal links to the partial plan. Our method needs to remove composite steps and their adjacent links when expanding them.
 
@@ -228,9 +297,9 @@ This is a measure of the maximum amount of abstraction an entity can express [^i
 $$lv(x) = \left ( \max_{a \in A_x}(lv(a)) + 1 \right ) [A_x \neq \emptyset]$$
 ::::::::::::::::::::::::::::::::::::::::::::::
 
-[^iverson]: We use Iverson brackets here.
+[^iverson]: We use Iverson brackets here, see notations in @tbl:symbols.
 
-*Example*: The abstraction level of any atomic action is $0$ while it is $2$ for the composite action $make(drink)$. The example domain has an abstraction level of $3$.
+*Example*: The abstraction level of any atomic action is $0$ while it is $2$ for the composite action $make(drink)$. The example domain (in @lst:domain) has an abstraction level of $3$.
 
 ## Abstraction In POCL
 
@@ -254,7 +323,7 @@ In HiPOP, the flaw selection is made by prioritizing the decomposition flaws. @b
 
 ## Cycles
 
-![Illustration of how the cyclical approach is applied on the example domain. Atomic actions that are copied from a cycle to the next are omitted.](graphics/cycles.pdf){#fig:cycles}
+![Illustration of how the cyclical approach is applied on the example domain. Atomic actions that are copied from a cycle to the next are omitted.](graphics/cycles.old.pdf){#fig:cycles .wide}
 
 The main focus of our work is toward obtaining **abstract plans** which are plans that are completed while still containing composite actions. In order to do that the flaw selection function will enforce cycles in the planning process.
 
@@ -320,11 +389,13 @@ From these proofs, we can derive the property of soundness (from the guarantee t
 
 ## Experimental
 
-In order to assess its capabilities, HEART was tested on two criteria: quality and complexity. All tests were executed on an Intel® Core™ i7-7700HQ CPU clocked at 2.80GHz. The Java process used only one core and was not limited by time or memory. Each experiment was repeated between $700$ and $10 000$ times to ensure that variations in speed were not impacting the results.
+In order to assess its capabilities, HEART was tested on two criteria: quality and complexity. All tests were executed on an Intel® Core™ i7-7700HQ CPU clocked at 2.80GHz. The Java process used only one core and was not limited by time or memory [^code]. Each experiment was repeated between $700$ and $10 000$ times to ensure that variations in speed were not impacting the results.
+
+[^code]: The source code of HEART will be available at [genn.io/heart](https://genn.io/heart)
 
 ![Evolution of the quality with computation time.](graphics/quality-speed.svg){#fig:quality}
 
-@Fig:quality shows how the quality is affected by the abstraction in partial plans. The tests are made using our example domain. The quality is measured by counting the number of providing fluents in the plan $\left| \bigcup_{a \in S_\pi} \mathit{eff}(a) \right|$. This metric is actually used to approximate the probability of a goal given observations in intent recognition ($P(G|O)$ with noisy observations, see [@sohrabi_plan_2016]). The percentages are relative to the total number of unique fluents of the complete solution. 
+@Fig:quality shows how the quality is affected by the abstraction in partial plans. The tests are made using our example domain (see @lst:domain). The quality is measured by counting the number of providing fluents in the plan $\left| \bigcup_{a \in S_\pi} \mathit{eff}(a) \right|$. This metric is actually used to approximate the probability of a goal given observations in intent recognition ($P(G|O)$ with noisy observations, see [@sohrabi_plan_2016]). The percentages are relative to the total number of unique fluents of the complete solution. 
 These results show that in some cases it may be more interesting to plan in a leveled fashion to solve HTN problems. For the first cycle of level $3$, the quality of the abstract plan is already of $60\%$. This is the quality of the exploitation of the plan *before any planning*. With almost three quarters of the final quality and less than half of the complete computation time, the result of the first cycle is a good quality/time compromise.
 
 ![Impact of domain shape on the computation time by levels. The scale of the vertical axis is logarithmic. Equations are the definition of the trend curves.](graphics/level-spread.svg){#fig:width}
@@ -340,8 +411,7 @@ We showed how HEART performs compared to complete planners in terms of speed and
 
 # References {-}
 
-\setlength{\parindent}{-0.2in}
-\setlength{\leftskip}{0.2in}
-\setlength{\parskip}{8pt}
-\small
+\setlength{\parindent}{0in}
+\setlength{\leftskip}{0in}
+
 \noindent

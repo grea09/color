@@ -22,6 +22,7 @@ import static me.grea.antoine.utils.collection.Collections.list;
  *
  * @author antoine
  */
+@Deprecated
 public class Cut<F extends Fluent<F, ?>> implements Resolver<F> {
 
 	public final Action<F, ?> target;

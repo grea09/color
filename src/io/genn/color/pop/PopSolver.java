@@ -5,7 +5,9 @@
  */
 package io.genn.color.pop;
 
+import io.genn.color.pop.heuristics.SimpleHeuristic;
 import io.genn.color.planning.algorithm.Flaw;
+import io.genn.color.planning.algorithm.Heuristic;
 import io.genn.color.planning.algorithm.Resolver;
 import io.genn.color.planning.algorithm.Solver;
 import io.genn.color.planning.domain.Action;
@@ -15,13 +17,13 @@ import io.genn.color.pop.flaws.SubGoal;
 import io.genn.color.pop.flaws.Threat;
 import io.genn.color.pop.resolvers.Bind;
 import io.genn.color.pop.resolvers.InstanciatedBind;
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Deque;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import static me.grea.antoine.utils.collection.Collections.queue;
-import static me.grea.antoine.utils.collection.Collections.set;
+import static me.grea.antoine.utils.collection.Collections.*;
 import me.grea.antoine.utils.log.Log;
 
 /**
@@ -30,16 +32,16 @@ import me.grea.antoine.utils.log.Log;
  */
 public class PopSolver extends Solver {
 
-	protected PopSolver(Problem problem) {
-		super(problem);
+	protected PopSolver(Problem problem, Heuristic heuristic) {
+		super(problem, heuristic);
 	}
 
-	public PopSolver(Flaw flaw, Problem problem) {
-		super(flaw, problem);
+	public PopSolver(Flaw flaw, Problem problem, Heuristic heuristic) {
+		super(flaw, problem, heuristic);
 	}
 
 	@Override
-	protected <F extends Flaw> Deque<Resolver> solve(F flaw) {
+	protected <F extends Flaw> List<Resolver> solve(F flaw) {
 		if (flaw instanceof SubGoal) {
 			return PopSolver.this.solve((SubGoal) flaw);
 		} else if (flaw instanceof Threat) {
@@ -49,8 +51,8 @@ public class PopSolver extends Solver {
 				flaw.getClass() + " is not handled by " + getClass());
 	}
 
-	protected Deque<Resolver> solve(SubGoal flaw) {
-		Deque<Resolver> resolvers = new ArrayDeque<Resolver>() {
+	protected List<Resolver> solve(SubGoal flaw) {
+		List<Resolver> resolvers = new ArrayList<Resolver>() {
 			@Override
 			public boolean add(Resolver e) {
 				if (contains(e)) {
@@ -71,14 +73,19 @@ public class PopSolver extends Solver {
 				resolvers.addAll(solve(action, flaw));
 			}
 		}
+		Collections.sort(resolvers, (r1, r2) -> {
+					 return heuristic.compare(((Bind) r1).source,
+											  ((Bind) r2).source);
+				 });
 		return resolvers;
 	}
 
-	protected <F extends Fluent<F, E>, E> Deque<Resolver<F>> solve(
+	protected <F extends Fluent<F, E>, E> List<Resolver<F>> solve(
 			Action<F, E> provider, SubGoal<F> flaw) {
-		Deque<Resolver<F>> resolvers = queue();
+		List<Resolver<F>> resolvers = list();
 
-		Collection<Map<E, E>> unifications = set();
+		Collection<Map<E, E>> unifications =
+				me.grea.antoine.utils.collection.Collections.set();
 		Collection<Map<E, E>> provide = provider.eff.provide(flaw.fluent);
 		if (provide != null) {
 			unifications.addAll(provide);
@@ -124,8 +131,8 @@ public class PopSolver extends Solver {
 		return resolvers;
 	}
 
-	protected Deque<Resolver> solve(Threat flaw) {
-		Deque<Resolver> resolvers = new ArrayDeque<>();
+	protected List<Resolver> solve(Threat flaw) {
+		List<Resolver> resolvers = list();
 		if (flaw.threatened.target() != problem.goal) {
 //            Log.w("Can't demote after goal step !");
 			resolvers.add(new Bind<>(flaw.threatened.target(), flaw.breaker));
