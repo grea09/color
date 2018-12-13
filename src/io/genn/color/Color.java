@@ -28,7 +28,7 @@ public class Color {
 	public static void main(String[] args) throws InterruptedException {
 		try {
 			Log.i("Opening the world...");
-			World world = new World("data/blocks.w");
+			World world = new World("data/kitchen_tea.w");
 			Log.i("Compiling...");
 			Log.LEVEL = Log.Level.INFO;
 			world.compile(false);
@@ -56,7 +56,7 @@ public class Color {
 //			}
 
 //			problem = control.problem();
-			planner = new Pop(problem);
+			planner = new Heart(problem);
 			planner.solve();
 			Log.i(problem.solution);
 			

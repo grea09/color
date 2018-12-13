@@ -29,7 +29,7 @@ The paper introduces the HEART planner which is based on a hierarchical POCL. Th
 
 The only aspect to mention is that the notation used (summarized in Table 1) is somehow complicated to follow along the paper. Specifically for those people not very familiarized with it. Regarding previous work, it is not very clear from the paper what are the exact contributions. 
 
-For instance, definition 2 of decomposition flaws is presented as a contribution of the work, but it seems it is not, given that (as the authors mentioned) HiPOP also made use of that concept. Then, the paper should make clear the difference between the background and the new contributions. Maybe it would be good to make clearer and enphasize in some what does it mean that your version is lifted in runtime. 
+For instance, definition 12 of decomposition flaws is presented as a contribution of the work, but it seems it is not, given that (as the authors mentioned) HiPOP also made use of that concept. Then, the paper should make clear the difference between the background and the new contributions. Maybe it would be good to make clearer and enphasize in some what does it mean that your version is lifted in runtime.
 
 The conclusions of the paper can be developed little more. Is there any future work? 
 
