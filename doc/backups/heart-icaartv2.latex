@@ -2,7 +2,7 @@
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
 %
-\documentclass[a4paper,twoside, 10pt,twocolumn,]{article}
+\documentclass[a4paper,twoside, 10pt,twocolumn,]{.panzer/template/latex/SCITEarticle}
 \usepackage{lmodern}
 \usepackage{amssymb,amsmath}
  %%%%% PANCAKE
@@ -266,6 +266,7 @@
 \makeatother
 
 \renewcommand{\and}{\quad}
+\usepackage{.panzer/template/latex/apalike}
 \usepackage{.panzer/template/latex/SCITEPRESS}
 \makeatletter
 \@ifpackageloaded{subfig}{}{\usepackage{subfig}}
@@ -280,6 +281,34 @@
 \renewcommand*\listtablename{List of Tables}
 }
 \newcommand*\listoflistings\lstlistoflistings
+\AtBeginDocument{%
+\renewcommand*{\lstlistlistingname}{List of Listings}
+}
+\@ifpackageloaded{cleveref}{}{\usepackage{cleveref}}
+\crefname{figure}{figure}{figures}
+\Crefname{figure}{Figure}{Figures}
+\crefname{table}{table}{tables}
+\Crefname{table}{Table}{Tables}
+\crefname{equation}{equation}{equations}
+\Crefname{equation}{Equation}{Equations}
+\crefname{listing}{listing}{listings}
+\Crefname{listing}{Listing}{Listings}
+\crefname{section}{section}{sections}
+\Crefname{section}{Section}{Sections}
+\makeatother
+\makeatletter
+\@ifpackageloaded{subfig}{}{\usepackage{subfig}}
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\captionsetup[subfloat]{margin=0.5em}
+\AtBeginDocument{%
+\renewcommand*\figurename{Figure}
+\renewcommand*\tablename{Table}
+}
+\AtBeginDocument{%
+\renewcommand*\listfigurename{List of Figures}
+\renewcommand*\listtablename{List of Tables}
+}
+%\newcommand*\listoflistings\lstlistoflistings
 \AtBeginDocument{%
 \renewcommand*{\lstlistlistingname}{List of Listings}
 }
@@ -344,112 +373,94 @@ in expressivity, speed, and reliability but often aim to excel in one of
 these domains. This leads to a polarization of the solutions toward more
 specialized methods to tackle each problem. All of these approaches have
 been compared and discussed extensively in the books of Ghallab \emph{et
-al.} (\protect\hyperlink{ref-ghallab_automated_2004}{2004},
-\protect\hyperlink{ref-ghallab_automated_2016}{2016}). Partially ordered
-approaches are popular for their least commitment aspect, flexibility
-and ability to modify plans to use refinement operations (Weld,
-\protect\hyperlink{ref-weld_introduction_1994}{1994}). These approaches
-are often used in applications in robotics and multi-agent planning
-(Dvorak et al., \protect\hyperlink{ref-dvorak_flexible_2014}{2014};
-Lemai and Ingrand,
-\protect\hyperlink{ref-lemai_interleaving_2004}{2004}). One of the most
-flexible partially ordered approaches is called \emph{Partial Order
-Causal Link planning (POCL)} (Young and Moore,
-\protect\hyperlink{ref-young_dpocl_1994}{1994}). It works by refining
-partial plans consisting of steps and causal links into a solution by
-solving all flaws compromising the validity of the plan. Another
-approach is \emph{Hierarchical Task Networks (HTN)} (Sacerdoti,
-\protect\hyperlink{ref-sacerdoti_planning_1974}{1974}) that is meant to
-tackle the problem using composite actions in order to define
-hierarchical tasks within the plan. Hierarchical domains are considered
-easier to conceive and maintain by experts mainly because they seem
-closer to the way we think about these problems (Sacerdoti,
-\protect\hyperlink{ref-sacerdoti_nonlinear_1975}{1975}). In our work, we
+al.} \cite{ghallab_automated_2004,ghallab_automated_2016}.
+Partially ordered approaches are popular for their least commitment
+aspect, flexibility and ability to modify plans to use refinement
+operations \cite{weld_introduction_1994}. These approaches are often
+used in applications in robotics and multi-agent planning
+\cite{lemai_interleaving_2004,dvorak_flexible_2014}. One of the
+most flexible partially ordered approaches is called \emph{Partial Order
+Causal Link planning (POCL)} \cite{young_dpocl_1994}. It works by
+refining partial plans consisting of steps and causal links into a
+solution by solving all flaws compromising the validity of the plan.
+Another approach is \emph{Hierarchical Task Networks (HTN)}
+\cite{sacerdoti_planning_1974} that is meant to tackle the problem
+using composite actions in order to define hierarchical tasks within the
+plan. Hierarchical domains are considered easier to conceive and
+maintain by experts mainly because they seem closer to the way we think
+about these problems \cite{sacerdoti_nonlinear_1975}. In our work, we
 aim to combine HTN planning and POCL planning in such a manner as to
 generate intermediary high-level plans during the planning process.
-Combining these two approaches is not new (Biundo and Schattenberg,
-\protect\hyperlink{ref-biundo_abstract_2001}{2001}; Kambhampati et al.,
-\protect\hyperlink{ref-kambhampati_hybrid_1998}{1998}; Young and Moore,
-\protect\hyperlink{ref-young_dpocl_1994}{1994}). Our work is based on
-\emph{Hierarchical Partial Order Planning (HiPOP)} by Bechon \emph{et
-al.} (\protect\hyperlink{ref-bechon_hipop_2014}{2014}). The idea is to
-expand the classical POCL algorithm with new flaws in order to make it
-compatible with HTN problems and allowing the production of abstract
-plans. To do so, we present an upgraded planning framework that aims to
-simplify and factorize all notions to their minimal forms. We also
-propose some domain compilation techniques to reduce the work of the
-expert conceiving the domain. In all these works, only the final
-solution to the input problem is considered. That is a good approach to
-classical planning except when no solutions can be found (or when none
-exists). Our work focuses on the case when the solution could not be
-found in time or when high-level explanations are preferable to the
-complete implementation detail of the plan. This is done by focusing the
-planning effort toward finding intermediary abstract plans along the
-path to the complete solution. In the rest of the paper, we detail how
-the HiErarchical Abstraction for Real-Time (HEART) planner creates
-abstract intermediary plans that can be used for various applications.
-First, we discuss the motivations and related works to detail the
-choices behind our design process. Then we present the way we modeled
-our own planning framework fitting our needs and then we explain our
-method and prove its properties to finally discuss the experimental
-results.
+Combining these two approaches is not new \cite{young_dpocl_1994,kambhampati_hybrid_1998,biundo_abstract_2001}. Our work is
+based on \emph{Hierarchical Partial Order Planning (HiPOP)} by Bechon
+\emph{et al.} \cite{bechon_hipop_2014}. The idea is to expand the
+classical POCL algorithm with new flaws in order to make it compatible
+with HTN problems and allowing the production of abstract plans. To do
+so, we present an upgraded planning framework that aims to simplify and
+factorize all notions to their minimal forms. We also propose some
+domain compilation techniques to reduce the work of the expert
+conceiving the domain. In all these works, only the final solution to
+the input problem is considered. That is a good approach to classical
+planning except when no solutions can be found (or when none exists).
+Our work focuses on the case when the solution could not be found in
+time or when high-level explanations are preferable to the complete
+implementation detail of the plan. This is done by focusing the planning
+effort toward finding intermediary abstract plans along the path to the
+complete solution. In the rest of the paper, we detail how the
+HiErarchical Abstraction for Real-Time (HEART) planner creates abstract
+intermediary plans that can be used for various applications. First, we
+discuss the motivations and related works to detail the choices behind
+our design process. Then we present the way we modeled our own planning
+framework fitting our needs and then we explain our method and prove its
+properties to finally discuss the experimental results.
 
 Several reasons can cause a problem to be unsolvable. The most obvious
 case is that no solution exists that meets the requirements of the
 problem. This has already been addressed by Göbelbecker \emph{et al.}
-(\protect\hyperlink{ref-gobelbecker_coming_2010}{2010}) where
-``excuses'' are being investigated as potential explanations for when a
-problem has no solution. Our approach deals with problems that are too
-difficult to solve within tight time constraints. For example, in
-robotics, systems often need to be run within refresh rates of several
-Hertz giving the process only fractions of a second to give an updated
-result. Since planning is at least EXPSPACE-hard for HTN using complex
-representation (Erol et al.,
-\protect\hyperlink{ref-erol_htn_1994}{1994}), computing only the first
-plan level of a hierarchical domain is much easier in relation to the
-complete problem. While abstract plans are not complete solutions, they
-still display a useful set of properties for various applications. The
-most immediate application is for explainable planning (Fox et al.,
-\protect\hyperlink{ref-fox_explainable_2017}{2017}; Seegebarth et al.,
-\protect\hyperlink{ref-seegebarth_making_2012}{2012}). Indeed a
-high-level plan is more concise and does not contain unnecessary
-implementation details that would confuse a non-expert. Recent works
-focus on matching the domain to a separate human model (Sreedharan,
-Chakraborti, et al.,
-\protect\hyperlink{ref-sreedharan_handling_2018}{2018}; Sreedharan,
-Srivastava, et al.,
-\protect\hyperlink{ref-sreedharan_hierarchical_2018}{2018}). This
-requires the creation and maintenance of expansive human domains that
-are mostly used as dictionaries to explain technical details. Our method
-will give coherent high level plans that are more concise and simpler
-than any classical plans. Another potential application for such plans
-is relative to domains that work with approximative data. Our main
-example here is intent recognition which is the original motivation for
-this work. Planners are not meant to solve intent recognition problems.
-However, several works extended what is called in psychology the
-\emph{theory of mind}. That theory is the equivalent of asking
-``\emph{what would \textbf{I} do if I was them ?}'' when observing the
-behavior of other agents. This leads to new ways to use \emph{inverted
-planning} as an inference tool. One of the first to propose that idea
-was Baker \emph{et al.} (\protect\hyperlink{ref-baker_goal_2007}{2007})
-that use Bayesian planning to infer intentions. Ramirez and Geffner
-(\protect\hyperlink{ref-ramirez_plan_2009}{2009}) found an elegant way
-to transform a plan recognition problem into classical planning. This is
-done simply by encoding temporal constraints in the planning domain in a
-similar way as Baioletti \emph{et al.}
-(\protect\hyperlink{ref-baioletti_encoding_1998}{1998}) describe it to
-match the observed action sequence. A cost comparison will then give a
-probability of the goal to be pursued given the observations. Chen
-\emph{et al.} (\protect\hyperlink{ref-chen_planning_2013}{2013})
-extended this with multi-goal recognition. A new method, proposed by
-Sohrabi \emph{et al.} (\protect\hyperlink{ref-sohrabi_plan_2016}{2016}),
-makes the recognition fluent centric. It assigns costs to missing or
-noisy observed fluents, which allows finer details and less
-preprocessing work than action-based recognition. This method also uses
-a meta-goal that combines each possible goal and is realized when at
-least one of these goals is satisfied. Sohrabi \emph{et al.} state that
-the quality of the recognition is directly linked to the quality and
-domain coverage of the generated plans. Thus guided diverse
+\cite{gobelbecker_coming_2010} where ``excuses'' are being
+investigated as potential explanations for when a problem has no
+solution. Our approach deals with problems that are too difficult to
+solve within tight time constraints. For example, in robotics, systems
+often need to be run within refresh rates of several Hertz giving the
+process only fractions of a second to give an updated result. Since
+planning is at least EXPSPACE-hard for HTN using complex representation
+\cite{erol_htn_1994}, computing only the first plan level of a
+hierarchical domain is much easier in relation to the complete problem.
+While abstract plans are not complete solutions, they still display a
+useful set of properties for various applications. The most immediate
+application is for explainable planning \cite{fox_explainable_2017,seegebarth_making_2012}. Indeed a high-level plan is more concise
+and does not contain unnecessary implementation details that would
+confuse a non-expert. Recent works focus on matching the domain to a
+separate human model \cite{sreedharan_handling_2018,sreedharan_hierarchical_2018}. This requires the creation and
+maintenance of expansive human domains that are mostly used as
+dictionaries to explain technical details. Our method will give coherent
+high level plans that are more concise and simpler than any classical
+plans. Another potential application for such plans is relative to
+domains that work with approximative data. Our main example here is
+intent recognition which is the original motivation for this work.
+Planners are not meant to solve intent recognition problems. However,
+several works extended what is called in psychology the \emph{theory of
+mind}. That theory is the equivalent of asking ``\emph{what would
+\textbf{I} do if I was them ?}'' when observing the behavior of other
+agents. This leads to new ways to use \emph{inverted planning} as an
+inference tool. One of the first to propose that idea was Baker \emph{et
+al.} \cite{baker_goal_2007} that use Bayesian planning to infer
+intentions. Ramirez and Geffner \cite{ramirez_plan_2009} found an
+elegant way to transform a plan recognition problem into classical
+planning. This is done simply by encoding temporal constraints in the
+planning domain in a similar way as Baioletti \emph{et al.}
+\cite{baioletti_encoding_1998} describe it to match the observed
+action sequence. A cost comparison will then give a probability of the
+goal to be pursued given the observations. Chen \emph{et al.}
+\cite{chen_planning_2013} extended this with multi-goal recognition. A
+new method, proposed by Sohrabi \emph{et al.}
+\cite{sohrabi_plan_2016}, makes the recognition fluent centric. It
+assigns costs to missing or noisy observed fluents, which allows finer
+details and less preprocessing work than action-based recognition. This
+method also uses a meta-goal that combines each possible goal and is
+realized when at least one of these goals is satisfied. Sohrabi \emph{et
+al.} state that the quality of the recognition is directly linked to the
+quality and domain coverage of the generated plans. Thus guided diverse
 planning\footnote{Diverse planning aims to find a set of \(m\) plans
   that are distant of \(d\) from one another.} was preferred along with
 the ability to infer several probable goals at once.
@@ -460,43 +471,37 @@ the ability to infer several probable goals at once.
 HTN is often combined with classical approaches since it allows for a
 more natural expression of domains making expert knowledge easier to
 encode. These kinds of planners are named \textbf{decompositional
-planners} when no initial plan is provided (Fox,
-\protect\hyperlink{ref-fox_natural_1997}{1997}). Most of the time the
-integration of HTN simply consists in calling another algorithm when
-introducing a composite operator during the planning process. The DUET
-planner by Gerevini \emph{et al.}
-(\protect\hyperlink{ref-gerevini_combining_2008}{2008}) does so by
-calling an instance of a HTN planner based on task insertion called
-SHOP2 (Nau et al., \protect\hyperlink{ref-nau_shop2_2003}{2003}) to
+planners} when no initial plan is provided \cite{fox_natural_1997}.
+Most of the time the integration of HTN simply consists in calling
+another algorithm when introducing a composite operator during the
+planning process. The DUET planner by Gerevini \emph{et al.}
+\cite{gerevini_combining_2008} does so by calling an instance of a HTN
+planner based on task insertion called SHOP2 \cite{nau_shop2_2003} to
 decompose composite actions. Some planners take the integration further
 by making the decomposition of composite actions into a special step in
 their refinement process. Such works include the discourse generation
-oriented DPOCL (Young and Moore,
-\protect\hyperlink{ref-young_dpocl_1994}{1994}) and the work of
-Kambhampati \emph{et al.}
-(\protect\hyperlink{ref-kambhampati_hybrid_1998}{1998}) generalizing the
-practice for decompositional planners. In our case, we chose a class of
+oriented DPOCL \cite{young_dpocl_1994} and the work of Kambhampati
+\emph{et al.} \cite{kambhampati_hybrid_1998} generalizing the practice
+for decompositional planners. In our case, we chose a class of
 hierarchical planners based on Plan-Space Planning (PSP) algorithms
-(Bechon et al., \protect\hyperlink{ref-bechon_hipop_2014}{2014}; Bercher
-et al., \protect\hyperlink{ref-bercher_hybrid_2014}{2014}; Dvorak et
-al., \protect\hyperlink{ref-dvorak_flexible_2014}{2014}) as a reference
-approach. The main difference here is that the decomposition is
-integrated into the classical POCL algorithm by only adding new types of
-flaws. This allows keeping all the flexibility and properties of POCL
-while adding the expressivity and abstraction capabilities of HTN. We
-also made an improved planning framework based on the one used by HiPOP
-to reduce further the number of changes needed to handle composite
-actions and to increase the efficiency of the resulting implementation.
-As stated previously, our goal is to obtain intermediary abstract plans
-and to evaluate their properties. Another work has already been done on
-another aspect of those types of plans. The Angelic algorithm by Marthi
-\emph{et al.} (\protect\hyperlink{ref-marthi_angelic_2007}{2007})
-exploited such plans in the planning process itself and used them as a
-heuristic guide. They also proved that, for a given fluent semantics, it
-is guaranteed that such abstract solutions can be refined into actual
-solutions. However, the Angelic planner does not address the inherent
-properties of such abstract plans as approximate solutions and uses a
-more restrictive totally ordered framework.
+\cite{bechon_hipop_2014,dvorak_flexible_2014,bercher_hybrid_2014} as a reference approach. The main difference
+here is that the decomposition is integrated into the classical POCL
+algorithm by only adding new types of flaws. This allows keeping all the
+flexibility and properties of POCL while adding the expressivity and
+abstraction capabilities of HTN. We also made an improved planning
+framework based on the one used by HiPOP to reduce further the number of
+changes needed to handle composite actions and to increase the
+efficiency of the resulting implementation. As stated previously, our
+goal is to obtain intermediary abstract plans and to evaluate their
+properties. Another work has already been done on another aspect of
+those types of plans. The Angelic algorithm by Marthi \emph{et al.}
+\cite{marthi_angelic_2007} exploited such plans in the planning
+process itself and used them as a heuristic guide. They also proved
+that, for a given fluent semantics, it is guaranteed that such abstract
+solutions can be refined into actual solutions. However, the Angelic
+planner does not address the inherent properties of such abstract plans
+as approximate solutions and uses a more restrictive totally ordered
+framework.
 
 \hypertarget{definitions}{%
 \section{Definitions}\label{definitions}}
@@ -504,15 +509,14 @@ more restrictive totally ordered framework.
 In order to make the notations used in the paper more understandable, we
 gathered them in table \ref{tbl:symbols}. For domain and problem
 representation, we use a custom knowledge description language that is
-inspired from RDF Turtle (Beckett and Berners-Lee,
-\protect\hyperlink{ref-beckett_turtle_2011}{2011}) and is based on
+inspired from RDF Turtle \cite{beckett_turtle_2011} and is based on
 triples and propositional logic. In that language quantifiers are used
 to quantify variables \passthrough{\lstinline!*(x)!} (forall x) but can
 also be simplified with an implicit form:
 \passthrough{\lstinline!lost(\~)!} meaning \emph{" nothing is
 lost``\emph{. For reference, the \emph{exclusive quantifier} we
 introduced (noted \passthrough{\lstinline!\~!}) is used for the negation
-(e.g.~\passthrough{\lstinline!\~(lost(\_))!} for }'' something is not
+(e.g.~\passthrough{\lstinline!\~(lost(_))!} for }'' something is not
 lost"}) as well as the symbol for nil. All symbols are defined as they
 are first used. If a symbol is used as a parameter and is referenced
 again in the same statement, it becomes a variable.
@@ -522,8 +526,8 @@ again in the same statement, it becomes a variable.
 \centering
 
 \caption{\label{tbl:symbols}Our notations are adapted from Ghallab
-\emph{et al.} (\protect\hyperlink{ref-ghallab_automated_2004}{2004}).
-The symbol \(\pm\) shows when the notation has signed variants.}
+\emph{et al.} \cite{ghallab_automated_2004}. The symbol \(\pm\) shows
+when the notation has signed variants.}
 
 \begin{tabular}{@{}ll@{}}
 \toprule
@@ -589,7 +593,7 @@ where:
 
 \emph{Example:} The example domain in listing \ref{lst:domain} is
 inspired from the kitchen domain of Ramirez and Geffner
-(\protect\hyperlink{ref-ramirez_probabilistic_2010}{2010}).
+\cite{ramirez_probabilistic_2010}.
 
 \begin{lstlisting}[caption={Domain file used in our planner.}, label=lst:domain]
 take(item) pre (taken(~), ?(item)); //?(item) is used to make item into a variable.
@@ -945,18 +949,16 @@ while it is \(2\) for the composite action \(make(drink)\). The example
 domain (in listing \ref{lst:domain}) has an abstraction level of \(3\).
 
 The most straightforward way to handle abstraction in regular planners
-is illustrated by Duet (Gerevini et al.,
-\protect\hyperlink{ref-gerevini_combining_2008}{2008}) by managing
+is illustrated by Duet \cite{gerevini_combining_2008} by managing
 hierarchical actions separately from a task insertion planner. We chose
 to add abstraction in POCL in a manner inspired by the work of Bechon
-\emph{et al.} (\protect\hyperlink{ref-bechon_hipop_2014}{2014}) on a
-planner called HiPOP. The difference between the original HiPOP and our
-implementation of it is that we focus on the expressivity and the ways
-flaw selection can be exploited for partial resolution. Our version is
-lifted at runtime while the original is grounded for optimizations. All
-mechanisms we have implemented use POCL but with different management of
-flaws and resolvers. The original algorithm \ref{alg:pocl} is left
-untouched.
+\emph{et al.} \cite{bechon_hipop_2014} on a planner called HiPOP. The
+difference between the original HiPOP and our implementation of it is
+that we focus on the expressivity and the ways flaw selection can be
+exploited for partial resolution. Our version is lifted at runtime while
+the original is grounded for optimizations. All mechanisms we have
+implemented use POCL but with different management of flaws and
+resolvers.
 
 One of those changes is that resolver selection needs to be altered for
 subgoals. Indeed, as stated by the authors of HiPOP: the planner must
@@ -999,15 +1001,14 @@ removed from the plan. The main differences between HiPOP and HEART in
 our implementations are the functions of flaw selection and the handling
 of the results (one plan for HiPOP and a plan per cycle for HEART). In
 HiPOP, the flaw selection is made by prioritizing the decomposition
-flaws. Bechon \emph{et al.}
-(\protect\hyperlink{ref-bechon_hipop_2014}{2014}) state that it makes
-the full resolution faster. However, it also loses opportunities to
-obtain abstract plans in the process.
+flaws. Bechon \emph{et al.} \cite{bechon_hipop_2014} state that it
+makes the full resolution faster. However, it also loses opportunities
+to obtain abstract plans in the process.
 
 \begin{figure}
 \hypertarget{fig:cycles}{%
 \centering
-\includegraphics{graphics/cycles.svg}
+\includegraphics{graphics/cycles.pdf}
 \caption{Illustration of how the cyclical approach is applied on the
 example domain. Atomic actions that are copied from a cycle to the next
 are omitted.}\label{fig:cycles}
@@ -1043,8 +1044,7 @@ supported plan. Before the first cycle, the plan returned is
 \(\pi_{lv(a_0)}\).
 
 \emph{Example:} In our case using the method of intent recognition of
-Sohrabi \emph{et al.} Sohrabi et al.
-(\protect\hyperlink{ref-sohrabi_plan_2016}{2016}), we can already use
+Sohrabi \emph{et al.} \cite{sohrabi_plan_2016}, we can already use
 \(\pi_{lv(a_0)}\) to find a likely goal explaining an observation (a set
 of temporally ordered fluents). That can make an early assessment of the
 probability of each goal of the recognition problem.
@@ -1072,15 +1072,15 @@ found.
 \hypertarget{results}{%
 \section{Results}\label{results}}
 
-The completeness and soundness of POCL has been proven in (Penberthy et
-al., \protect\hyperlink{ref-penberthy_ucpop_1992}{1992}). An interesting
-property of POCL algorithms is that flaw selection strategies do not
-impact these properties. Since the only modification of the algorithm is
-the extension of the classical flaws with a decomposition flaw, all we
-need to explore, to update the proofs, is the impact of the new
-resolver. By definition, the resolvers of decomposition flaws will take
-into account all flaws introduced by its resolution into the refined
-plan. It can also revert its application properly.
+The completeness and soundness of POCL has been proven in
+\cite{penberthy_ucpop_1992}. An interesting property of POCL
+algorithms is that flaw selection strategies do not impact these
+properties. Since the only modification of the algorithm is the
+extension of the classical flaws with a decomposition flaw, all we need
+to explore, to update the proofs, is the impact of the new resolver. By
+definition, the resolvers of decomposition flaws will take into account
+all flaws introduced by its resolution into the refined plan. It can
+also revert its application properly.
 
 \begin{lemma}[Decomposing preserves acyclicity]
 
@@ -1185,164 +1185,8 @@ problems within tight time constraints.
 The source code of HEART along with an extended version of this paper is
 available at \href{https://genn.io/heart}{genn.io/heart}.
 
-\hypertarget{references}{%
-\section*{References}\label{references}}
-\addcontentsline{toc}{section}{References}
-
-\setlength{\parindent}{0in}
-\setlength{\leftskip}{0in}
-\small
-
-\noindent
-
-\hypertarget{refs}{}
-\leavevmode\hypertarget{ref-baioletti_encoding_1998}{}%
-Baioletti, M., Marcugini, S., and Milani, A. (1998). Encoding planning
-constraints into partial order planning domains. In \emph{International
-Conference on Principles of Knowledge Representation and Reasoning},
-pages 608--616. Morgan Kaufmann Publishers Inc.
-
-\leavevmode\hypertarget{ref-baker_goal_2007}{}%
-Baker, C. L., Tenenbaum, J. B., and Saxe, R. R. (2007). Goal inference
-as inverse planning. In \emph{Proceedings of the Annual Meeting of the
-Cognitive Science Society},Vol. 29.
-
-\leavevmode\hypertarget{ref-bechon_hipop_2014}{}%
-Bechon, P., Barbier, M., Infantes, G., Lesire, C., and Vidal, V. (2014).
-HiPOP: Hierarchical Partial-Order Planning. In \emph{European Starting
-AI Researcher Symposium},Vol. 264, pages 51--60. IOS Press.
-
-\leavevmode\hypertarget{ref-beckett_turtle_2011}{}%
-Beckett, D., and Berners-Lee, T. (2011). \emph{Turtle - Terse RDF Triple
-Language} (W3C Team Submission). W3C.
-
-\leavevmode\hypertarget{ref-bercher_hybrid_2014}{}%
-Bercher, P., Keen, S., and Biundo, S. (2014). Hybrid planning heuristics
-based on task decomposition graphs. In \emph{Seventh Annual Symposium on
-Combinatorial Search}.
-
-\leavevmode\hypertarget{ref-biundo_abstract_2001}{}%
-Biundo, S., and Schattenberg, B. (2001). From abstract crisis to
-concrete relief preliminary report on flexible integration on nonlinear
-and hierarchical planning. In \emph{Proceedings of the European
-Conference on Planning}.
-
-\leavevmode\hypertarget{ref-chen_planning_2013}{}%
-Chen, J., Chen, Y., Xu, Y., Huang, R., and Chen, Z. (2013). A Planning
-Approach to the Recognition of Multiple Goals. \emph{International
-Journal of Intelligent Systems}, \emph{28}(3), 203--216.
-
-\leavevmode\hypertarget{ref-dvorak_flexible_2014}{}%
-Dvorak, F., Bit-Monnot, A., Ingrand, F., and Ghallab, M. (2014). A
-flexible ANML actor and planner in robotics. In \emph{Planning and
-Robotics (PlanRob) Workshop (ICAPS)}.
-
-\leavevmode\hypertarget{ref-erol_htn_1994}{}%
-Erol, K., Hendler, J., and Nau, D. S. (1994). HTN planning: Complexity
-and expressivity. In \emph{AAAI},Vol. 94, pages 1123--1128.
-
-\leavevmode\hypertarget{ref-fox_natural_1997}{}%
-Fox, M. (1997). Natural hierarchical planning using operator
-decomposition. In \emph{European Conference on Planning}, pages
-195--207. Springer.
-
-\leavevmode\hypertarget{ref-fox_explainable_2017}{}%
-Fox, M., Long, D., and Magazzeni, D. (2017). Explainable Planning. In
-\emph{Proceedings of IJCAI Workshop on Explainable AI}. Melbourne,
-Australia.
-
-\leavevmode\hypertarget{ref-gerevini_combining_2008}{}%
-Gerevini, A., Kuter, U., Nau, D. S., Saetti, A., and Waisbrot, N.
-(2008). Combining Domain-Independent Planning and HTN Planning: The Duet
-Planner. In \emph{Proceedings of the European Conference on Artificial
-Intelligence},Vol. 18, pages 573--577.
-
-\leavevmode\hypertarget{ref-ghallab_automated_2004}{}%
-Ghallab, M., Nau, D., and Traverso, P. (2004). \emph{Automated planning:
-Theory \& practice}. Elsevier.
-
-\leavevmode\hypertarget{ref-ghallab_automated_2016}{}%
-Ghallab, M., Nau, D., and Traverso, P. (2016). \emph{Automated Planning
-and Acting}. Cambridge University Press.
-
-\leavevmode\hypertarget{ref-gobelbecker_coming_2010}{}%
-Göbelbecker, M., Keller, T., Eyerich, P., Brenner, M., and Nebel, B.
-(2010). Coming Up With Good Excuses: What to do When no Plan Can be
-Found. In \emph{Proceedings of the International Conference on Automated
-Planning and Scheduling},Vol. 20, pages 81--88. AAAI Press.
-
-\leavevmode\hypertarget{ref-kambhampati_hybrid_1998}{}%
-Kambhampati, S., Mali, A., and Srivastava, B. (1998). Hybrid planning
-for partially hierarchical domains. In \emph{AAAI/IAAI}, pages 882--888.
-
-\leavevmode\hypertarget{ref-lemai_interleaving_2004}{}%
-Lemai, S., and Ingrand, F. (2004). Interleaving temporal planning and
-execution in robotics domains. In \emph{AAAI},Vol. 4, pages 617--622.
-
-\leavevmode\hypertarget{ref-marthi_angelic_2007}{}%
-Marthi, B., Russell, S. J., and Wolfe, J. A. (2007). Angelic Semantics
-for High-Level Actions. In \emph{ICAPS}, pages 232--239.
-
-\leavevmode\hypertarget{ref-nau_shop2_2003}{}%
-Nau, D. S., Au, T.-C., Ilghami, O., Kuter, U., Murdock, J. W., Wu, D.,
-and Yaman, F. (2003). SHOP2: An HTN planning system. \emph{J. Artif.
-Intell. Res.(JAIR)}, \emph{20}, 379--404.
-
-\leavevmode\hypertarget{ref-penberthy_ucpop_1992}{}%
-Penberthy, J. S., Weld, D. S., and others. (1992). UCPOP: A Sound,
-Complete, Partial Order Planner for ADL. \emph{Kr}, \emph{92}, 103--114.
-
-\leavevmode\hypertarget{ref-ramirez_plan_2009}{}%
-Ramırez, M., and Geffner, H. (2009). Plan recognition as planning. In
-\emph{Proceedings of the International Conference on International
-Conference on Automated Planning and Scheduling},Vol. 19, pages
-1778--1783. AAAI Press.
-
-\leavevmode\hypertarget{ref-ramirez_probabilistic_2010}{}%
-Ramırez, M., and Geffner, H. (2010). Probabilistic plan recognition
-using off-the-shelf classical planners. In \emph{Proceedings of the
-Conference of the Association for the Advancement of Artificial
-Intelligence},Vol. 24, pages 1121--1126.
-
-\leavevmode\hypertarget{ref-sacerdoti_planning_1974}{}%
-Sacerdoti, E. D. (1974). Planning in a hierarchy of abstraction spaces.
-\emph{Artificial Intelligence}, \emph{5}(2), 115--135.
-
-\leavevmode\hypertarget{ref-sacerdoti_nonlinear_1975}{}%
-Sacerdoti, E. D. (1975). \emph{The nonlinear nature of plans}. STANFORD
-RESEARCH INST MENLO PARK CA.
-
-\leavevmode\hypertarget{ref-seegebarth_making_2012}{}%
-Seegebarth, B., Müller, F., Schattenberg, B., and Biundo, S. (2012).
-Making hybrid plans more clear to human usersa formal approach for
-generating sound explanations. In \emph{Proceedings of the Twenty-Second
-International Conference on International Conference on Automated
-Planning and Scheduling}, pages 225--233. AAAI Press.
-
-\leavevmode\hypertarget{ref-sohrabi_plan_2016}{}%
-Sohrabi, S., Riabov, A. V., and Udrea, O. (2016). Plan Recognition as
-Planning Revisited. In \emph{Proceedings of the International Joint
-Conference on Artificial Intelligence},Vol. 25.
-
-\leavevmode\hypertarget{ref-sreedharan_handling_2018}{}%
-Sreedharan, S., Chakraborti, T., and Kambhampati, S. (2018). Handling
-Model Uncertainty and Multiplicity in Explanations via Model
-Reconciliation. In \emph{International Conference on Automated Planning
-and Scheduling}.
-
-\leavevmode\hypertarget{ref-sreedharan_hierarchical_2018}{}%
-Sreedharan, S., Srivastava, S., and Kambhampati, S. (2018). Hierarchical
-Expertise-Level Modeling for User Specific Robot-Behavior Explanations.
-In \emph{International Joint Conference on Artificial Intelligence}.
-
-\leavevmode\hypertarget{ref-weld_introduction_1994}{}%
-Weld, D. S. (1994). An introduction to least commitment planning.
-\emph{AI Magazine}, \emph{15}(4), 27.
-
-\leavevmode\hypertarget{ref-young_dpocl_1994}{}%
-Young, R. M., and Moore, J. D. (1994). DPOCL: A principled approach to
-discourse planning. In \emph{Proceedings of the Seventh International
-Workshop on Natural Language Generation}, pages 13--20. Association for
-Computational Linguistics.
+\bibliographystyle{.panzer/template/latex/apalike}
+{\small
+\bibliography{bibliography/heart.bib}}
 
 \end{document}
