@@ -1,0 +1,199 @@
+\begin{thebibliography}{}
+
+\bibitem[Baioletti et~al., 1998]{baioletti_encoding_1998}
+Baioletti, M., Marcugini, S., and Milani, A. (1998).
+\newblock Encoding planning constraints into partial order planning domains.
+\newblock In {\em International {{Conference}} on {{Principles}} of {{Knowledge
+  Representation}} and {{Reasoning}}}, pages 608--616. {Morgan Kaufmann
+  Publishers Inc.}
+\newblock 00013.
+
+\bibitem[Baker et~al., 2007]{baker_goal_2007}
+Baker, C.~L., Tenenbaum, J.~B., and Saxe, R.~R. (2007).
+\newblock Goal inference as inverse planning.
+\newblock In {\em Proceedings of the {{Annual Meeting}} of the {{Cognitive
+  Science Society}}}, volume~29.
+\newblock 00064.
+
+\bibitem[Bechon et~al., 2014]{bechon_hipop_2014}
+Bechon, P., Barbier, M., Infantes, G., Lesire, C., and Vidal, V. (2014).
+\newblock {{HiPOP}}: {{Hierarchical Partial}}-{{Order Planning}}.
+\newblock In {\em European {{Starting AI Researcher Symposium}}}, volume 264,
+  pages 51--60. {IOS Press}.
+
+\bibitem[Beckett and {Berners-Lee}, 2011]{beckett_turtle_2011}
+Beckett, D. and {Berners-Lee}, T. (2011).
+\newblock Turtle - {{Terse RDF Triple Language}}.
+\newblock {{W3C Team Submission}}, {W3C}.
+
+\bibitem[Bercher et~al., 2014]{bercher_hybrid_2014}
+Bercher, P., Keen, S., and Biundo, S. (2014).
+\newblock Hybrid planning heuristics based on task decomposition graphs.
+\newblock In {\em Seventh {{Annual Symposium}} on {{Combinatorial Search}}}.
+
+\bibitem[Biundo and Schattenberg, 2001]{biundo_abstract_2001}
+Biundo, S. and Schattenberg, B. (2001).
+\newblock From abstract crisis to concrete relief \textemdash{} {{A}}
+  preliminary report on flexible integration on nonlinear and hierarchical
+  planning.
+\newblock In {\em Proceedings of the {{European Conference}} on {{Planning}}}.
+
+\bibitem[Chen et~al., 2013]{chen_planning_2013}
+Chen, J., Chen, Y., Xu, Y., Huang, R., and Chen, Z. (2013).
+\newblock A {{Planning Approach}} to the {{Recognition}} of {{Multiple Goals}}.
+\newblock {\em International Journal of Intelligent Systems}, 28(3):203--216.
+\newblock 00003.
+
+\bibitem[Dvorak et~al., 2014]{dvorak_flexible_2014}
+Dvorak, F., {Bit-Monnot}, A., Ingrand, F., and Ghallab, M. (2014).
+\newblock A flexible {{ANML}} actor and planner in robotics.
+\newblock In {\em Planning and {{Robotics}} ({{PlanRob}}) {{Workshop}}
+  ({{ICAPS}})}.
+
+\bibitem[Erol et~al., 1994]{erol_htn_1994}
+Erol, K., Hendler, J., and Nau, D.~S. (1994).
+\newblock {{HTN}} planning: {{Complexity}} and expressivity.
+\newblock In {\em {{AAAI}}}, volume~94, pages 1123--1128.
+
+\bibitem[Fox, 1997]{fox_natural_1997}
+Fox, M. (1997).
+\newblock Natural hierarchical planning using operator decomposition.
+\newblock In {\em European {{Conference}} on {{Planning}}}, pages 195--207.
+  {Springer}.
+
+\bibitem[Fox et~al., 2017]{fox_explainable_2017}
+Fox, M., Long, D., and Magazzeni, D. (2017).
+\newblock Explainable {{Planning}}.
+\newblock In {\em Proceedings of {{IJCAI Workshop}} on {{Explainable AI}}},
+  Melbourne, Australia.
+
+\bibitem[Gerevini et~al., 2008]{gerevini_combining_2008}
+Gerevini, A., Kuter, U., Nau, D.~S., Saetti, A., and Waisbrot, N. (2008).
+\newblock Combining {{Domain}}-{{Independent Planning}} and {{HTN Planning}}:
+  {{The Duet Planner}}.
+\newblock In {\em Proceedings of the {{European Conference}} on {{Artificial
+  Intelligence}}}, volume~18, pages 573--577.
+\newblock 00025.
+
+\bibitem[Ghallab et~al., 2004]{ghallab_automated_2004}
+Ghallab, M., Nau, D., and Traverso, P. (2004).
+\newblock {\em Automated Planning: Theory \& Practice}.
+\newblock {Elsevier}.
+\newblock 00002.
+
+\bibitem[Ghallab et~al., 2016]{ghallab_automated_2016}
+Ghallab, M., Nau, D., and Traverso, P. (2016).
+\newblock {\em Automated {{Planning}} and {{Acting}}}.
+\newblock {Cambridge University Press}.
+\newblock 00058.
+
+\bibitem[G\"obelbecker et~al., 2010]{gobelbecker_coming_2010}
+G\"obelbecker, M., Keller, T., Eyerich, P., Brenner, M., and Nebel, B. (2010).
+\newblock Coming {{Up With Good Excuses}}: {{What}} to do {{When}} no {{Plan
+  Can}} be {{Found}}.
+\newblock In {\em Proceedings of the {{International Conference}} on
+  {{Automated Planning}} and {{Scheduling}}}, volume~20, pages 81--88. {AAAI
+  Press}.
+\newblock 00036.
+
+\bibitem[Kambhampati et~al., 1998]{kambhampati_hybrid_1998}
+Kambhampati, S., Mali, A., and Srivastava, B. (1998).
+\newblock Hybrid planning for partially hierarchical domains.
+\newblock In {\em {{AAAI}}/{{IAAI}}}, pages 882--888.
+
+\bibitem[Lemai and Ingrand, 2004]{lemai_interleaving_2004}
+Lemai, S. and Ingrand, F. (2004).
+\newblock Interleaving temporal planning and execution in robotics domains.
+\newblock In {\em {{AAAI}}}, volume~4, pages 617--622.
+\newblock 00117.
+
+\bibitem[Marthi et~al., 2007]{marthi_angelic_2007}
+Marthi, B., Russell, S.~J., and Wolfe, J.~A. (2007).
+\newblock Angelic {{Semantics}} for {{High}}-{{Level Actions}}.
+\newblock In {\em {{ICAPS}}}, pages 232--239.
+
+\bibitem[Nau et~al., 2003]{nau_shop2_2003}
+Nau, D.~S., Au, T.-C., Ilghami, O., Kuter, U., Murdock, J.~W., Wu, D., and
+  Yaman, F. (2003).
+\newblock {{SHOP2}}: {{An HTN}} planning system.
+\newblock {\em J. Artif. Intell. Res.(JAIR)}, 20:379--404.
+\newblock 00891.
+
+\bibitem[Penberthy et~al., 1992]{penberthy_ucpop_1992}
+Penberthy, J.~S., Weld, D.~S., and {others} (1992).
+\newblock {{UCPOP}}: {{A Sound}}, {{Complete}}, {{Partial Order Planner}} for
+  {{ADL}}.
+\newblock {\em Kr}, 92:103--114.
+\newblock 00000.
+
+\bibitem[Ram\i{}rez and Geffner, 2009]{ramirez_plan_2009}
+Ram\i{}rez, M. and Geffner, H. (2009).
+\newblock Plan recognition as planning.
+\newblock In {\em Proceedings of the {{International Conference}} on
+  {{International Conference}} on {{Automated Planning}} and {{Scheduling}}},
+  volume~19, pages 1778--1783. {AAAI Press}.
+\newblock 00093.
+
+\bibitem[Ram\i{}rez and Geffner, 2010]{ramirez_probabilistic_2010}
+Ram\i{}rez, M. and Geffner, H. (2010).
+\newblock Probabilistic plan recognition using off-the-shelf classical
+  planners.
+\newblock In {\em Proceedings of the {{Conference}} of the {{Association}} for
+  the {{Advancement}} of {{Artificial Intelligence}}}, volume~24, pages
+  1121--1126.
+\newblock 00099.
+
+\bibitem[Sacerdoti, 1974]{sacerdoti_planning_1974}
+Sacerdoti, E.~D. (1974).
+\newblock Planning in a hierarchy of abstraction spaces.
+\newblock {\em Artificial intelligence}, 5(2):115--135.
+
+\bibitem[Sacerdoti, 1975]{sacerdoti_nonlinear_1975}
+Sacerdoti, E.~D. (1975).
+\newblock The nonlinear nature of plans.
+\newblock Technical report, {STANFORD RESEARCH INST MENLO PARK CA}.
+
+\bibitem[Seegebarth et~al., 2012]{seegebarth_making_2012}
+Seegebarth, B., M\"uller, F., Schattenberg, B., and Biundo, S. (2012).
+\newblock Making hybrid plans more clear to human users\textemdash{}a formal
+  approach for generating sound explanations.
+\newblock In {\em Proceedings of the {{Twenty}}-{{Second International
+  Conference}} on {{International Conference}} on {{Automated Planning}} and
+  {{Scheduling}}}, pages 225--233. {AAAI Press}.
+\newblock 00019.
+
+\bibitem[Sohrabi et~al., 2016]{sohrabi_plan_2016}
+Sohrabi, S., Riabov, A.~V., and Udrea, O. (2016).
+\newblock Plan {{Recognition}} as {{Planning Revisited}}.
+\newblock In {\em Proceedings of the {{International Joint Conference}} on
+  {{Artificial Intelligence}}}, volume~25.
+\newblock 00004.
+
+\bibitem[Sreedharan et~al., 2018a]{sreedharan_handling_2018}
+Sreedharan, S., Chakraborti, T., and Kambhampati, S. (2018a).
+\newblock Handling {{Model Uncertainty}} and {{Multiplicity}} in
+  {{Explanations}} via {{Model Reconciliation}}.
+\newblock In {\em International {{Conference}} on {{Automated Planning}} and
+  {{Scheduling}}}.
+
+\bibitem[Sreedharan et~al., 2018b]{sreedharan_hierarchical_2018}
+Sreedharan, S., Srivastava, S., and Kambhampati, S. (2018b).
+\newblock Hierarchical {{Expertise}}-{{Level Modeling}} for {{User Specific
+  Robot}}-{{Behavior Explanations}}.
+\newblock In {\em International {{Joint Conference}} on {{Artificial
+  Intelligence}}}.
+
+\bibitem[Weld, 1994]{weld_introduction_1994}
+Weld, D.~S. (1994).
+\newblock An introduction to least commitment planning.
+\newblock {\em AI magazine}, 15(4):27.
+\newblock 00775.
+
+\bibitem[Young and Moore, 1994]{young_dpocl_1994}
+Young, R.~M. and Moore, J.~D. (1994).
+\newblock {{DPOCL}}: {{A}} principled approach to discourse planning.
+\newblock In {\em Proceedings of the {{Seventh International Workshop}} on
+  {{Natural Language Generation}}}, pages 13--20. {Association for
+  Computational Linguistics}.
+
+\end{thebibliography}
